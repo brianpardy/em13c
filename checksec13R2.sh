@@ -27,6 +27,9 @@
 #                  democertcheck, and ciphercheck
 # Changes   v1.0:  Converted to EM13cR2, converted repository DB checks
 #                  to use DBBP Bundle Patch (aka Exadata patch), not PSU
+# Changes   v1.1:  Updated for 20161231 EM13cR2 patches. 
+#                  Updated for 20170117 security patches.
+#                  Add check for OPatch and OMSPatcher versions. 
 #
 # From: @BrianPardy on Twitter
 #
@@ -68,9 +71,10 @@
 # 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="19 Oct 2016"
+PATCHDATE="17 Jan 2017"
+PATCHNOTE="2219797.1"
 OMSHOST=`hostname -f`
-VERSION="1.0"
+VERSION="1.1"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -135,7 +139,6 @@ EM_INSTANCE_BASE=`$GREP GCDomain $MW_HOME/domain-registry.xml | sed -e 's/.*=//'
 
 EMGC_PROPS="$EM_INSTANCE_BASE/em/EMGC_OMS1/emgc.properties"
 EMBIP_PROPS="$EM_INSTANCE_BASE/em/EMGC_OMS1/embip.properties"
-#OPMN_PROPS="$EM_INSTANCE_BASE/WebTierIH1/config/OPMN/opmn/ports.prop"
 #OHS_ADMIN_CONF="$EM_INSTANCE_BASE/WebTierIH1/config/OHS/ohs1/admin.conf"
 
 PORT_UPL=`$GREP EM_UPLOAD_HTTPS_PORT $EMGC_PROPS | awk -F= '{print $2}'`
@@ -145,7 +148,6 @@ PORT_NODEMANAGER=`$GREP EM_NODEMGR_PORT $EMGC_PROPS | awk -F= '{print $2}'`
 PORT_BIP=`$GREP BIP_HTTPS_PORT $EMBIP_PROPS | awk -F= '{print $2}'`
 PORT_BIP_OHS=`$GREP BIP_HTTPS_OHS_PORT $EMBIP_PROPS | awk -F= '{print $2}'`
 PORT_ADMINSERVER=`$GREP AS_HTTPS_PORT $EMGC_PROPS | awk -F= '{print $2}'`
-#PORT_OPMN=`$GREP '/opmn/remote_port' $OPMN_PROPS | awk -F= '{print $2}'`
 #PORT_OHS_ADMIN=`$GREP Listen $OHS_ADMIN_CONF | awk '{print $2}'`
 PORT_AGENT=`$AGENT_HOME/bin/emctl status agent | $GREP 'Agent URL' | sed -e 's/\/emd\/main\///' | sed -e 's/^.*://' | uniq`
 
@@ -169,6 +171,40 @@ if [[ "$REPOS_DB_HOST" == "$OMSHOST" ]]; then
 		echo -e "\tSkipping local repository DB patch check, only 11.2.0.4 or 12.1.0.2 supported by this script for now"
 	fi
 fi
+
+patchercheck () {
+	PATCHER_CHECK_COMPONENT=$1
+	PATCHER_CHECK_OH=$2
+	PATCHER_CHECK_VERSION=$3
+
+	if [[ $PATCHER_CHECK_COMPONENT == "OPatch" ]]; then
+		PATCHER_RET=`$PATCHER_CHECK_OH/opatch version -jre $MW_HOME/oracle_common/jdk | grep Version | sed 's/.*: //'`
+		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
+
+		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
+			echo OK
+		else
+			echo FAILED
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$PATCHER_CHECK_COMPONENT @ $PATCHER_CHECK_OH: fails minimum version requirement $PATCHER_MINVER vs $PATCHER_CHECK_VERSION"
+		fi
+		return
+	fi
+
+	if [[ $PATCHER_CHECK_COMPONENT == "OMSPatcher" ]]; then
+		PATCHER_RET=`$PATCHER_CHECK_OH/omspatcher version -jre $MW_HOME/oracle_common/jdk | grep 'OMSPatcher Version' | sed 's/.*: //'`
+		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
+
+		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
+			echo OK
+		else
+			echo FAILED
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$PATCHER_CHECK_COMPONENT @ $PATCHER_CHECK_OH: fails minimum version requirement $PATCHER_MINVER vs $PATCHER_CHECK_VERSION"
+		fi
+		return
+	fi
+}
 
 
 
@@ -625,7 +661,6 @@ sslcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS ssl2
 sslcheck OMSconsole $OMSHOST $PORT_OMS ssl2
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA ssl2
 sslcheck OMSupload $OMSHOST $PORT_UPL ssl2
-#sslcheck OPMN $OMSHOST $PORT_OPMN ssl2
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER ssl2
 
 echo -e "\n\t(1b) Forbid SSLv3 connections"
@@ -636,7 +671,6 @@ sslcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS ssl3
 sslcheck OMSconsole $OMSHOST $PORT_OMS ssl3
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA ssl3
 sslcheck OMSupload $OMSHOST $PORT_UPL ssl3
-#sslcheck OPMN $OMSHOST $PORT_OPMN ssl3
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER ssl3
 
 echo -e "\n\t(1c) $OPENSSL_PERMIT_FORBID_NON_TLS1_2 TLSv1 connections"
@@ -647,7 +681,6 @@ sslcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS tls1
 sslcheck OMSconsole $OMSHOST $PORT_OMS tls1
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1
-#sslcheck OPMN $OMSHOST $PORT_OPMN tls1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1
 
 echo -e "\n\t(1c) $OPENSSL_PERMIT_FORBID_NON_TLS1_2 TLSv1.1 connections"
@@ -658,7 +691,6 @@ sslcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS tls1_1
 sslcheck OMSconsole $OMSHOST $PORT_OMS tls1_1
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1_1
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1_1
-#sslcheck OPMN $OMSHOST $PORT_OPMN tls1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1_1
 
 echo -e "\n\t(1c) Permit TLSv1.2 connections"
@@ -669,7 +701,6 @@ sslcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS tls1_2
 sslcheck OMSconsole $OMSHOST $PORT_OMS tls1_2
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1_2
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1_2
-#sslcheck OPMN $OMSHOST $PORT_OPMN tls1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1_2
 
 echo -e "\n(2) Checking supported ciphers at SSL/TLS endpoints (see notes 2138391.1, 1067411.1)"
@@ -680,7 +711,6 @@ ciphercheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
 ciphercheck OMSconsole $OMSHOST $PORT_OMS
 ciphercheck OMSproxy $OMSHOST $PORT_OMS_JAVA
 ciphercheck OMSupload $OMSHOST $PORT_UPL
-#ciphercheck OPMN $OMSHOST $PORT_OPMN
 ciphercheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)"
@@ -698,25 +728,28 @@ certcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
 democertcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
 certcheck OMSupload $OMSHOST $PORT_UPL
 democertcheck OMSupload $OMSHOST $PORT_UPL
-#certcheck OPMN $OMSHOST $PORT_OPMN
-#democertcheck OPMN $OMSHOST $PORT_OPMN
 certcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 
-echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes 1664074.1, 1900943.1, 822485.1, 1470197.1, 1967243.1)"
+echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 1664074.1, 1900943.1, 822485.1, 1470197.1, 1967243.1)"
 
 if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.161018 (OCT2016) (24340679)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 24340679
+		#echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.161018 (OCT2016) (24340679)... "
+		#opatchcheck ReposDBHome $REPOS_DB_HOME 24340679
+		echo -ne "\n\t(4a) *UPDATED* OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170117 (JAN2017) (24732088)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 24732088
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.161018, Oracle JavaVM Component (OCT2016) (24315824)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 24315824
+		#echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.161018, Oracle JavaVM Component (OCT2016) (24315824)... "
+		#opatchcheck ReposDBHome $REPOS_DB_HOME 24315824
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Interim patch for 24846605 (24846605)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 24846605
+		echo -ne "\n\t(4a) *UPDATED* OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170117, Oracle JavaVM Component (JAN2017) (24917972)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 24917972
+
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Interim patch for 25101514 (25101514)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 25101514
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 20243268
@@ -759,23 +792,32 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 fi
 
-#echo -ne "\n\t(4c) *UPDATED* OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.1.0.0.160920 (24437699)... "
-#opatchcheck Agent $AGENT_HOME 24437699
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.161231 (25105555)... "
+opatchcheck Agent $AGENT_HOME 25105555
 
-#echo -ne "\n\t(4c) *UPDATED* OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.1.1.0.160920 MONITORING (24545984)... "
-#opatchcheck Agent $AGENT_HOME 24545984
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 MONITORING (25197693)... "
+opatchcheck Agent $AGENT_HOME 25197693
 
-#echo -ne "\n\t(4c) *UPDATED* OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.1.1.0.160920 DISCOVERY (24545989)... "
-#opatchcheck Agent $AGENT_HOME 24545989
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197692)... "
+opatchcheck Agent $AGENT_HOME 25197692
 
-#echo -ne "\n\t(4c) *UPDATED* OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.1.1.0.160920 MONITORING (24658006)... "
-#opatchcheck Agent $AGENT_HOME 24658006
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.161231 MONITORING (25197697)... "
+opatchcheck Agent $AGENT_HOME 25197697
 
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.1.1.0.160531 DISCOVERY (23294895)... "
-#opatchcheck Agent $AGENT_HOME 23294895
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197700)... "
+opatchcheck Agent $AGENT_HOME 25197700
 
-#echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.1.1.0.160331 (22920724)... "
-#omspatchercheck OMS $OMS_HOME 22920724
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.161231 MONITORING (25197707)... "
+opatchcheck Agent $AGENT_HOME 25197707
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
+opatchcheck Agent $AGENT_HOME 25162444
+
+echo -ne "\n\t(4d) *NEW* OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
+omspatchercheck OMS $OMS_HOME 25163555
+
+echo -ne "\n\t(4d) *NEW* OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.161231 (25197714)... "
+omspatchercheck OMS $OMS_HOME 25197714
 
 #echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OH PLUGIN BUNDLE PATCH 13.1.1.0.160429 (23135564)... "
 #opatchcheck Agent $AGENT_HOME 23135564
@@ -786,14 +828,21 @@ fi
 #echo -ne "\n\t(4f) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM PATCH SET UPDATE 13.1.0.0.160719 (23134365)... "
 #omspatchercheck OMS $MW_HOME 23134365
 
-echo -ne "\n\t(4c) *NEW* ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.161019 (23744018)... "
-opatchcheck WLS $MW_HOME 23744018
+echo -ne "\n\t(4e) ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
+opatchcheck WLS $MW_HOME 24904852
 
-echo -e "\n(5) Checking EM13c Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1)"
+echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1)"
 
-echo -ne "\n\t(5a) WLS ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-111 (13079846)... "
-javacheck WLSJAVA $MW_HOME/oracle_common/jdk
+echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-111 (13079846)... "
+javacheck JAVA $MW_HOME/oracle_common/jdk
 
+echo -e "\n(6) Checking EM13cR2 OPatch/OMSPatcher patch levels against $PATCHDATE requirements (see patch 25197714 README, patches 6880880 and 19999993)"
+
+echo -ne "\n\t(6a) *NEW* OPatch ($MW_HOME/OPatch) VERSION 13.9.1.0.0 or newer... "
+patchercheck OPatch $MW_HOME/OPatch 13.9.1.0.0
+
+echo -ne "\n\t(6b) *NEW* OMSPatcher ($MW_HOME/OPatch) VERSION 13.8.0.0.1 or newer... "
+patchercheck OMSPatcher $MW_HOME/OMSPatcher 13.8.0.0.1
 
 echo
 echo
