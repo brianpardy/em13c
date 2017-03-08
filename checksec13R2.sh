@@ -34,6 +34,7 @@
 # Changes   v1.3:  Updated for 20170228 bundle patches.
 # Changes   v1.4:  Added patches 25604219 and 24327938
 #                  Updated Java check to 1.7.0_131
+# Changes   v1.5:  Add check for chained agent Java version
 #
 # From: @BrianPardy on Twitter
 #
@@ -78,7 +79,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="1.4"
+VERSION="1.5"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -883,19 +884,22 @@ omspatchercheck OMS $OMS_HOME 25501489
 #echo -ne "\n\t(4f) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM PATCH SET UPDATE 13.1.0.0.160719 (23134365)... "
 #omspatchercheck OMS $MW_HOME 23134365
 
-echo -ne "\n\t(4e) ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
+echo -ne "\n\t(4e) OMS HOME ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
 opatchcheck WLS $MW_HOME 24904852
 
-echo -ne "\n\t(4e) *NEW* ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
+echo -ne "\n\t(4e) *NEW* OMS HOME ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
 opatchcheck WLS $MW_HOME 24327938
 
-echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1)"
+echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1, 2241373.1)"
 
 #echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-111 (13079846)... "
 #javacheck JAVA $MW_HOME/oracle_common/jdk
 
 echo -ne "\n\t(5a) *UPDATED* Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
 javacheck JAVA $MW_HOME/oracle_common/jdk
+
+echo -ne "\n\t(5b) *NEW* OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
+javacheck JAVA $AGENT_HOME/oracle_common/jdk
 
 echo -e "\n(6) Checking EM13cR2 OPatch/OMSPatcher patch levels against $PATCHDATE requirements (see patch 25197714 README, patches 6880880 and 19999993)"
 
@@ -916,7 +920,8 @@ else
 fi
 
 echo
-echo "Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for the latest version."
+echo "Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for more information."
+echo "Download the latest version from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13R2.sh"
 echo
 
 exit
