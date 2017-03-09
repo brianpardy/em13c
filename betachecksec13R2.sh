@@ -587,14 +587,18 @@ emclicheck () {
 
             # Now check for existence of patch
 
-            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '$i')" | $GREP -c PATCH_INSTALLED`
+            if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
+                EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '$i')" | $GREP -c PATCH_INSTALLED`
 
-            if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
-                echo -e "\tOK"
+                if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
+                    echo -e "\tOK"
+                else
+                    echo -e "\tFAILED"
+                    FAIL_COUNT=$((FAIL_COUNT+1))
+                    FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
+                fi
             else
-                echo -e "\tFAILED"
-                FAIL_COUNT=$((FAIL_COUNT+1))
-                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
+                echo -e "\tOK - plugin not installed"
             fi
         fi
 
