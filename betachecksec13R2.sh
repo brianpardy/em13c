@@ -581,9 +581,9 @@ emclicheck () {
 
             # OK at this point simply means plugin home exists on the agent, still need to check for the requested patch
 
-            if [[ "$EMCLICHECK_RETURN" != "OK" ]]; then
-                echo -e "\tOK - plugin not installed"
-            fi
+            #if [[ "$EMCLICHECK_RETURN" != "OK" ]]; then
+            #    echo -e "\tOK - plugin not installed"
+            #fi
 
             # Now check for existence of patch
 
@@ -1013,7 +1013,7 @@ if [[ "$EMCLI_CHECK" -eq 1 ]]; then
     emclicheck oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 7a "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
     emclicheck oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 7a "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
     emclicheck oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 7a "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-    emclicheck oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 7a "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228"
+    emclicheck oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 7a "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
     emclicheck oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 7a "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
     emclicheck oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 7a "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
     emclicheck oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 7a "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
