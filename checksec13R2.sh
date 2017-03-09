@@ -35,6 +35,15 @@
 # Changes   v1.4:  Added patches 25604219 and 24327938
 #                  Updated Java check to 1.7.0_131
 # Changes   v1.5:  Add check for chained agent Java version
+# Changes   v1.6:  Updated note references.
+#                  Added plugin patch checks for OMS chained agent
+#                  for non-default discovery/monitoring plugins
+#                  not previously checked. If you do not have
+#                  those plugins installed, the script will not
+#                  indicate failure due to the missing patch.
+#                  Added EMCLI check. If you login to EMCLI
+#                  before running ./checksec13R2.sh, the script
+#                  will soon check additional items using EMCLI.
 #
 # From: @BrianPardy on Twitter
 #
@@ -79,12 +88,13 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="1.5"
+VERSION="1.6"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
 RUN_DB_CHECK=0
 VERBOSE_CHECKSEC=2
+EMCLI_CHECK=0
 
 HOST_OS=`uname -s`
 HOST_ARCH=`uname -m`
@@ -176,6 +186,15 @@ if [[ "$REPOS_DB_HOST" == "$OMSHOST" ]]; then
 		echo -e "\tSkipping local repository DB patch check, only 11.2.0.4 or 12.1.0.2 supported by this script for now"
 	fi
 fi
+
+EMCLI="$MW_HOME/bin/emcli"
+$EMCLI sync
+EMCLI_NOT_LOGGED_IN=$?
+
+if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
+    EMCLI_CHECK=1
+fi
+
 
 patchercheck () {
 	PATCHER_CHECK_COMPONENT=$1
@@ -304,6 +323,33 @@ opatchcheck () {
 
 	test $VERBOSE_CHECKSEC -ge 2 && echo $OPATCH_RET
 
+}
+
+opatchplugincheck () {
+	OPATCH_CHECK_COMPONENT=$1
+	OPATCH_CHECK_OH=$2
+	OPATCH_CHECK_PATCH=$3
+    OPATCH_PLUGIN_DIR=$4
+
+    if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}" ]]; then
+        if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
+            OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+        else
+            OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+        fi
+    else
+            OPATCH_RET="Plugin dir $OPATCH_PLUGIN_DIR does not exist, not installed"
+    fi
+
+	if [[ -z "$OPATCH_RET" ]]; then
+		echo FAILED
+		FAIL_COUNT=$((FAIL_COUNT+1))
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPATCH_CHECK_COMPONENT @ ${OPATCH_CHECK_OH}:Patch $OPATCH_CHECK_PATCH not found"
+	else
+		echo OK
+	fi
+
+	test $VERBOSE_CHECKSEC -ge 2 && echo $OPATCH_RET
 }
 
 opatchautocheck () {
@@ -656,7 +702,7 @@ if [[ $RUN_DB_CHECK -eq "1" ]]; then
 	echo -e "\tRepository DB on OMS server, will check patches/parameters in $REPOS_DB_HOME"
 fi
 
-echo -e "\n(1) Checking SSL/TLS configuration (see notes 1602983.1, 1477287.1, 1905314.1)"
+echo -e "\n(1) Checking SSL/TLS configuration (see notes 2138391.1, 2212006.1)"
 
 echo -e "\n\t(1a) Forbid SSLv2 connections"
 sslcheck Agent $OMSHOST $PORT_AGENT ssl2
@@ -737,18 +783,13 @@ certcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 
-echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 1664074.1, 1900943.1, 822485.1, 1470197.1, 1967243.1)"
+echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 822485.1, 1470197.1)"
 
 if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-		#echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.161018 (OCT2016) (24340679)... "
-		#opatchcheck ReposDBHome $REPOS_DB_HOME 24340679
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170117 (JAN2017) (24732088)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 24732088
-
-		#echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.161018, Oracle JavaVM Component (OCT2016) (24315824)... "
-		#opatchcheck ReposDBHome $REPOS_DB_HOME 24315824
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170117, Oracle JavaVM Component (JAN2017) (24917972)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 24917972
@@ -797,56 +838,47 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 fi
 
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170131 (25291403)... "
-#opatchcheck Agent $AGENT_HOME 25291403
-
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
 opatchcheck Agent $AGENT_HOME 25414194
 
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 MONITORING (25197693)... "
-#opatchcheck Agent $AGENT_HOME 25197693
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362907)... "
-#opatchcheck Agent $AGENT_HOME 25362907
-
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
-opatchcheck Agent $AGENT_HOME 25501452
+opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
 
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197692)... "
-opatchcheck Agent $AGENT_HOME 25197692
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.161231 MONITORING (25197697)... "
-#opatchcheck Agent $AGENT_HOME 25197697
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362899)... "
-#opatchcheck Agent $AGENT_HOME 25362899
+opatchplugincheck Agent $AGENT_HOME 25197692 oracle.sysman.db.discovery.plugin_13.2.1.0.0
 
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501427)... "
-opatchcheck Agent $AGENT_HOME 25501427
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197700)... "
-#opatchcheck Agent $AGENT_HOME 25197700
+opatchplugincheck Agent $AGENT_HOME 25501427 oracle.sysman.emas.agent.plugin_13.2.1.0.0
 
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
-opatchcheck Agent $AGENT_HOME 25197700
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.161231 MONITORING (25197707)... "
-#opatchcheck Agent $AGENT_HOME 25197707
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362904)... "
-#opatchcheck Agent $AGENT_HOME 25362904
+opatchplugincheck Agent $AGENT_HOME 25197700 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
 
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
-opatchcheck Agent $AGENT_HOME 25501408
+opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
 
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
-opatchcheck Agent $AGENT_HOME 25162444
-
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362880)... "
-#opatchcheck Agent $AGENT_HOME 25362880
+opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
 
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501436)... "
-opatchcheck Agent $AGENT_HOME 25501436
+opatchplugincheck Agent $AGENT_HOME 25501436 oracle.sysman.xa.discovery.plugin_13.2.1.0.0
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25362875)... "
+opatchplugincheck Agent $AGENT_HOME 25362875 oracle.sysman.xa.agent.plugin_13.2.1.0.0
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25522944)... "
+opatchplugincheck Agent $AGENT_HOME 25522944 oracle.sysman.emfa.agent.plugin_13.2.1.0.0
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501416)... "
+opatchplugincheck Agent $AGENT_HOME 25501416 oracle.sysman.vi.agent.plugin_13.2.1.0.0
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362898)... "
+opatchplugincheck Agent $AGENT_HOME 25362898 oracle.sysman.vi.discovery.plugin_13.2.1.0.0
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362890)... "
+opatchplugincheck Agent $AGENT_HOME 25362890 oracle.sysman.vt.agent.plugin_13.2.1.0.0
+
+echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
+opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
 
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
@@ -854,9 +886,6 @@ omspatchercheck OMS $OMS_HOME 23603592
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
 omspatchercheck OMS $OMS_HOME 25163555
 
-#echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 19485414 20022048 (21849941)... "
-#omspatchercheck OMS $OMS_HOME 21849941
-#
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... "
 omspatchercheck OMS $OMS_HOME 25322055
 
@@ -869,31 +898,16 @@ omspatchercheck OMS $OMS_HOME 25604219
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
 omspatchercheck OMS $OMS_HOME 25221285
 
-#echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170131 (25362912)... "
-#omspatchercheck OMS $OMS_HOME 25362912
-
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... "
 omspatchercheck OMS $OMS_HOME 25501489
 
-#echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OH PLUGIN BUNDLE PATCH 13.1.1.0.160429 (23135564)... "
-#opatchcheck Agent $AGENT_HOME 23135564
-
-#echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.1.1.0.160920 (24546113)... "
-#omspatchercheck OMS $OMS_HOME 24546113
-
-#echo -ne "\n\t(4f) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM PATCH SET UPDATE 13.1.0.0.160719 (23134365)... "
-#omspatchercheck OMS $MW_HOME 23134365
-
-echo -ne "\n\t(4e) OMS HOME ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
+echo -ne "\n\t(4d) OMS HOME ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
 opatchcheck WLS $MW_HOME 24904852
 
-echo -ne "\n\t(4e) *NEW* OMS HOME ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
+echo -ne "\n\t(4d) *NEW* OMS HOME ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
 opatchcheck WLS $MW_HOME 24327938
 
-echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1, 2241373.1)"
-
-#echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-111 (13079846)... "
-#javacheck JAVA $MW_HOME/oracle_common/jdk
+echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
 
 echo -ne "\n\t(5a) *UPDATED* Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
 javacheck JAVA $MW_HOME/oracle_common/jdk
@@ -908,6 +922,14 @@ patchercheck OPatch $MW_HOME/OPatch 13.9.1.0.0
 
 echo -ne "\n\t(6b) OMSPatcher ($MW_HOME/OPatch) VERSION 13.8.0.0.1 or newer... "
 patchercheck OMSPatcher $MW_HOME/OMSPatcher 13.8.0.0.1
+
+
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+    echo -e "\n(7) Confirmed EMCLI logged-in state. Proceeding with EMCLI-based checks (none yet, try again later)."
+else
+    echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks."
+fi
+
 
 echo
 echo
