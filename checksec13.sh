@@ -832,7 +832,8 @@ else
 fi
 
 echo
-echo "Visit https://pardydba.wordpress.com/2016/04/05/securing-oracle-enterprise-manager-13c/ for the latest version."
+echo "Visit https://pardydba.wordpress.com/2016/04/05/securing-oracle-enterprise-manager-13c/ for more information."
+echo "Download the latest version from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13.sh"
 echo
 
 exit
