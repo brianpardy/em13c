@@ -6,11 +6,15 @@
 # The user will receive the permissions necessary to execute all of the EMCLI-based
 # checks used by checksec13R2.sh 
 #
-# EM_ALL_OPERATOR works to allow CHECKSEC user to execute_sql.... prefer less privilege though
+# EM_ALL_OPERATOR works to allow CHECKSEC user to ./emcli execute_sql.
 #
 # Brian J. Pardy
 # 20170313
 #
+# This script makes a few assumptions.
+#   - All of your saved credentials have SYSMAN as their owner
+#     * Update the OEM_CREDENTIAL_OWNER variable if you use another owner.
+#   - /dev/urandom exists on your system (try /dev/random if not)
 #
 
 VERSION=0.2
@@ -50,7 +54,7 @@ AGENT_TARGETS_XML="$AGENT_HOME/../agent_inst/sysman/emd/targets.xml"
 REPOS_DB_TARGET_NAME=`$GREP 'Member TYPE="oracle_database"' $AGENT_TARGETS_XML | sed 's/^.*NAME="//' | sed 's/".*$//'`
 
 
-echo<<EOBANNER
+cat<<EOBANNER
 Welcome to $0, version $VERSION, released $RELDATE.
 
 Download the latest release of this script at any time from:
@@ -72,24 +76,48 @@ Providing host credentials for every monitored host running an agent enables the
 additional checks in checksec13R2.sh:
 	* Check for presence/absence of the latest Java version on all agents
 
-Login to EMCLI as SYSMAN before running this script. 
+Login to EMCLI as SYSMAN before running this script. If you already have an $OEM_USER account,
+running this script will delete and recreate it with a new password.
 EOBANNER
+
+echo -ne "\nContinue? [y/n] "
+read quitnow
+
+if [[ "$quitnow" != "y" ]]; then
+	echo -e "\nAborting.\n"
+	exit 1
+else
+	echo -e "\nContinuing...\n\n"
+fi
 
 $EMCLI sync
 NOT_LOGGED_IN=$?
-
-$EMCLI delete_user -name=$OEM_USER -force
-
 if [[ $NOT_LOGGED_IN > 0 ]]; then
 	echo "Login to EMCLI with \"$EMCLI login -username=SYSMAN\" then run this script again"
 	exit 1
 fi
 
+$EMCLI delete_user -name=$OEM_USER -force
+DELRET=$?
+if [[ $DELRET > 0 ]]; then
+	echo "Failed to delete existing $OEM_USER account, aborting."
+	exit 1
+else
+	echo -e "\n"
+fi
+
+
 
 $EMCLI create_user -name=$OEM_USER -password="$OEM_USER_PW" -privilege="VIEW_ANY_TARGET" -privilege="CONNECT_TARGET;$REPOS_DB_TARGET_NAME:oracle_database" -privilege="CREATE_JOB" -privilege="DB_RUN_SQL;$REPOS_DB_TARGET_NAME:oracle_database" -role="EM_ALL_OPERATOR"
+CREATERET=$?
+if [[ $CREATERET > 0 ]]; then
+	echo "Failed to create $OEM_USER account, aborting."
+	exit 1
+else
+	echo -e "\n"
+fi
 
-
-echo "Created user $OEM_USER with password: $OEM_USER_PW"
+echo -e "\nCreated user $OEM_USER with password: $OEM_USER_PW\n"
 
 echo "Now $OEM_USER needs preferred credentials for the repository DB and repository DB host."
 echo "Your repository DB target name is $REPOS_DB_TARGET_NAME"
@@ -100,7 +128,7 @@ read reposysdbacreds
 echo -n "Enter the credential name for the repository DB Database Host Credentials: "
 read repodbhostcreds
 
-echo "Validating that supplied credentials exist."
+echo -e "\nValidating that supplied credentials exist.\n"
 
 ### Check normal database credentials for repository
 $EMCLI test_named_credential -cred_names="$repodbnormcreds" -target_name="$REPOS_DB_TARGET_NAME" -target_type=oracle_database
@@ -130,11 +158,10 @@ if [[ $TESTRET != 0 ]]; then
 fi
 
 
-echo "Granting $OEM_USER GET_CREDENTIAL access to supplied credentials."
+echo -e "\nGranting $OEM_USER GET_CREDENTIAL access to supplied credentials."
 
 $EMCLI grant_privs -name=$OEM_USER -privilege="GET_CREDENTIAL;CRED_NAME=$repodbnormcreds" -privilege="GET_CREDENTIAL;CRED_NAME=$repodbhostcreds" -privilege="GET_CREDENTIAL;CRED_NAME=$reposysdbacreds"
 GRANTRET=$?
-
 if [[ $GRANTRET != 0 ]]; then
 	echo "Error granting access to $repodbnormcreds and $repodbhostcreds"
 	exit 1
@@ -157,7 +184,6 @@ for currentagent in $ALL_AGENTS; do
 	(( AGENTNUM += 1 ))
 	echo -ne "\nEnter the credential name to login as the agent user for $currentagent: "
 	read curagentcred
-
 	if [[ "$curagentcred" = "done" ]]; then
 		echo "OK. Skipping this step."
 		DOAGENTS=0
@@ -166,7 +192,6 @@ for currentagent in $ALL_AGENTS; do
 
 	$EMCLI test_named_credential -cred_names="$curagentcred" -target_name="$THEHOST" -target_type=host
 	TESTRET=$?
-
 	if [[ $TESTRET != 0 ]]; then
 		echo "Error: could not validate $curagentcred against $THEHOST, skipping agent credential configuration."
 		DOAGENTS=0
@@ -175,7 +200,6 @@ for currentagent in $ALL_AGENTS; do
 
 	$EMCLI grant_privs -name=$OEM_USER -privilege="GET_CREDENTIAL;CRED_NAME=$curagentcred"
 	GRANTRET=$?
-
 	if [[ $GRANTRET != 0 ]]; then
 		echo "Error granting access to $curagentcred, skipping agent credential configuration."
 		DOAGENTS=0
@@ -186,16 +210,17 @@ for currentagent in $ALL_AGENTS; do
 done
 
 
-echo "Logging out of EMCLI"
+echo -e "\nLogging out of EMCLI"
 $EMCLI logout
 
-echo "Logging in to EMCLI as $OEM_USER"
+echo -e "\nLogging in to EMCLI as $OEM_USER"
 $EMCLI login -username=$OEM_USER -password=$OEM_USER_PW
 LOGINRET=$?
-
 if [[ $LOGINRET != 0 ]]; then
 	echo "EMCLI login as $OEM_USER failed.  Aborting."
 	exit 1
+else
+	echo -e "\n"
 fi
 
 echo "Setting preferred credentials $repodbnormcreds for $OEM_USER on $REPOS_DB_TARGET_NAME"
@@ -204,6 +229,8 @@ SETRET=$?
 if [[ $SETRET != 0 ]]; then
 	echo "Error setting preferred credential $repodbnormcreds for $OEM_USER on $REPOS_DB_TARGET_NAME"
 	exit 1
+else
+	echo -e "\n"
 fi
 
 echo "Setting preferred credentials $reposysdbacreds for $OEM_USER on $REPOS_DB_TARGET_NAME"
@@ -212,6 +239,8 @@ SETRET=$?
 if [[ $SETRET != 0 ]]; then
 	echo "Error setting preferred credential $reposysdbacreds for $OEM_USER on $REPOS_DB_TARGET_NAME"
 	exit 1
+else
+	echo -e "\n"
 fi
 
 echo "Setting preferred credentials $repodbhostcreds for $OEM_USER on $REPOS_DB_TARGET_NAME"
@@ -220,6 +249,8 @@ SETRET=$?
 if [[ $SETRET != 0 ]]; then
 	echo "Error setting preferred credential $repodbhostcreds for $OEM_USER on $REPOS_DB_TARGET_NAME"
 	exit 1
+else
+	echo -e "\n"
 fi
 
 
@@ -229,13 +260,16 @@ if [[ $DOAGENTS == 1 ]]; then
 	for currentagent in $ALL_AGENTS; do
 		(( AGENTNUM += 1 ))
 		THEHOST=`echo $currentagent | sed -e 's/:.*$//'`
-		echo "\nSetting preferred credentials for $OEM_USER on $currentagent"
+		echo -e "\nSetting preferred credentials for $OEM_USER on $currentagent"
 		$EMCLI set_preferred_credential -set_name="HostCredsNormal" -target_name=$THEHOST -target_type="host" -credential_name="${agentcreds[$AGENTNUM]}" -credential_owner="$OEM_CREDENTIAL_OWNER"
 		SETRET=$?
 		if [[ $SETRET != 0 ]]; then
 			echo "Error setting preferred credential ${agentcreds[$AGENTNUM]} for $OEM_USER on $THEHOST"
+		else
+			echo -e "\n"
 		fi
 	done
 fi
 
 echo -e "\n\nAll finished. User $OEM_USER now logged in to EMCLI.\n\nNow go run the checksec13R2.sh script."
+echo -e "\n\nAs a reminder, user $OEM_USER has password $OEM_USER_PW."
