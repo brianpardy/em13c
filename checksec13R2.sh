@@ -111,7 +111,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.0"
+VERSION="2.0.1"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -571,67 +571,94 @@ emclijavacheck () {
     done
 }
 
-emclicheck () {
+pluginpatchpresent () {
     WHICH_TARGET_TYPE=$1
     WHICH_PLUGIN=$2
     WHICH_PLUGIN_TYPE=$3
     WHICH_PLUGIN_VERSION=$4
     WHICH_PATCH=$5
-    EMCLICHECK_LABEL=$6
-    EMCLICHECK_PATCH_DESC=$7
+    WHICH_LABEL=$6
+    WHICH_PATCH_DESC=$7
 
+    echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
+
+    PLUGIN_EXISTS=`$GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
+  #  echo $GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE \| sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"
+
+    if [[ -z "$PLUGIN_EXISTS" ]]; then
+        echo "OK - plugin not installed"
+    else
+        if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
+            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
+        else
+            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
+        fi
+  #      echo "plugin type $WHICH_PLUGIN_TYPE"
+  #      echo "CUR_PLUGIN_VERSION=$CUR_PLUGIN_VERSION"
+
+        for j in $PLUGIN_EXISTS; do
+            EMCLICHECK_RETURN=""
+  #          echo "compare $j against $CUR_PLUGIN_VERSION"
+            EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
+            if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
+                EMCLICHECK_RETURN="OK"
+                break
+            fi
+        done
+
+        # OK at this point simply means plugin home exists on the agent, still need to check for the requested patch
+  #      echo "emclicheck return: $EMCLICHECK_RETURN"
+
+        if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
+            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
+
+            if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
+                echo -e "\tOK"
+            else
+                echo -e "\tFAILED"
+                FAIL_COUNT=$((FAIL_COUNT+1))
+                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
+            fi
+        else
+            echo -e "\tOK - plugin not installed"
+        fi
+    fi
+
+#    test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
+}
+
+emcliagentbundlepatchcheck () {
     ALL_AGENTS=`$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}'`
+    SECTION_NUM=7
 
-    for i in $ALL_AGENTS; do
+    for curagent in $ALL_AGENTS; do
         EMCLICHECK_RETURN="FAILED"
         EMCLICHECK_FOUND_VERSION=0
         EMCLICHECK_QUERY_RET=0
+        EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+        EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
 
-        echo -ne "\n\t($EMCLICHECK_LABEL) $EMCLICHECK_PATCH_DESC @ $i ($WHICH_PATCH)... "
+        echo -ne "\n($SECTION_NUM) Agent plugin bundle check on ${curagent}... "
 
-        EMCLICHECK_INITIAL_RETURN=`$EMCLI list_plugins_on_agent -agent_names="$i" -include_discovery | $GREP $WHICH_PLUGIN | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
+        $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
 
-        if [[ -z "$EMCLICHECK_INITIAL_RETURN" ]]; then
-            echo "OK - plugin not installed"
-        else
-            if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
-                CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
-            else
-                CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
-            fi
+        pluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+        pluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 25501427 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+        pluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
+        pluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+        pluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 j "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
+        pluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 25362890 l "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
+        pluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
 
-            for j in $EMCLICHECK_INITIAL_RETURN; do
-                EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
-                if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
-                    EMCLICHECK_RETURN="OK"
-                    break
-                fi
-            done
+        (( SECTION_NUM+=1 ))
 
-            # OK at this point simply means plugin home exists on the agent, still need to check for the requested patch
-
-            #if [[ "$EMCLICHECK_RETURN" != "OK" ]]; then
-            #    echo -e "\tOK - plugin not installed"
-            #fi
-
-            # Now check for existence of patch
-
-            if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
-                EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '$i')" | $GREP -c PATCH_INSTALLED`
-
-                if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
-                    echo -e "\tOK"
-                else
-                    echo -e "\tFAILED"
-                    FAIL_COUNT=$((FAIL_COUNT+1))
-                    FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
-                fi
-            else
-                echo -e "\tOK - plugin not installed"
-            fi
-        fi
-
-#        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
+        rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
     done
 }
 
@@ -1012,20 +1039,7 @@ patchercheck OMSPatcher $MW_HOME/OMSPatcher 13.8.0.0.1
 
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    echo -e "\n(7) Confirmed EMCLI logged-in state. Proceeding with EMCLI-based checks."
-    emclicheck oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 7a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-    emclicheck oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 7b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
-    emclicheck oracle_emd oracle.sysman.emas agent 13.2.1.0.0 25501427 7c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-    emclicheck oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 7d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-    emclicheck oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 7e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-    emclicheck oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 7f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
-    emclicheck oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 7g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-    emclicheck oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 7h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-    emclicheck oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 7i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-    emclicheck oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 7j "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-    emclicheck oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 7k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
-    emclicheck oracle_emd oracle.sysman.vt agent 13.2.1.0.0 25362890 7l "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
-    emclicheck oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 7m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+    emcliagentbundlepatchcheck
 else
     echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
     echo -e "\n    with an OEM user that has configured default normal database credentials and default host"
