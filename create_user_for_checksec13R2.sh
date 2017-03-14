@@ -68,10 +68,10 @@ https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checks
 This script exists to supplement checksec13R2.sh and enable additional checks. When run, this
 script will create a user named $OEM_USER in your EM13cR2 environment and give that user a 
 random password, which gets printed to the screen at the end of the script. The script then
-grants $OEM_USER VIEW_ANY_TARGET privilege, and then prompts you to supply the names of credentials
-existing in your EM13cR2 environment. The script validates the names of credentials supplied, 
-grants VIEW access to $OEM_USER for each credential, and assigns those credentials as preferred
-credentials for $OEM_USER for each relevant target.
+grants $OEM_USER VIEW_ANY_TARGET and EM_ALL_OPERATOR privilege, and then prompts you to supply 
+the names of credentials existing in your EM13cR2 environment. The script validates the names of 
+credentials supplied, grants VIEW access to $OEM_USER for each credential, and assigns those 
+credentials as preferred credentials for $OEM_USER for each relevant target.
 
 Providing credentials for the repository database enables the following additional checks in 
 checksec13R2.sh:
