@@ -44,12 +44,11 @@
 #                  Added EMCLI check. If you login to EMCLI
 #                  before running ./checksec13R2.sh, the script
 #                  will soon check additional items using EMCLI.
-# Changes   v2.0:  Now checking plugin bundle patches on all agents.
-#                  Requires EMCLI.  Run the script while not logged in
+# Changes   v2.0:  Now checking plugin bundle patches on all agents
+#                  using EMCLI.  Run the script while not logged in
 #                  to EMCLI for instructions.  Login to EMCLI and run
 #                  the script to use the new functionality.
-#                  TODO: Use old chained agent checks if EMCLI not available.
-#                  TODO: Stop using them when EMCLI available.
+#                  If not logged in, still runs all non-EMCLI checks.
 #
 # From: @BrianPardy on Twitter
 #
@@ -91,9 +90,16 @@
 # before running the script:
 #
 # - Login to EMCLI using an OEM user account
+# - Make sure the OEM user account can execute EMCLI execute_sql and 
+#   execute_hostcmd
 # - Make sure the OEM user account has specified default normal database
 #   credentials and default host credentials for the repository database
 #   target.
+#      * This will enable plugin bundle patch checks on all agents.
+# - Make sure the OEM user account has specified preferred credentials for 
+#   all host targets where agents run
+#      * This will enable Java version checks on all agents.
+#
 #
 # 
 # Dedicated to our two Lhasa Apsos:
@@ -105,7 +111,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.0beta2"
+VERSION="2.0"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -544,6 +550,27 @@ javacheck () {
 	test $VERBOSE_CHECKSEC -ge 2 && echo $JAVACHECK_RETURN
 }
 
+emclijavacheck () {
+    JAVA_VERSION="1.7.0_131"
+    ALL_AGENTS=`$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}'`
+
+    for i in $ALL_AGENTS; do
+        THEHOST=`echo $i | sed -e 's/:.*$//'`
+        echo -ne "\n\t(5b) Checking for Java $JAVA_VERSION in ORACLE_HOME for agent $i... "
+        EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+        EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
+
+        if [[ "$EMCLIJAVACHECK_GETVER" == "1.7.0_131" ]]; then
+            echo -e "\tOK"
+        else
+            echo -e "\tFAILED"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER"
+        fi
+        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
+    done
+}
+
 emclicheck () {
     WHICH_TARGET_TYPE=$1
     WHICH_PLUGIN=$2
@@ -963,9 +990,14 @@ echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (s
 echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
 javacheck JAVA $MW_HOME/oracle_common/jdk
 
-echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
-javacheck JAVA $AGENT_HOME/oracle_common/jdk
-
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+    echo -e "\nUsing EMCLI to check Java patch levels on all agents"
+    emclijavacheck 
+else
+    echo -e "\nNot logged in to EMCLI, will only check Java patch levels on local host."
+    echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
+    javacheck JAVA $AGENT_HOME/oracle_common/jdk
+fi
 
 
 
