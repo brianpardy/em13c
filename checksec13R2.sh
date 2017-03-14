@@ -100,6 +100,10 @@
 #   all host targets where agents run
 #      * This will enable Java version checks on all agents.
 #
+# The create_user_for_checksec13R2.sh script provided in the same repo
+# as this script will create a user with the necessary permissions and 
+# prompt for the necessary named credentials. Download it from:
+# https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh"
 #
 # 
 # Dedicated to our two Lhasa Apsos:
@@ -179,7 +183,6 @@ EM_INSTANCE_BASE=`$GREP GCDomain $MW_HOME/domain-registry.xml | sed -e 's/.*=//'
 
 EMGC_PROPS="$EM_INSTANCE_BASE/em/EMGC_OMS1/emgc.properties"
 EMBIP_PROPS="$EM_INSTANCE_BASE/em/EMGC_OMS1/embip.properties"
-#OHS_ADMIN_CONF="$EM_INSTANCE_BASE/WebTierIH1/config/OHS/ohs1/admin.conf"
 
 PORT_UPL=`$GREP EM_UPLOAD_HTTPS_PORT $EMGC_PROPS | awk -F= '{print $2}'`
 PORT_OMS=`$GREP EM_CONSOLE_HTTPS_PORT $EMGC_PROPS | awk -F= '{print $2}'`
@@ -188,7 +191,6 @@ PORT_NODEMANAGER=`$GREP EM_NODEMGR_PORT $EMGC_PROPS | awk -F= '{print $2}'`
 PORT_BIP=`$GREP BIP_HTTPS_PORT $EMBIP_PROPS | awk -F= '{print $2}'`
 PORT_BIP_OHS=`$GREP BIP_HTTPS_OHS_PORT $EMBIP_PROPS | awk -F= '{print $2}'`
 PORT_ADMINSERVER=`$GREP AS_HTTPS_PORT $EMGC_PROPS | awk -F= '{print $2}'`
-#PORT_OHS_ADMIN=`$GREP Listen $OHS_ADMIN_CONF | awk '{print $2}'`
 PORT_AGENT=`$AGENT_HOME/bin/emctl status agent | $GREP 'Agent URL' | sed -e 's/\/emd\/main\///' | sed -e 's/^.*://' | uniq`
 
 REPOS_DB_CONNDESC=`$GREP EM_REPOS_CONNECTDESCRIPTOR $EMGC_PROPS | sed -e 's/EM_REPOS_CONNECTDESCRIPTOR=//' | sed -e 's/\\\\//g'`
@@ -542,7 +544,6 @@ javacheck () {
 	if [[ "$JAVACHECK_RETURN" == "1.7.0_131" ]]; then
 		echo -e "\tOK"
 	else
-		#echo -e "\tFAILED - Found version $JAVACHECK_RETURN"
 		echo -e "\tFAILED"
 		FAIL_COUNT=$((FAIL_COUNT+1))
 		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_JAVA Java in ${JAVA_DIR}:Found incorrect version $JAVACHECK_RETURN"
@@ -583,7 +584,6 @@ pluginpatchpresent () {
     echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
 
     PLUGIN_EXISTS=`$GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
-  #  echo $GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE \| sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"
 
     if [[ -z "$PLUGIN_EXISTS" ]]; then
         echo "OK - plugin not installed"
@@ -593,12 +593,9 @@ pluginpatchpresent () {
         else
             CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
         fi
-  #      echo "plugin type $WHICH_PLUGIN_TYPE"
-  #      echo "CUR_PLUGIN_VERSION=$CUR_PLUGIN_VERSION"
 
         for j in $PLUGIN_EXISTS; do
             EMCLICHECK_RETURN=""
-  #          echo "compare $j against $CUR_PLUGIN_VERSION"
             EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
             if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
                 EMCLICHECK_RETURN="OK"
@@ -606,8 +603,8 @@ pluginpatchpresent () {
             fi
         done
 
-        # OK at this point simply means plugin home exists on the agent, still need to check for the requested patch
-  #      echo "emclicheck return: $EMCLICHECK_RETURN"
+	# OK at this point simply means plugin home exists on the agent
+	# Now check for existence of patch
 
         if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
             EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
