@@ -16,9 +16,14 @@
 #     * Update the OEM_CREDENTIAL_OWNER variable if you use another owner.
 #   - /dev/urandom exists on your system (try /dev/random if not)
 #
+# Note that you do NOT need to run this script to use checksec13R2.sh, it
+# contains much functionality that works without EMCLI. You can also manually
+# set up your own EMCLI user account and login to it before running checksec13R2.sh,
+# or just login as SYSMAN if you wish.
+#
 
-VERSION=0.2
-RELDATE="20170313"
+VERSION=1.0
+RELDATE="20170314"
 
 EMCLI="$MW_HOME/bin/emcli"
 OEM_USER=CHECKSEC
