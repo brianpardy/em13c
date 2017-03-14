@@ -4,6 +4,8 @@ Various utilities for Oracle Enterprise Manager 13c
     - This script for EM13c will check your SSL/TLS configuration and patch levels.  Updated infrequently as I no longer have a system available to test with.
 * checksec13R2.sh
     - This script for EM13c R2 will check your SSL/TLS configuration and patch levels. Updated with every new patch release, with new features still appearing.
+* create\_user\_for\_checksec13R2.sh
+    - This script uses EMCLI to create an administrator in EM13c for use by checksec13R2.sh's new features. Optional.
 * create\_agent\_wallets.sh
     - This script uses EMCLI and orapki to create Oracle wallets for your EM13c agents.
 * import\_agent\_wallets.sh

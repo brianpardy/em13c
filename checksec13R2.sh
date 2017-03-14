@@ -44,6 +44,11 @@
 #                  Added EMCLI check. If you login to EMCLI
 #                  before running ./checksec13R2.sh, the script
 #                  will soon check additional items using EMCLI.
+# Changes   v2.0:  Now checking plugin bundle patches on all agents
+#                  using EMCLI.  Run the script while not logged in
+#                  to EMCLI for instructions.  Login to EMCLI and run
+#                  the script to use the new functionality.
+#                  If not logged in, still runs all non-EMCLI checks.
 #
 # From: @BrianPardy on Twitter
 #
@@ -78,6 +83,24 @@
 # will simply make sure you do not permit DES, DES40, 3DES112, or any
 # of the RC4_* algorithms.
 #
+# As of version 2.0, this script will now make use of EMCLI if the user
+# executing it has logged in to EMCLI before executing the script.
+#
+# To make use of this new functionality, you must perform the following steps
+# before running the script:
+#
+# - Login to EMCLI using an OEM user account
+# - Make sure the OEM user account can execute EMCLI execute_sql and 
+#   execute_hostcmd
+# - Make sure the OEM user account has specified default normal database
+#   credentials and default host credentials for the repository database
+#   target.
+#      * This will enable plugin bundle patch checks on all agents.
+# - Make sure the OEM user account has specified preferred credentials for 
+#   all host targets where agents run
+#      * This will enable Java version checks on all agents.
+#
+#
 # 
 # Dedicated to our two Lhasa Apsos:
 #   Lucy (6/13/1998 - 3/13/2015)
@@ -88,7 +111,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="1.6"
+VERSION="2.0"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -148,6 +171,8 @@ MW_HOME=$OMS_HOME
 COMMON_HOME="$MW_HOME/oracle_common"
 
 AGENT_HOME=`$GREP -vi REMOVED $ORAINVENTORY/ContentsXML/inventory.xml | $GREP "HOME NAME=\"agent13c" | awk '{print $3}' | sed -e 's/LOC=\"//' | sed -e 's/"//'`
+AGENT_TARGETS_XML="$AGENT_HOME/../agent_inst/sysman/emd/targets.xml"
+REPOS_DB_TARGET_NAME=`$GREP 'Member TYPE="oracle_database"' $AGENT_TARGETS_XML | sed 's/^.*NAME="//' | sed 's/".*$//'`
 
 
 EM_INSTANCE_BASE=`$GREP GCDomain $MW_HOME/domain-registry.xml | sed -e 's/.*=//' | sed -e 's/\/user_projects.*$//' | sed -e 's/"//'`
@@ -525,6 +550,92 @@ javacheck () {
 	test $VERBOSE_CHECKSEC -ge 2 && echo $JAVACHECK_RETURN
 }
 
+emclijavacheck () {
+    JAVA_VERSION="1.7.0_131"
+    ALL_AGENTS=`$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}'`
+
+    for i in $ALL_AGENTS; do
+        THEHOST=`echo $i | sed -e 's/:.*$//'`
+        echo -ne "\n\t(5b) Checking for Java $JAVA_VERSION in ORACLE_HOME for agent $i... "
+        EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+        EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
+
+        if [[ "$EMCLIJAVACHECK_GETVER" == "1.7.0_131" ]]; then
+            echo -e "\tOK"
+        else
+            echo -e "\tFAILED"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER"
+        fi
+        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
+    done
+}
+
+emclicheck () {
+    WHICH_TARGET_TYPE=$1
+    WHICH_PLUGIN=$2
+    WHICH_PLUGIN_TYPE=$3
+    WHICH_PLUGIN_VERSION=$4
+    WHICH_PATCH=$5
+    EMCLICHECK_LABEL=$6
+    EMCLICHECK_PATCH_DESC=$7
+
+    ALL_AGENTS=`$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}'`
+
+    for i in $ALL_AGENTS; do
+        EMCLICHECK_RETURN="FAILED"
+        EMCLICHECK_FOUND_VERSION=0
+        EMCLICHECK_QUERY_RET=0
+
+        echo -ne "\n\t($EMCLICHECK_LABEL) $EMCLICHECK_PATCH_DESC @ $i ($WHICH_PATCH)... "
+
+        EMCLICHECK_INITIAL_RETURN=`$EMCLI list_plugins_on_agent -agent_names="$i" -include_discovery | $GREP $WHICH_PLUGIN | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
+
+        if [[ -z "$EMCLICHECK_INITIAL_RETURN" ]]; then
+            echo "OK - plugin not installed"
+        else
+            if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
+                CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
+            else
+                CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
+            fi
+
+            for j in $EMCLICHECK_INITIAL_RETURN; do
+                EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
+                if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
+                    EMCLICHECK_RETURN="OK"
+                    break
+                fi
+            done
+
+            # OK at this point simply means plugin home exists on the agent, still need to check for the requested patch
+
+            #if [[ "$EMCLICHECK_RETURN" != "OK" ]]; then
+            #    echo -e "\tOK - plugin not installed"
+            #fi
+
+            # Now check for existence of patch
+
+            if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
+                EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '$i')" | $GREP -c PATCH_INSTALLED`
+
+                if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
+                    echo -e "\tOK"
+                else
+                    echo -e "\tFAILED"
+                    FAIL_COUNT=$((FAIL_COUNT+1))
+                    FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
+                fi
+            else
+                echo -e "\tOK - plugin not installed"
+            fi
+        fi
+
+#        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
+    done
+}
+
+
 paramcheck () {
 	WHICH_PARAM=$1
 	WHICH_ORACLE_HOME=$2
@@ -684,6 +795,7 @@ echo "Using port definitions from configuration files "
 echo -e "\t/etc/oragchomelist"
 echo -e "\t$EMGC_PROPS"
 echo -e "\t$EMBIP_PROPS"
+echo -e "\t$AGENT_TARGETS_XML"
 echo
 echo -e "\tAgent port found at $OMSHOST:$PORT_AGENT"
 echo -e "\tBIPublisher port found at $OMSHOST:$PORT_BIP"
@@ -695,6 +807,7 @@ echo -e "\tOMSupload port found at $OMSHOST:$PORT_UPL"
 echo -e "\tWLSadmin found at $OMSHOST:$PORT_ADMINSERVER"
 echo
 echo -e "\tRepository DB version=$REPOS_DB_VERSION SID=$REPOS_DB_SID host=$REPOS_DB_HOST"
+echo -e "\tRepository DB target name=$REPOS_DB_TARGET_NAME"
 echo 
 echo -e "\tUsing OPENSSL=$OPENSSL (has TLS1_2=$OPENSSL_HAS_TLS1_2)"
 
@@ -841,45 +954,6 @@ fi
 echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
 opatchcheck Agent $AGENT_HOME 25414194
 
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
-opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197692)... "
-opatchplugincheck Agent $AGENT_HOME 25197692 oracle.sysman.db.discovery.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501427)... "
-opatchplugincheck Agent $AGENT_HOME 25501427 oracle.sysman.emas.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
-opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
-opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
-opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
-
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501436)... "
-opatchplugincheck Agent $AGENT_HOME 25501436 oracle.sysman.xa.discovery.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25362875)... "
-opatchplugincheck Agent $AGENT_HOME 25362875 oracle.sysman.xa.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25522944)... "
-opatchplugincheck Agent $AGENT_HOME 25522944 oracle.sysman.emfa.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501416)... "
-opatchplugincheck Agent $AGENT_HOME 25501416 oracle.sysman.vi.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362898)... "
-opatchplugincheck Agent $AGENT_HOME 25362898 oracle.sysman.vi.discovery.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362890)... "
-opatchplugincheck Agent $AGENT_HOME 25362890 oracle.sysman.vt.agent.plugin_13.2.1.0.0
-
-echo -ne "\n\t(4c) *NEW* OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
-opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
-
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
 
@@ -892,7 +966,7 @@ omspatchercheck OMS $OMS_HOME 25322055
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... "
 omspatchercheck OMS $OMS_HOME 24329181
 
-echo -ne "\n\t(4d) *NEW* OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
+echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
 omspatchercheck OMS $OMS_HOME 25604219
 
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
@@ -904,16 +978,29 @@ omspatchercheck OMS $OMS_HOME 25501489
 echo -ne "\n\t(4d) OMS HOME ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
 opatchcheck WLS $MW_HOME 24904852
 
-echo -ne "\n\t(4d) *NEW* OMS HOME ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
+echo -ne "\n\t(4d) OMS HOME ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
 opatchcheck WLS $MW_HOME 24327938
+
+
+
+
 
 echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
 
-echo -ne "\n\t(5a) *UPDATED* Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
+echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
 javacheck JAVA $MW_HOME/oracle_common/jdk
 
-echo -ne "\n\t(5b) *NEW* OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
-javacheck JAVA $AGENT_HOME/oracle_common/jdk
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+    echo -e "\nUsing EMCLI to check Java patch levels on all agents"
+    emclijavacheck 
+else
+    echo -e "\nNot logged in to EMCLI, will only check Java patch levels on local host."
+    echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
+    javacheck JAVA $AGENT_HOME/oracle_common/jdk
+fi
+
+
+
 
 echo -e "\n(6) Checking EM13cR2 OPatch/OMSPatcher patch levels against $PATCHDATE requirements (see patch 25197714 README, patches 6880880 and 19999993)"
 
@@ -925,11 +1012,64 @@ patchercheck OMSPatcher $MW_HOME/OMSPatcher 13.8.0.0.1
 
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    echo -e "\n(7) Confirmed EMCLI logged-in state. Proceeding with EMCLI-based checks (none yet, try again later)."
+    echo -e "\n(7) Confirmed EMCLI logged-in state. Proceeding with EMCLI-based checks."
+    emclicheck oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 7a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+    emclicheck oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 7b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+    emclicheck oracle_emd oracle.sysman.emas agent 13.2.1.0.0 25501427 7c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+    emclicheck oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 7d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+    emclicheck oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 7e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+    emclicheck oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 7f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
+    emclicheck oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 7g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+    emclicheck oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 7h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+    emclicheck oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 7i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+    emclicheck oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 7j "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+    emclicheck oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 7k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
+    emclicheck oracle_emd oracle.sysman.vt agent 13.2.1.0.0 25362890 7l "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
+    emclicheck oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 7m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
 else
-    echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks."
-fi
+    echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
+    echo -e "\n    with an OEM user that has configured default normal database credentials and default host"
+    echo -e "\n    credentials for your repository database target, then run this script again."
 
+    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
+    opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197692)... "
+    opatchplugincheck Agent $AGENT_HOME 25197692 oracle.sysman.db.discovery.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501427)... "
+    opatchplugincheck Agent $AGENT_HOME 25501427 oracle.sysman.emas.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
+    opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
+    opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7f) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
+    opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
+
+    echo -ne "\n\t(7g) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501436)... "
+    opatchplugincheck Agent $AGENT_HOME 25501436 oracle.sysman.xa.discovery.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7h) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25362875)... "
+    opatchplugincheck Agent $AGENT_HOME 25362875 oracle.sysman.xa.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25522944)... "
+    opatchplugincheck Agent $AGENT_HOME 25522944 oracle.sysman.emfa.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501416)... "
+    opatchplugincheck Agent $AGENT_HOME 25501416 oracle.sysman.vi.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362898)... "
+    opatchplugincheck Agent $AGENT_HOME 25362898 oracle.sysman.vi.discovery.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362890)... "
+    opatchplugincheck Agent $AGENT_HOME 25362890 oracle.sysman.vt.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
+    opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
+fi
 
 echo
 echo
