@@ -12,3 +12,5 @@ Various utilities for Oracle Enterprise Manager 13c
     - This script uses EMCLI and orapki to import signed certificates to your EM13c agent wallets.
 * make\_agents\_TLSv1.2.sh
     - This script uses EMCLI to enable TLSv1.2 and disable earlier TLS protocols for your EM13c agents.
+* secure\_agent\_ciphersuites.sh
+    - This script uses EMCLI to disable LOW and MEDIUM strength ciphersuites for your EM13c agents.
