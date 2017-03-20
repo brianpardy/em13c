@@ -474,8 +474,9 @@ ciphercheck () {
 	OPENSSL_CHECK_COMPONENT=$1
 	OPENSSL_CHECK_HOST=$2
 	OPENSSL_CHECK_PORT=$3
+	CIPHERCHECK_SECTION=$4
 
-	echo -ne "\tChecking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
+	echo -ne "\t($CIPHERCHECK_SECTION) Checking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
 
 	OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
@@ -488,7 +489,7 @@ ciphercheck () {
 	fi
 
 
-	echo -ne "\tChecking MEDIUM strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
+	echo -ne "\t($CIPHERCHECK_SECTION) Checking MEDIUM strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
 
 	OPENSSL_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
@@ -502,7 +503,7 @@ ciphercheck () {
 
 
 
-	echo -ne "\tChecking HIGH strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
+	echo -ne "\t($CIPHERCHECK_SECTION) Checking HIGH strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
 
 	OPENSSL_HIGH_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher HIGH 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
@@ -849,9 +850,52 @@ emcliagentprotocols() {
 	echo -e "\tNot yet implemented."
 }
 
-### XXX TODO
 emcliagentciphers() {
-	echo -e "\tNot yet implemented."
+	EMCLIAGENTCIPHERS_SECTION=$1
+
+	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+		EMCLIAGENTCIPHERS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
+		EMCLIAGENTCIPHERS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
+
+		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking LOW strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
+
+		EMCLIAGENTCIPHERS_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTCIPHERS_CHECK_HOST:$EMCLIAGENTCIPHERS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+
+		if [[ $EMCLIAGENTCIPHERS_LOW_RETURN -eq "0" ]]; then
+			echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTCIPHERS_CHECK_COMPONENT @ $EMCLIAGENTCIPHERS_CHECK_HOST:${EMCLIAGENTCIPHERS_CHECK_PORT}:Permits LOW strength ciphers"
+		else
+			echo -e "\tOK"
+		fi
+
+
+
+		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking MEDIUM strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
+		EMCLIAGENTCIPHERS_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTCIPHERS_CHECK_HOST:$EMCLIAGENTCIPHERS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+
+		if [[ $EMCLIAGENTCIPHERS_MEDIUM_RETURN -eq "0" ]]; then
+			echo -e "\tFAILED - PERMITS MEDIUM STRENGTH CIPHER CONNECTIONS"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTCIPHERS_CHECK_COMPONENT @ $EMCLIAGENTCIPHERS_CHECK_HOST:${EMCLIAGENTCIPHERS_CHECK_PORT}:Permits MEDIUM strength ciphers"
+		else
+			echo -e "\tOK"
+		fi
+
+
+		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking HIGH strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
+
+		EMCLIAGENTCIPHERS_HIGH_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTCIPHERS_CHECK_HOST:$EMCLIAGENTCIPHERS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher HIGH 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+
+		if [[ $EMCLIAGENTCIPHERS_HIGH_RETURN -eq "0" ]]; then
+			echo -e "\tOK"
+		else
+			echo -e "\tFAILED - CANNOT CONNECT WITH HIGH STRENGTH CIPHER"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTCIPHERS_CHECK_COMPONENT @ $EMCLIAGENTCIPHERS_CHECK_HOST:${EMCLIAGENTCIPHERS_CHECK_PORT}:Rejects HIGH strength ciphers"
+		fi
+		echo
+	done
 }
 
 emcliagentopatch() {
@@ -918,7 +962,7 @@ sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA ssl2
 sslcheck OMSupload $OMSHOST $PORT_UPL ssl2
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER ssl2
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking SSLv2 on all agents"
+	echo -e "\n\tChecking SSLv2 on all agents\n"
 	emcliagentprotocols 1a ssl2
 fi
 
@@ -932,7 +976,7 @@ sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA ssl3
 sslcheck OMSupload $OMSHOST $PORT_UPL ssl3
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER ssl3
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking SSLv3 on all agents"
+	echo -e "\n\tChecking SSLv3 on all agents\n"
 	emcliagentprotocols 1b ssl3
 fi
 
@@ -946,7 +990,7 @@ sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking TLSv1 on all agents"
+	echo -e "\n\tChecking TLSv1 on all agents\n"
 	emcliagentprotocols 1c tls1
 fi
 
@@ -960,7 +1004,7 @@ sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1_1
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1_1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1_1
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking TLSv1.1 on all agents"
+	echo -e "\n\tChecking TLSv1.1 on all agents\n"
 	emcliagentprotocols 1d tls1_1
 fi
 
@@ -974,22 +1018,22 @@ sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1_2
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1_2
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1_2
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking TLSv1.2 on all agents"
+	echo -e "\n\tChecking TLSv1.2 on all agents\n"
 	emcliagentprotocols 1e tls1_2
 fi
 
 echo -e "\n(2) Checking supported ciphers at SSL/TLS endpoints (see notes 2138391.1, 1067411.1)"
-ciphercheck Agent $OMSHOST $PORT_AGENT
-ciphercheck BIPublisher $OMSHOST $PORT_BIP
-ciphercheck NodeManager $OMSHOST $PORT_NODEMANAGER
-ciphercheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
-ciphercheck OMSconsole $OMSHOST $PORT_OMS
-ciphercheck OMSproxy $OMSHOST $PORT_OMS_JAVA
-ciphercheck OMSupload $OMSHOST $PORT_UPL
-ciphercheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+ciphercheck Agent $OMSHOST $PORT_AGENT 2a
+ciphercheck BIPublisher $OMSHOST $PORT_BIP 2b
+ciphercheck NodeManager $OMSHOST $PORT_NODEMANAGER 2c
+ciphercheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS 2d
+ciphercheck OMSconsole $OMSHOST $PORT_OMS 2e
+ciphercheck OMSproxy $OMSHOST $PORT_OMS_JAVA 2f
+ciphercheck OMSupload $OMSHOST $PORT_UPL 2g
+ciphercheck WLSadmin $OMSHOST $PORT_ADMINSERVER 2h
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking supported ciphers on all agents"
-	emcliagentciphers 2b
+	echo -e "\n\tChecking supported ciphers on all agents\n"
+	emcliagentciphers 2i
 fi
 
 echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)"
@@ -1015,10 +1059,10 @@ democertcheck OMSupload $OMSHOST $PORT_UPL
 democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\t(3c) Checking for self-signed certificates on all agents"
+	echo -e "\n\t(3c) Checking for self-signed certificates on all agents\n"
 	emcliagentselfsignedcerts
 
-	echo -e "\n\t(3d) Checking for demonstration certificates on all agents"
+	echo -e "\n\t(3d) Checking for demonstration certificates on all agents\n"
 	emcliagentdemocerts
 fi
 
