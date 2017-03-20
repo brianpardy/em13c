@@ -9,7 +9,8 @@
 # HIGH ciphersuite check.
 #
 # You need to login to EMCLI first before running this script.
-# SYSMAN will work, so will the CHECKSEC account created with my other tools.
+# SYSMAN will work, or any other user with appropriate permissions and 
+# preferred credentials configured.
 #
 # Released  v1.0:  Initial beta release 20 Mar 2017
 #
@@ -38,7 +39,7 @@ fi
 
 for agent in `$EMCLI get_targets -targets=oracle_emd | grep oracle_emd | awk '{print $4}'`
 do
-    echo -n "Checking ciphersuites on $agent... "
+    echo -n "\nChecking ciphersuites on $agent... "
     CURCIPHER=`$EMCLI get_agent_property -agent_name="$agent" -name="SSLCipherSuites" | $GREP "Property Value" | awk '{print $3}' | sed 's/ //g'`
 
     if [[ "$CURCIPHER" == "$HIGH_STRENGTH_CIPHER" ]]; then
