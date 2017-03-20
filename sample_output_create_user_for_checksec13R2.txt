@@ -1,0 +1,246 @@
+Welcome to ./create_user_for_checksec13R2.sh, version 1.0, released 20170314.
+
+Download the latest release of this script at any time from:
+https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh
+
+This script exists to supplement checksec13R2.sh and enable additional checks. When run, this
+script will create a user named CHECKSEC in your EM13cR2 environment and give that user a 
+random password, which gets printed to the screen at the end of the script. The script then
+grants CHECKSEC VIEW_ANY_TARGET and EM_ALL_OPERATOR privilege, and then prompts you to supply 
+the names of credentials existing in your EM13cR2 environment. The script validates the names of 
+credentials supplied, grants VIEW access to CHECKSEC for each credential, and assigns those 
+credentials as preferred credentials for CHECKSEC for each relevant target.
+
+Providing credentials for the repository database enables the following additional checks in 
+checksec13R2.sh:
+	* Check for presence/absence of plugin bundle patches on all agents
+
+Providing host credentials for every monitored host running an agent enables the following
+additional checks in checksec13R2.sh:
+	* Check for presence/absence of the latest Java version on all agents
+
+Login to EMCLI as SYSMAN before running this script. If you already have an CHECKSEC account,
+running this script will delete and recreate it with a new password.
+
+Continue? [y/n] 
+Continuing...
+
+
+Synchronized successfully
+User "CHECKSEC" deleted successfully
+
+
+User "CHECKSEC" created successfully
+
+
+
+Created user CHECKSEC with password: [redacted]
+
+Now CHECKSEC needs preferred credentials for the repository DB and repository DB host.
+Your repository DB target name is oemdb.domain.com
+Enter the credential name for the repository DB Normal Database Credentials: Enter the credential name for the repository DB SYSDBA Database Credentials: Enter the credential name for the repository DB Database Host Credentials: 
+Validating that supplied credentials exist.
+
+Credentials "DB-OEMDB-SYSTEM:SYSMAN" tested successfully
+Credentials "DB-OEMDB-SYS:SYSMAN" tested successfully
+Credentials "HOST-omshost-ORACLE:SYSMAN" tested successfully
+
+Granting CHECKSEC GET_CREDENTIAL access to supplied credentials.
+Privileges granted to user/role "CHECKSEC" successfully
+
+Confirmed supplied credentials exist and granted to CHECKSEC.
+
+
+The next section asks you to supply credentials for the account used to run the Oracle Management Agent.
+
+
+You will receive a separate prompt for each agent. Enter 'done' (without quotes) to skip this step.
+
+
+If you provide these credentials, checksec13R2.sh can report on the Java version used by your agents.
+
+Generating a list of all agent targets.
+Now loop through all agent targets and provide named credentials for the agent user account on each host.
+
+
+Enter the credential name to login as the agent user for host01.domain.com:3872: Credentials "HOST-HOST01-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host02.domain.com:3872: Credentials "HOST-HOST02-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host03.domain.com:3872: Credentials "HOST-HOST03-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host04.usa.domain.com:1830: Credentials "HOST-HOST04-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host05.domain.com:3872: Credentials "HOST-HOST05-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host06.domain.com:1830: Credentials "HOST-HOST06-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host07.domain.com:3872: Credentials "HOST-HOST07-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host08.domain.com:3872: Credentials "HOST-HOST08-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host09.domain.com:1830: Credentials "HOST-HOST09-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host10.domain.com:3872: Credentials "HOST-HOST10-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host11.domain.com:3872: Credentials "HOST-HOST11-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host12.domain.com:3872: Credentials "HOST-HOST12-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host13.domain.com:3872: Credentials "HOST-HOST13-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host14.domain.com:3872: Credentials "HOST-HOST14-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host15.domain.com:3872: Credentials "HOST-HOST15-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host16.domain.com:3872: Credentials "HOST-HOST16-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for omshost.domain.com:3872: Credentials "HOST-omshost-ORACLE:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host17.domain.com:3872: Credentials "HOST-HOST17-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Enter the credential name to login as the agent user for host18.domain.com:3872: Credentials "HOST-HOST18-ORAAGENT:SYSMAN" tested successfully
+Privileges granted to user/role "CHECKSEC" successfully
+
+Logging out of EMCLI
+Logout successful
+
+Logging in to EMCLI as CHECKSEC
+Login successful
+
+
+Setting preferred credentials DB-OEMDB-SYSTEM for CHECKSEC on oemdb.domain.com
+Successfully set preferred credentials for target oemdb.domain.com:oracle_database.
+
+
+Setting preferred credentials DB-OEMDB-SYS for CHECKSEC on oemdb.domain.com
+Successfully set preferred credentials for target oemdb.domain.com:oracle_database.
+
+
+Setting preferred credentials HOST-omshost-ORACLE for CHECKSEC on oemdb.domain.com
+Successfully set preferred credentials for target oemdb.domain.com:oracle_database.
+
+
+
+Now assigning preferred credentials for agent targets.
+
+Setting preferred credentials for CHECKSEC on host01.domain.com:3872
+Successfully set preferred credentials for target host01.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host02.domain.com:3872
+Successfully set preferred credentials for target host02.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host03.domain.com:3872
+Successfully set preferred credentials for target host03.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host04.usa.domain.com:1830
+Successfully set preferred credentials for target host04.usa.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host05.domain.com:3872
+Successfully set preferred credentials for target host05.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host06.domain.com:1830
+Successfully set preferred credentials for target host06.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host07.domain.com:3872
+Successfully set preferred credentials for target host07.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host08.domain.com:3872
+Successfully set preferred credentials for target host08.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host09.domain.com:1830
+Successfully set preferred credentials for target host09.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host10.domain.com:3872
+Successfully set preferred credentials for target host10.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host11.domain.com:3872
+Successfully set preferred credentials for target host11.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host12.domain.com:3872
+Successfully set preferred credentials for target host12.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host13.domain.com:3872
+Successfully set preferred credentials for target host13.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host14.domain.com:3872
+Successfully set preferred credentials for target host14.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host15.domain.com:3872
+Successfully set preferred credentials for target host15.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host16.domain.com:3872
+Successfully set preferred credentials for target host16.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on omshost.domain.com:3872
+Successfully set preferred credentials for target omshost.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host17.domain.com:3872
+Successfully set preferred credentials for target host17.domain.com:host.
+
+
+
+Setting preferred credentials for CHECKSEC on host18.domain.com:3872
+Successfully set preferred credentials for target host18.domain.com:host.
+
+
+
+
+All finished. User CHECKSEC now logged in to EMCLI.
+
+Now go run the checksec13R2.sh script.
+
+
+As a reminder, user CHECKSEC has password [redacted].

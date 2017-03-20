@@ -1,0 +1,1096 @@
+Synchronized successfully
+Performing EM13c R2 security checkup version 2.0.2 on omshost.domain.com at Mon Mar 20 12:48:53 EDT 2017.
+
+Using port definitions from configuration files 
+	/etc/oragchomelist
+	/oracle/oem/gc_inst1/em/EMGC_OMS1/emgc.properties
+	/oracle/oem/gc_inst1/em/EMGC_OMS1/embip.properties
+	/oracle/oem/agent13cR1/agent_13.2.0.0.0/../agent_inst/sysman/emd/targets.xml
+
+	Agent port found at omshost.domain.com:3872
+	BIPublisher port found at omshost.domain.com:9803
+	BIPublisherOHS port found at omshost.domain.com:9852
+	NodeManager port found at omshost.domain.com:7403
+	OMSconsole port found at omshost.domain.com:7802
+	OMSproxy port found at omshost.domain.com:7301
+	OMSupload port found at omshost.domain.com:4903
+	WLSadmin found at omshost.domain.com:7102
+
+	Repository DB version=12.1.0.2.0 SID=oemdb host=omshost.domain.com
+	Repository DB target name=oemdb.domain.com
+
+	Using OPENSSL=/usr/bin/openssl1 (has TLS1_2=2)
+	Repository DB on OMS server, will check patches/parameters in /oracle/oem/product/12.1.0/db
+
+(1) Checking SSL/TLS configuration (see notes 2138391.1, 2212006.1)
+
+	(1a) Forbid SSLv2 connections
+	Confirming ssl2 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming ssl2 disabled for BIPublisher at omshost.domain.com:9803... OK
+	Confirming ssl2 disabled for NodeManager at omshost.domain.com:7403... OK
+	Confirming ssl2 disabled for BIPublisherOHS at omshost.domain.com:9852... OK
+	Confirming ssl2 disabled for OMSconsole at omshost.domain.com:7802... OK
+	Confirming ssl2 disabled for OMSproxy at omshost.domain.com:7301... OK
+	Confirming ssl2 disabled for OMSupload at omshost.domain.com:4903... OK
+	Confirming ssl2 disabled for WLSadmin at omshost.domain.com:7102... OK
+
+	Checking SSLv2 on all agents
+
+	Confirming ssl2 disabled for Agent at host01.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host02.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host03.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host04.usa.domain.com:1830... OK
+	Confirming ssl2 disabled for Agent at host05.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host06.domain.com:1830... OK
+	Confirming ssl2 disabled for Agent at host07.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host08.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host09.domain.com:1830... OK
+	Confirming ssl2 disabled for Agent at host10.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host11.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host12.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host13.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host14.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host15.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host16.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host17.domain.com:3872... OK
+	Confirming ssl2 disabled for Agent at host18.domain.com:3872... OK
+
+	(1b) Forbid SSLv3 connections
+	Confirming ssl3 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming ssl3 disabled for BIPublisher at omshost.domain.com:9803... OK
+	Confirming ssl3 disabled for NodeManager at omshost.domain.com:7403... OK
+	Confirming ssl3 disabled for BIPublisherOHS at omshost.domain.com:9852... OK
+	Confirming ssl3 disabled for OMSconsole at omshost.domain.com:7802... OK
+	Confirming ssl3 disabled for OMSproxy at omshost.domain.com:7301... OK
+	Confirming ssl3 disabled for OMSupload at omshost.domain.com:4903... OK
+	Confirming ssl3 disabled for WLSadmin at omshost.domain.com:7102... OK
+
+	Checking SSLv3 on all agents
+
+	Confirming ssl3 disabled for Agent at host01.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host02.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host03.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host04.usa.domain.com:1830... OK
+	Confirming ssl3 disabled for Agent at host05.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host06.domain.com:1830... OK
+	Confirming ssl3 disabled for Agent at host07.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host08.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host09.domain.com:1830... OK
+	Confirming ssl3 disabled for Agent at host10.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host11.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host12.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host13.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host14.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host15.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host16.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host17.domain.com:3872... OK
+	Confirming ssl3 disabled for Agent at host18.domain.com:3872... OK
+
+	(1c) Forbid TLSv1 connections
+	Confirming tls1 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming tls1 disabled for BIPublisher at omshost.domain.com:9803... OK
+	Confirming tls1 disabled for NodeManager at omshost.domain.com:7403... OK
+	Confirming tls1 disabled for BIPublisherOHS at omshost.domain.com:9852... OK
+	Confirming tls1 disabled for OMSconsole at omshost.domain.com:7802... OK
+	Confirming tls1 disabled for OMSproxy at omshost.domain.com:7301... OK
+	Confirming tls1 disabled for OMSupload at omshost.domain.com:4903... OK
+	Confirming tls1 disabled for WLSadmin at omshost.domain.com:7102... OK
+
+	Checking TLSv1 on all agents
+
+	Confirming tls1 disabled for agent at host01.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host02.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host03.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host04.usa.domain.com:1830... OK
+	Confirming tls1 disabled for agent at host05.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host06.domain.com:1830... OK
+	Confirming tls1 disabled for agent at host07.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host08.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host09.domain.com:1830... OK
+	Confirming tls1 disabled for agent at host10.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host11.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host12.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host13.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host14.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host15.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host16.domain.com:3872... OK
+	Confirming tls1 disabled for agent at omshost.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host17.domain.com:3872... OK
+	Confirming tls1 disabled for agent at host18.domain.com:3872... OK
+
+	(1d) Forbid TLSv1.1 connections
+	Confirming tls1_1 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming tls1_1 disabled for BIPublisher at omshost.domain.com:9803... OK
+	Confirming tls1_1 disabled for NodeManager at omshost.domain.com:7403... OK
+	Confirming tls1_1 disabled for BIPublisherOHS at omshost.domain.com:9852... OK
+	Confirming tls1_1 disabled for OMSconsole at omshost.domain.com:7802... OK
+	Confirming tls1_1 disabled for OMSproxy at omshost.domain.com:7301... OK
+	Confirming tls1_1 disabled for OMSupload at omshost.domain.com:4903... OK
+	Confirming tls1_1 disabled for WLSadmin at omshost.domain.com:7102... OK
+
+	Checking TLSv1.1 on all agents
+
+	Confirming tls1_1 disabled for agent at host01.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host02.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host03.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host04.usa.domain.com:1830... OK
+	Confirming tls1_1 disabled for agent at host05.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host06.domain.com:1830... OK
+	Confirming tls1_1 disabled for agent at host07.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host08.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host09.domain.com:1830... OK
+	Confirming tls1_1 disabled for agent at host10.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host11.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host12.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host13.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host14.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host15.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host16.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at omshost.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host17.domain.com:3872... OK
+	Confirming tls1_1 disabled for agent at host18.domain.com:3872... OK
+
+	(1e) Permit TLSv1.2 connections
+	Confirming tls1_2 available for Agent at omshost.domain.com:3872... OK
+	Confirming tls1_2 available for BIPublisher at omshost.domain.com:9803... OK
+	Confirming tls1_2 available for NodeManager at omshost.domain.com:7403... OK
+	Confirming tls1_2 available for BIPublisherOHS at omshost.domain.com:9852... OK
+	Confirming tls1_2 available for OMSconsole at omshost.domain.com:7802... OK
+	Confirming tls1_2 available for OMSproxy at omshost.domain.com:7301... OK
+	Confirming tls1_2 available for OMSupload at omshost.domain.com:4903... OK
+	Confirming tls1_2 available for WLSadmin at omshost.domain.com:7102... OK
+
+	Checking TLSv1.2 on all agents
+
+	Confirming tls1_2 available for agent at host01.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host02.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host03.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host04.usa.domain.com:1830... OK
+	Confirming tls1_2 available for agent at host05.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host06.domain.com:1830... OK
+	Confirming tls1_2 available for agent at host07.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host08.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host09.domain.com:1830... OK
+	Confirming tls1_2 available for agent at host10.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host11.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host12.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host13.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host14.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host15.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host16.domain.com:3872... OK
+	Confirming tls1_2 available for agent at omshost.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host17.domain.com:3872... OK
+	Confirming tls1_2 available for agent at host18.domain.com:3872... OK
+
+(2) Checking supported ciphers at SSL/TLS endpoints (see notes 2138391.1, 1067411.1)
+	(2a) Checking LOW strength ciphers on Agent (omshost.domain.com:3872, protocol tls1_2)...	OK
+	(2a) Checking MEDIUM strength ciphers on Agent (omshost.domain.com:3872)...	OK
+	(2a) Checking HIGH strength ciphers on Agent (omshost.domain.com:3872)...	OK
+
+	(2b) Checking LOW strength ciphers on BIPublisher (omshost.domain.com:9803, protocol tls1_2)...	OK
+	(2b) Checking MEDIUM strength ciphers on BIPublisher (omshost.domain.com:9803)...	OK
+	(2b) Checking HIGH strength ciphers on BIPublisher (omshost.domain.com:9803)...	OK
+
+	(2c) Checking LOW strength ciphers on NodeManager (omshost.domain.com:7403, protocol tls1_2)...	OK
+	(2c) Checking MEDIUM strength ciphers on NodeManager (omshost.domain.com:7403)...	OK
+	(2c) Checking HIGH strength ciphers on NodeManager (omshost.domain.com:7403)...	OK
+
+	(2d) Checking LOW strength ciphers on BIPublisherOHS (omshost.domain.com:9852, protocol tls1_2)...	OK
+	(2d) Checking MEDIUM strength ciphers on BIPublisherOHS (omshost.domain.com:9852)...	OK
+	(2d) Checking HIGH strength ciphers on BIPublisherOHS (omshost.domain.com:9852)...	OK
+
+	(2e) Checking LOW strength ciphers on OMSconsole (omshost.domain.com:7802, protocol tls1_2)...	OK
+	(2e) Checking MEDIUM strength ciphers on OMSconsole (omshost.domain.com:7802)...	OK
+	(2e) Checking HIGH strength ciphers on OMSconsole (omshost.domain.com:7802)...	OK
+
+	(2f) Checking LOW strength ciphers on OMSproxy (omshost.domain.com:7301, protocol tls1_2)...	OK
+	(2f) Checking MEDIUM strength ciphers on OMSproxy (omshost.domain.com:7301)...	OK
+	(2f) Checking HIGH strength ciphers on OMSproxy (omshost.domain.com:7301)...	OK
+
+	(2g) Checking LOW strength ciphers on OMSupload (omshost.domain.com:4903, protocol tls1_2)...	OK
+	(2g) Checking MEDIUM strength ciphers on OMSupload (omshost.domain.com:4903)...	OK
+	(2g) Checking HIGH strength ciphers on OMSupload (omshost.domain.com:4903)...	OK
+
+	(2h) Checking LOW strength ciphers on WLSadmin (omshost.domain.com:7102, protocol tls1_2)...	OK
+	(2h) Checking MEDIUM strength ciphers on WLSadmin (omshost.domain.com:7102)...	OK
+	(2h) Checking HIGH strength ciphers on WLSadmin (omshost.domain.com:7102)...	OK
+
+
+	Checking supported ciphers on all agents
+
+	(2i) Checking LOW strength ciphers on agent host01.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host01.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host01.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host02.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host02.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host02.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host03.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host03.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host03.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host04.usa.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host04.usa.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host04.usa.domain.com:1830 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host05.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host05.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host05.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host06.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host06.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host06.domain.com:1830 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host07.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host07.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host07.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host08.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host08.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host08.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host09.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host09.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host09.domain.com:1830 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host10.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host10.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host10.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host11.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host11.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host11.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host12.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host12.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host12.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host13.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host13.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host13.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host14.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host14.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host14.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host15.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host15.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host15.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host16.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host16.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host16.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent omshost.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent omshost.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent omshost.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host17.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host17.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host17.domain.com:3872 (protocol tls1_2)...	OK
+
+	(2i) Checking LOW strength ciphers on agent host18.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on agent host18.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking HIGH strength ciphers on agent host18.domain.com:3872 (protocol tls1_2)...	OK
+
+
+(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)
+
+	(3a) Checking for self-signed certificates on OMS components
+	Checking certificate at Agent (omshost.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at BIPublisherOHS (omshost.domain.com:9852, protocol tls1_2)... OK
+	Checking certificate at BIPublisher (omshost.domain.com:9803, protocol tls1_2)... OK
+	Checking certificate at NodeManager (omshost.domain.com:7403, protocol tls1_2)... OK
+	Checking certificate at OMSconsole (omshost.domain.com:7802, protocol tls1_2)... OK
+	Checking certificate at OMSproxy (omshost.domain.com:7301, protocol tls1_2)... OK
+	Checking certificate at OMSupload (omshost.domain.com:4903, protocol tls1_2)... OK
+	Checking certificate at WLSadmin (omshost.domain.com:7102, protocol tls1_2)... OK
+
+	(3b) Checking for demonstration certificates on OMS components
+	Checking demo certificate at Agent (omshost.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at BIPublisherOHS (omshost.domain.com:9852, protocol tls1_2)... OK
+	Checking demo certificate at BIPublisher (omshost.domain.com:9803, protocol tls1_2)... OK
+	Checking demo certificate at NodeManager (omshost.domain.com:7403, protocol tls1_2)... OK
+	Checking demo certificate at OMSconsole (omshost.domain.com:7802, protocol tls1_2)... OK
+	Checking demo certificate at OMSproxy (omshost.domain.com:7301, protocol tls1_2)... OK
+	Checking demo certificate at OMSupload (omshost.domain.com:4903, protocol tls1_2)... OK
+	Checking demo certificate at WLSadmin (omshost.domain.com:7102, protocol tls1_2)... OK
+
+	(3c) Checking for self-signed certificates on all agents
+
+	Checking certificate at host01.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host02.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host03.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host04.usa.domain.com:1830 (protocol tls1_2)... OK
+	Checking certificate at host05.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host06.domain.com:1830 (protocol tls1_2)... OK
+	Checking certificate at host07.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host08.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host09.domain.com:1830 (protocol tls1_2)... OK
+	Checking certificate at host10.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host11.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host12.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host13.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host14.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host15.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host16.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at omshost.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host17.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at host18.domain.com:3872 (protocol tls1_2)... OK
+
+	(3d) Checking for demonstration certificates on all agents
+
+	Checking demo certificate at host01.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host02.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host03.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host04.usa.domain.com:1830 (protocol tls1_2)... OK
+	Checking demo certificate at host05.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host06.domain.com:1830 (protocol tls1_2)... OK
+	Checking demo certificate at host07.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host08.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host09.domain.com:1830 (protocol tls1_2)... OK
+	Checking demo certificate at host10.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host11.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host12.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host13.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host14.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host15.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host16.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at omshost.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host17.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at host18.domain.com:3872 (protocol tls1_2)... OK
+
+(4) Checking EM13c Oracle home patch levels against 28 Feb 2017 baseline (see notes 1664074.1, 2219797.1, 822485.1, 1470197.1)
+
+	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) DATABASE BUNDLE PATCH: 12.1.0.2.170117 (JAN2017) (24732088)... OK
+24732088 24732088 Patch 24732088 : applied on Thu Jan 19 11:36:03 EST 2017 Patch description: "DATABASE BUNDLE PATCH: 12.1.0.2.170117 (24732088)"
+
+	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) Database PSU 12.1.0.2.170117, Oracle JavaVM Component (JAN2017) (24917972)... OK
+Patch 24917972 : applied on Thu Jan 19 11:44:05 EST 2017 24917972, 25067795, 24534298, 25076732, 25076756, 24315824, 21659726
+
+	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) OCW Interim patch for 25101514 (25101514)... OK
+Patch 25101514 : applied on Thu Jan 19 11:35:06 EST 2017 Patch description: "OCW Interim patch for 25101514"
+
+	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... OK
+Patch 20243268 : applied on Thu Jan 19 11:36:45 EST 2017 20243268
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_TYPES_SERVER parameter (76629.1, 2167682.1)... OK
+(AES128,AES256,AES192,3DES168)
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_SERVER parameter (76629.1, 2167682.1)... OK
+requested
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_TYPES_CLIENT parameter (76629.1, 2167682.1)... OK
+(AES128,AES256,AES192,3DES168)
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_CLIENT parameter (76629.1, 2167682.1)... OK
+requested
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER parameter (76629.1, 2167682.1)... OK
+(SHA1)
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_SERVER parameter (76629.1, 2167682.1)... OK
+requested
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_TYPES_CLIENT parameter (76629.1, 2167682.1)... OK
+(SHA1)
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_CLIENT parameter (76629.1, 2167682.1)... OK
+requested
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SSL_VERSION parameter (1545816.1)... OK
+1.0
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SSL_CIPHER_SUITES parameter (1545816.1)... OK
+(SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_AES_256_CBC_SHA)
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) listener.ora SSL_VERSION parameter (1545816.1)... OK
+1.0
+
+	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) listener.ora SSL_CIPHER_SUITES parameter (1545816.1)... OK
+(SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_AES_256_CBC_SHA)
+
+	(4c) OMS CHAINED AGENT HOME (/oracle/oem/agent13cR1/agent_13.2.0.0.0) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... OK
+Patch 25414194 : applied on Wed Mar 01 11:12:28 EST 2017 25414194, 23478148, 25297713, 25342677, 25125856, 25113676, 24598039
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... OK
+23603592 23742814 23603592 23742821 23603592 23742810 23603592 25062489
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... OK
+oracle.sysman.top.oms/13.2.0.0.0 Core 25163555 25163555
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... OK
+oracle.jrf.adfrt/12.1.3.0.0 Core N/A 25322055 One-off
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... OK
+oracle.ohs2/12.1.3.0.0 Core N/A 24329181 One-off
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... OK
+25604219 25604219
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... OK
+oracle.opss.wls/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.jrf.iau/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.opss.jrf/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.rcu.iau/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.opss.core/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... OK
+oracle.sysman.db.oms.plugin/13.2.1.0.0 Plugin 25501489 25414281 EM DB Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.si.oms.plugin/13.2.1.0.0 Plugin 25501489 25414339 EM SI Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.cfw.oms.plugin/13.2.1.0.0 Plugin 25501489 25414245 EM CFW Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.xa.oms.plugin/13.2.1.0.0 Plugin 25501489 25414294 EM Exadata Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.emas.oms.plugin/13.2.1.0.0 Plugin 25501489 25414317 EM FMW Plugin Bundle Patch 13.2.1.0.170228
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... OK
+Patch 24904852 : applied on Thu Jan 26 12:26:31 EST 2017
+
+	(4d) OMS HOME (/oracle/oem/Middleware13cR2) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... OK
+Patch 24327938 : applied on Mon Mar 06 10:37:05 EST 2017
+
+(5) Checking EM13cR2 Java patch levels against 28 Feb 2017 baseline (see notes 2241373.1, 2241358.1)
+
+	(5a) Common Java (/oracle/oem/Middleware13cR2/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... 	OK
+1.7.0_131
+
+	Using EMCLI to check Java patch levels on all agents
+
+	(5b) Agent host01.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host02.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host03.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host04.usa.domain.com:1830 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host05.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host06.domain.com:1830 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host07.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host08.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host09.domain.com:1830 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host10.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host11.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host12.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host13.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host14.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host15.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host16.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent omshost.domain.com:3872 Java VERSION 1.7.0_131... 	OK
+1.7.0_131
+
+	(5b) Agent host17.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+	(5b) Agent host18.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
+1.7.0_111
+
+(6) Checking EM13cR2 OPatch/OMSPatcher patch levels against 28 Feb 2017 requirements (see patch 25197714 README, patches 6880880 and 19999993)
+
+	(6a) OMS OPatch (/oracle/oem/Middleware13cR2/OPatch) VERSION 13.9.1.0.0 or newer... OK
+
+	(6b) OMSPatcher (/oracle/oem/Middleware13cR2/OPatch) VERSION 13.8.0.0.1 or newer... OK
+
+	(6c) Checking OPatch patch levels on all agents
+
+	(6c) Agent host01.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host02.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host03.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host04.usa.domain.com:1830 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host05.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host06.domain.com:1830 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host07.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host08.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host09.domain.com:1830 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host10.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host11.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host12.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host13.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host14.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host15.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host16.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent omshost.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host17.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+	(6c) Agent host18.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
+13.9.1.0.0
+
+(7) Agent plugin bundle patch checks on all agents... 
+	(7a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25501452)... 	OK
+
+	(7b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host01.domain.com:3872 (25197692)... 	OK
+
+	(7c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(7d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host01.domain.com:3872 (25501430)... 	OK
+
+	(7e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25501408)... 	OK
+
+	(7f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host01.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(7g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host01.domain.com:3872 (25501436)... 	OK
+
+	(7h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(7i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(7j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(7k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host01.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(7l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host01.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(7m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host01.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(8a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host02.domain.com:3872 (25501452)... 	OK
+
+	(8b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host02.domain.com:3872 (25197692)... 	OK
+
+	(8c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host02.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(8d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host02.domain.com:3872 (25501430)... 	OK
+
+	(8e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host02.domain.com:3872 (25501408)... 	OK
+
+	(8f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host02.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(8g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host02.domain.com:3872 (25501436)... 	OK
+
+	(8h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host02.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(8i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host02.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(8j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host02.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(8k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host02.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(8l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host02.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(8m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host02.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(9a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host03.domain.com:3872 (25501452)... 	OK
+
+	(9b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host03.domain.com:3872 (25197692)... 	OK
+
+	(9c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host03.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(9d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host03.domain.com:3872 (25501430)... 	OK
+
+	(9e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host03.domain.com:3872 (25501408)... 	OK
+
+	(9f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host03.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(9g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host03.domain.com:3872 (25501436)... 	OK
+
+	(9h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host03.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(9i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host03.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(9j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host03.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(9k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host03.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(9l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host03.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(9m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host03.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(10a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host04.usa.domain.com:1830 (25501452)... 	OK
+
+	(10b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host04.usa.domain.com:1830 (25197692)... 	OK
+
+	(10c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host04.usa.domain.com:1830 (25501427)... 	OK - plugin not installed
+
+	(10d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host04.usa.domain.com:1830 (25501430)... 	OK
+
+	(10e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host04.usa.domain.com:1830 (25501408)... 	OK - plugin not installed
+
+	(10f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host04.usa.domain.com:1830 (25162444)... OK - plugin not installed
+
+	(10g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host04.usa.domain.com:1830 (25501436)... OK - plugin not installed
+
+	(10h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host04.usa.domain.com:1830 (25362875)... OK - plugin not installed
+
+	(10i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host04.usa.domain.com:1830 (25522944)... OK - plugin not installed
+
+	(10j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host04.usa.domain.com:1830 (25501416)... OK - plugin not installed
+
+	(10k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host04.usa.domain.com:1830 (25362898)... OK - plugin not installed
+
+	(10l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host04.usa.domain.com:1830 (25362890)... OK - plugin not installed
+
+	(10m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host04.usa.domain.com:1830 (25197712)... OK - plugin not installed
+
+	(11a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host05.domain.com:3872 (25501452)... 	OK
+
+	(11b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host05.domain.com:3872 (25197692)... 	OK
+
+	(11c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host05.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(11d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host05.domain.com:3872 (25501430)... 	OK
+
+	(11e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host05.domain.com:3872 (25501408)... 	OK
+
+	(11f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host05.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(11g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host05.domain.com:3872 (25501436)... 	OK
+
+	(11h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host05.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(11i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host05.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(11j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host05.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(11k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host05.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(11l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host05.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(11m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host05.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(12a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host06.domain.com:1830 (25501452)... 	OK
+
+	(12b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host06.domain.com:1830 (25197692)... 	OK
+
+	(12c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host06.domain.com:1830 (25501427)... 	OK - plugin not installed
+
+	(12d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host06.domain.com:1830 (25501430)... 	OK
+
+	(12e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host06.domain.com:1830 (25501408)... 	OK
+
+	(12f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host06.domain.com:1830 (25162444)... OK - plugin not installed
+
+	(12g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host06.domain.com:1830 (25501436)... OK - plugin not installed
+
+	(12h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host06.domain.com:1830 (25362875)... OK - plugin not installed
+
+	(12i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host06.domain.com:1830 (25522944)... OK - plugin not installed
+
+	(12j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host06.domain.com:1830 (25501416)... OK - plugin not installed
+
+	(12k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host06.domain.com:1830 (25362898)... OK - plugin not installed
+
+	(12l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host06.domain.com:1830 (25362890)... OK - plugin not installed
+
+	(12m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host06.domain.com:1830 (25197712)... OK - plugin not installed
+
+	(13a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host07.domain.com:3872 (25501452)... 	OK
+
+	(13b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host07.domain.com:3872 (25197692)... 	OK
+
+	(13c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host07.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(13d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host07.domain.com:3872 (25501430)... 	OK
+
+	(13e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host07.domain.com:3872 (25501408)... 	OK
+
+	(13f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host07.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(13g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host07.domain.com:3872 (25501436)... 	OK
+
+	(13h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host07.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(13i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host07.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(13j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host07.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(13k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host07.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(13l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host07.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(13m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host07.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(14a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host08.domain.com:3872 (25501452)... 	OK
+
+	(14b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host08.domain.com:3872 (25197692)... 	OK
+
+	(14c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host08.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(14d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host08.domain.com:3872 (25501430)... 	OK
+
+	(14e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host08.domain.com:3872 (25501408)... 	OK
+
+	(14f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host08.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(14g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host08.domain.com:3872 (25501436)... 	OK
+
+	(14h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host08.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(14i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host08.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(14j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host08.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(14k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host08.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(14l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host08.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(14m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host08.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(15a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host09.domain.com:1830 (25501452)... 	OK
+
+	(15b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host09.domain.com:1830 (25197692)... 	OK
+
+	(15c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host09.domain.com:1830 (25501427)... 	OK - plugin not installed
+
+	(15d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host09.domain.com:1830 (25501430)... 	OK
+
+	(15e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host09.domain.com:1830 (25501408)... 	OK
+
+	(15f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host09.domain.com:1830 (25162444)... OK - plugin not installed
+
+	(15g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host09.domain.com:1830 (25501436)... 	OK
+
+	(15h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host09.domain.com:1830 (25362875)... 	OK - plugin not installed
+
+	(15i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host09.domain.com:1830 (25522944)... OK - plugin not installed
+
+	(15j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host09.domain.com:1830 (25501416)... OK - plugin not installed
+
+	(15k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host09.domain.com:1830 (25362898)... OK - plugin not installed
+
+	(15l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host09.domain.com:1830 (25362890)... OK - plugin not installed
+
+	(15m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host09.domain.com:1830 (25197712)... OK - plugin not installed
+
+	(16a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host10.domain.com:3872 (25501452)... 	OK
+
+	(16b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host10.domain.com:3872 (25197692)... 	OK
+
+	(16c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host10.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(16d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host10.domain.com:3872 (25501430)... 	OK
+
+	(16e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host10.domain.com:3872 (25501408)... 	OK
+
+	(16f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host10.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(16g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host10.domain.com:3872 (25501436)... 	OK
+
+	(16h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host10.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(16i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host10.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(16j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host10.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(16k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host10.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(16l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host10.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(16m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host10.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(17a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host11.domain.com:3872 (25501452)... 	OK
+
+	(17b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host11.domain.com:3872 (25197692)... 	OK
+
+	(17c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host11.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(17d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host11.domain.com:3872 (25501430)... 	OK
+
+	(17e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host11.domain.com:3872 (25501408)... 	OK
+
+	(17f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host11.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(17g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host11.domain.com:3872 (25501436)... 	OK
+
+	(17h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host11.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(17i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host11.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(17j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host11.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(17k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host11.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(17l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host11.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(17m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host11.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(18a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host12.domain.com:3872 (25501452)... 	OK
+
+	(18b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host12.domain.com:3872 (25197692)... 	OK
+
+	(18c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host12.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(18d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host12.domain.com:3872 (25501430)... 	OK
+
+	(18e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host12.domain.com:3872 (25501408)... 	OK
+
+	(18f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host12.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(18g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host12.domain.com:3872 (25501436)... 	OK
+
+	(18h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host12.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(18i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host12.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(18j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host12.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(18k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host12.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(18l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host12.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(18m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host12.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(19a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host13.domain.com:3872 (25501452)... 	OK
+
+	(19b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host13.domain.com:3872 (25197692)... 	OK
+
+	(19c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host13.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(19d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host13.domain.com:3872 (25501430)... 	OK
+
+	(19e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host13.domain.com:3872 (25501408)... 	OK
+
+	(19f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host13.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(19g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host13.domain.com:3872 (25501436)... 	OK
+
+	(19h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host13.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(19i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host13.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(19j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host13.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(19k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host13.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(19l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host13.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(19m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host13.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(20a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host14.domain.com:3872 (25501452)... 	OK
+
+	(20b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host14.domain.com:3872 (25197692)... 	OK
+
+	(20c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host14.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(20d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host14.domain.com:3872 (25501430)... 	OK
+
+	(20e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host14.domain.com:3872 (25501408)... 	OK
+
+	(20f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host14.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(20g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host14.domain.com:3872 (25501436)... 	OK
+
+	(20h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host14.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(20i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host14.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(20j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host14.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(20k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host14.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(20l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host14.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(20m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host14.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(21a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host15.domain.com:3872 (25501452)... 	OK
+
+	(21b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host15.domain.com:3872 (25197692)... 	OK
+
+	(21c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host15.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(21d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host15.domain.com:3872 (25501430)... 	OK
+
+	(21e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host15.domain.com:3872 (25501408)... 	OK
+
+	(21f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host15.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(21g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host15.domain.com:3872 (25501436)... 	OK
+
+	(21h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host15.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(21i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host15.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(21j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host15.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(21k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host15.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(21l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host15.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(21m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host15.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(22a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host16.domain.com:3872 (25501452)... 	OK
+
+	(22b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host16.domain.com:3872 (25197692)... 	OK
+
+	(22c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host16.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(22d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host16.domain.com:3872 (25501430)... 	OK
+
+	(22e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host16.domain.com:3872 (25501408)... 	OK
+
+	(22f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host16.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(22g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host16.domain.com:3872 (25501436)... 	OK
+
+	(22h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host16.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(22i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host16.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(22j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host16.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(22k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host16.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(22l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host16.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(22m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host16.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(23a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ omshost.domain.com:3872 (25501452)... 	OK
+
+	(23b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ omshost.domain.com:3872 (25197692)... 	OK
+
+	(23c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ omshost.domain.com:3872 (25501427)... 	OK
+
+	(23d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ omshost.domain.com:3872 (25501430)... 	OK
+
+	(23e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ omshost.domain.com:3872 (25501408)... 	OK
+
+	(23f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ omshost.domain.com:3872 (25162444)... 	OK
+
+	(23g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ omshost.domain.com:3872 (25501436)... 	OK
+
+	(23h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ omshost.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(23i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ omshost.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(23j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ omshost.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(23k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ omshost.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(23l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ omshost.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(23m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ omshost.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(24a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host17.domain.com:3872 (25501452)... 	OK
+
+	(24b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host17.domain.com:3872 (25197692)... 	OK
+
+	(24c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host17.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(24d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host17.domain.com:3872 (25501430)... 	OK
+
+	(24e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host17.domain.com:3872 (25501408)... 	OK
+
+	(24f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host17.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(24g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host17.domain.com:3872 (25501436)... 	OK
+
+	(24h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host17.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(24i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host17.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(24j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host17.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(24k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host17.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(24l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host17.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(24m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host17.domain.com:3872 (25197712)... OK - plugin not installed
+
+	(25a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host18.domain.com:3872 (25501452)... 	OK
+
+	(25b) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host18.domain.com:3872 (25197692)... 	OK
+
+	(25c) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host18.domain.com:3872 (25501427)... 	OK - plugin not installed
+
+	(25d) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host18.domain.com:3872 (25501430)... 	OK
+
+	(25e) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host18.domain.com:3872 (25501408)... 	OK
+
+	(25f) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 @ host18.domain.com:3872 (25162444)... OK - plugin not installed
+
+	(25g) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY @ host18.domain.com:3872 (25501436)... 	OK
+
+	(25h) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host18.domain.com:3872 (25362875)... 	OK - plugin not installed
+
+	(25i) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host18.domain.com:3872 (25522944)... OK - plugin not installed
+
+	(25j) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host18.domain.com:3872 (25501416)... OK - plugin not installed
+
+	(25k) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY @ host18.domain.com:3872 (25362898)... OK - plugin not installed
+
+	(25l) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING @ host18.domain.com:3872 (25362890)... OK - plugin not installed
+
+	(25m) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY @ host18.domain.com:3872 (25197712)... OK - plugin not installed
+
+
+Cleaning up temporary files... done
+Failed test count: 18 - Review output
+
+emclijavacheck:Java in host01.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host02.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host03.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host04.usa.domain.com:E:gent13cgent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host05.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host06.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host07.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host08.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host09.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host10.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host11.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host12.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host13.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host14.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host15.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host16.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host17.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+emclijavacheck:Java in host18.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+
+Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for more information.
+Download the latest release from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13R2.sh
+Download the latest beta release from https://raw.githubusercontent.com/brianpardy/em13c/beta/checksec13R2.sh
+

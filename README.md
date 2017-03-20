@@ -14,3 +14,7 @@ Various utilities for Oracle Enterprise Manager 13c
     - This script uses EMCLI to enable TLSv1.2 and disable earlier TLS protocols for your EM13c agents.
 * secure\_agent\_ciphersuites.sh
     - This script uses EMCLI to disable LOW and MEDIUM strength ciphersuites for your EM13c agents.
+* sample\_output\_checksec13R2\_with\_EMCLI.txt
+    - Sample output from the checksec13R2.sh script when run with EMCLI integration
+* sample\_output\_create\_user\_for\_checksec13R2.txt
+    - Sample output from the create\_user\_for\_checksec13R2.sh script when run to create a user for EMCLI integration.
