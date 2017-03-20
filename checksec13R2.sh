@@ -822,7 +822,7 @@ emcliagentselfsignedcerts() {
 		else
 			echo FAILED - Found self-signed certificate
 			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTSELFSIGNEDCERTS_CHECK_COMPONENT @ ${EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST}:${EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT} found self-signed certificate"
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ ${EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST}:${EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT} found self-signed certificate"
 		fi
 	done
 }
@@ -840,14 +840,78 @@ emcliagentdemocerts() {
 		else
 			echo FAILED - Found demonstration certificate
 			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTDEMOCERTS_CHECK_COMPONENT @ ${EMCLIAGENTDEMOCERTS_CHECK_HOST}:${EMCLIAGENTDEMOCERTS_CHECK_PORT} found demonstration certificate"
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ ${EMCLIAGENTDEMOCERTS_CHECK_HOST}:${EMCLIAGENTDEMOCERTS_CHECK_PORT} found demonstration certificate"
 		fi
 	done
 }
 
-### XXX TODO
 emcliagentprotocols() {
-	echo -e "\tNot yet implemented."
+	EMCLIAGENTPROTOCOLS_SECTION=$1
+	EMCLIAGENTPROTOCOLS_CHECK_PROTO=$2
+	OPENSSL_AVAILABLE_OR_DISABLED="disabled"
+
+	if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_1" && $OPENSSL_HAS_TLS1_1 == 0 ]]; then
+		echo -en "\tYour OpenSSL ($OPENSSL) does not support $EMCLIAGENTPROTOCOLS_CHECK_PROTO. Skipping.\n"
+		return
+	fi
+
+	if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_2" && $OPENSSL_HAS_TLS1_2 == 0 ]]; then
+		echo -en "\tYour OpenSSL ($OPENSSL) does not support $EMCLIAGENTPROTOCOLS_CHECK_PROTO. Skipping.\n"
+		return
+	fi
+
+	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+		EMCLIAGENTPROTOCOLS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
+		EMCLIAGENTPROTOCOLS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
+
+		EMCLIAGENTPROTOCOLS_OPENSSL_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTPROTOCOLS_CHECK_HOST:$EMCLIAGENTPROTOCOLS_CHECK_PORT -$EMCLIAGENTPROTOCOLS_CHECK_PROTO 2>&1 | $GREP Cipher | $GREP -c 0000`
+
+		if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1" || $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_1" || $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_2" ]]; then
+			if [[ $OPENSSL_ALLOW_TLS1_2_ONLY > 0 ]]; then
+				if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_2" ]]; then
+					OPENSSL_AVAILABLE_OR_DISABLED="available"
+				fi
+			fi
+
+			if [[ $OPENSSL_ALLOW_TLS1_2_ONLY == 0 ]]; then
+				OPENSSL_AVAILABLE_OR_DISABLED="available"
+			fi
+
+			echo -en "\tConfirming $EMCLIAGENTPROTOCOLS_CHECK_PROTO $OPENSSL_AVAILABLE_OR_DISABLED for agent at $EMCLIAGENTPROTOCOLS_CHECK_HOST:$EMCLIAGENTPROTOCOLS_CHECK_PORT... "
+
+			if [[ $OPENSSL_AVAILABLE_OR_DISABLED == "available" ]]; then
+				if [[ $EMCLIAGENTPROTOCOLS_OPENSSL_RETURN -eq "0" ]]; then
+					echo OK
+				else
+					echo FAILED
+					FAIL_COUNT=$((FAIL_COUNT+1))
+					FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ $EMCLIAGENTPROTOCOLS_CHECK_HOST:${EMCLIAGENTPROTOCOLS_CHECK_PORT}:$EMCLIAGENTPROTOCOLS_CHECK_PROTO protocol connection failed"
+				fi
+			fi
+
+			if [[ $OPENSSL_AVAILABLE_OR_DISABLED == "disabled" ]]; then
+				if [[ $EMCLIAGENTPROTOCOLS_OPENSSL_RETURN -ne "0" ]]; then
+					echo OK
+				else
+					echo FAILED
+					FAIL_COUNT=$((FAIL_COUNT+1))
+					FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ $EMCLIAGENTPROTOCOLS_CHECK_HOST:${EMCLIAGENTPROTOCOLS_CHECK_PORT}:$EMCLIAGENTPROTOCOLS_CHECK_PROTO protocol connection allowed"
+				fi
+			fi
+		fi
+
+		if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "ssl2" || $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "ssl3" ]]; then
+			echo -en "\tConfirming $EMCLIAGENTPROTOCOLS_CHECK_PROTO $OPENSSL_AVAILABLE_OR_DISABLED for Agent at $EMCLIAGENTPROTOCOLS_CHECK_HOST:$EMCLIAGENTPROTOCOLS_CHECK_PORT... "
+			if [[ $EMCLIAGENTPROTOCOLS_OPENSSL_RETURN -ne "0" ]]; then
+				echo OK
+			else
+				echo FAILED
+				FAIL_COUNT=$((FAIL_COUNT+1))
+				FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ $EMCLIAGENTPROTOCOLS_CHECK_HOST:${EMCLIAGENTPROTOCOLS_CHECK_PORT}:$EMCLIAGENTPROTOCOLS_CHECK_PROTO protocol connection succeeded"
+			fi
+		fi
+
+	done
 }
 
 emcliagentciphers() {
@@ -1065,8 +1129,6 @@ if [[ "$EMCLI_CHECK" -eq 1 ]]; then
 	echo -e "\n\t(3d) Checking for demonstration certificates on all agents\n"
 	emcliagentdemocerts
 fi
-
-exit 0
 
 echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 822485.1, 1470197.1)"
 
