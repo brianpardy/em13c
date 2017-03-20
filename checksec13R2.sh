@@ -161,6 +161,9 @@ OPENSSL_PERMIT_FORBID_NON_TLS1_2="Permit"
 
 if [[ $OPENSSL_ALLOW_TLS1_2_ONLY -gt 0 ]]; then
 	OPENSSL_PERMIT_FORBID_NON_TLS1_2="Forbid"
+	OPENSSL_CERTCHECK_PROTOCOL="tls1_2"
+else
+	OPENSSL_CERTCHECK_PROTOCOL="tls1"
 fi
 
 OMS_HOME=`$GREP -i oms $ORAGCHOMELIST | xargs ls -d 2>/dev/null`
@@ -230,6 +233,9 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 
 	EMCLI_CHECK=1
 fi
+
+
+
 
 
 patchercheck () {
@@ -431,15 +437,10 @@ certcheck () {
 	CERTCHECK_CHECK_HOST=$2
 	CERTCHECK_CHECK_PORT=$3
 
-	CERTCHECK_PROTOCOL="tls1"
-	if [[ $OPENSSL_ALLOW_TLS1_2_ONLY > 0 ]]; then
-		CERTCHECK_PROTOCOL=tls1_2
-	fi
-
-	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $CERTCHECK_PROTOCOL)... "
+	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
 
 
-	OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
+	OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
 
 	if [[ $OPENSSL_SELFSIGNED_COUNT -eq "0" ]]; then
 		echo OK
@@ -455,14 +456,9 @@ democertcheck () {
 	DEMOCERTCHECK_CHECK_HOST=$2
 	DEMOCERTCHECK_CHECK_PORT=$3
 
-	DEMOCERTCHECK_PROTOCOL="tls1"
-	if [[ $OPENSSL_ALLOW_TLS1_2_ONLY > 0 ]]; then
-		DEMOCERTCHECK_PROTOCOL=tls1_2
-	fi
+	echo -ne "\tChecking demo certificate at $DEMOCERTCHECK_CHECK_COMPONENT ($DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
 
-	echo -ne "\tChecking demo certificate at $DEMOCERTCHECK_CHECK_COMPONENT ($DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT, protocol $DEMOCERTCHECK_PROTOCOL)... "
-
-	OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
+	OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
 
 	if [[ $OPENSSL_DEMO_COUNT -eq "0" ]]; then
 		echo OK
@@ -479,14 +475,9 @@ ciphercheck () {
 	OPENSSL_CHECK_HOST=$2
 	OPENSSL_CHECK_PORT=$3
 
-	CIPHERCHECK_PROTOCOL="tls1"
-	if [[ $OPENSSL_ALLOW_TLS1_2_ONLY > 0 ]]; then
-		CIPHERCHECK_PROTOCOL=tls1_2
-	fi
+	echo -ne "\tChecking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
 
-	echo -ne "\tChecking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $CIPHERCHECK_PROTOCOL)..."
-
-	OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$CIPHERCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+	OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
 	if [[ $OPENSSL_LOW_RETURN -eq "0" ]]; then
 		echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
@@ -499,7 +490,7 @@ ciphercheck () {
 
 	echo -ne "\tChecking MEDIUM strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
 
-	OPENSSL_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$CIPHERCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+	OPENSSL_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
 	if [[ $OPENSSL_MEDIUM_RETURN -eq "0" ]]; then
 		echo -e "\tFAILED - PERMITS MEDIUM STRENGTH CIPHER CONNECTIONS"
@@ -513,7 +504,7 @@ ciphercheck () {
 
 	echo -ne "\tChecking HIGH strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
 
-	OPENSSL_HIGH_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$CIPHERCHECK_PROTOCOL -cipher HIGH 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+	OPENSSL_HIGH_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher HIGH 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
 	if [[ $OPENSSL_HIGH_RETURN -eq "0" ]]; then
 		echo -e "\tOK"
@@ -543,171 +534,6 @@ wlspatchcheck () {
 	test $VERBOSE_CHECKSEC -ge 2 && echo $WLSCHECK_RETURN
 	
 }
-
-javacheck () {
-	WHICH_JAVA=$1
-	JAVA_DIR=$2
-	JAVA_VER=$3
-
-	JAVACHECK_RETURN=`$JAVA_DIR/bin/java -version 2>&1 | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
-
-	if [[ "$JAVACHECK_RETURN" == "$JAVA_VER" ]]; then
-		echo -e "\tOK"
-	else
-		echo -e "\tFAILED"
-		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_JAVA Java in ${JAVA_DIR}:Found incorrect version $JAVACHECK_RETURN"
-	fi
-	test $VERBOSE_CHECKSEC -ge 2 && echo $JAVACHECK_RETURN
-}
-
-emclijavacheck () {
-    JAVA_VERSION=$1
-
-    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
-        THEHOST=`echo $i | sed -e 's/:.*$//'`
-        echo -ne "\n\t(5b) Agent $i Java VERSION $JAVA_VERSION... "
-        EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
-        EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
-
-        if [[ "$EMCLIJAVACHECK_GETVER" == "1.7.0_131" ]]; then
-            echo -e "\tOK"
-        else
-            echo -e "\tFAILED"
-            FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER"
-        fi
-        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
-    done
-}
-
-pluginpatchpresent () {
-    WHICH_TARGET_TYPE=$1
-    WHICH_PLUGIN=$2
-    WHICH_PLUGIN_TYPE=$3
-    WHICH_PLUGIN_VERSION=$4
-    WHICH_PATCH=$5
-    WHICH_LABEL=$6
-    WHICH_PATCH_DESC=$7
-
-    echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
-
-    PLUGIN_EXISTS=`$GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
-
-    if [[ -z "$PLUGIN_EXISTS" ]]; then
-        echo "OK - plugin not installed"
-    else
-        if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
-            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
-        else
-            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
-        fi
-
-        for j in $PLUGIN_EXISTS; do
-            EMCLICHECK_RETURN=""
-            EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
-            if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
-                EMCLICHECK_RETURN="OK"
-                break
-            fi
-        done
-
-	# OK at this point simply means plugin home exists on the agent
-	# Now check for existence of patch
-
-        if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
-            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
-
-            if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
-                echo -e "\tOK"
-            else
-                echo -e "\tFAILED"
-                FAIL_COUNT=$((FAIL_COUNT+1))
-                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
-            fi
-        else
-            echo -e "\tOK - plugin not installed"
-        fi
-    fi
-
-#    test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
-}
-
-emcliagentbundlepatchcheck () {
-    SECTION_NUM=$1
-
-    for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
-        EMCLICHECK_RETURN="FAILED"
-        EMCLICHECK_FOUND_VERSION=0
-        EMCLICHECK_QUERY_RET=0
-        EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-        EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
-
-
-        $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
-
-        pluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
-        pluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 25501427 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-        pluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
-        pluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-        pluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 j "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
-        pluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 25362890 l "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
-        pluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
-
-        (( SECTION_NUM+=1 ))
-
-        rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
-    done
-}
-
-### XXX TODO
-emcliagentselfsignedcerts() {
-	echo -e "\tNot yet implemented."
-}
-
-### XXX TODO
-emcliagentdemocerts() {
-	echo -e "\tNot yet implemented."
-}
-
-### XXX TODO
-emcliagentprotocols() {
-	echo -e "\tNot yet implemented."
-}
-
-### XXX TODO
-emcliagentciphers() {
-	echo -e "\tNot yet implemented."
-}
-
-emcliagentopatch() {
-    SECTION=$1
-    AGENT_OPATCH_VERSION=$2
-
-    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
-        THEHOST=`echo $i | sed -e 's/:.*$//'`
-        echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
-
-        EMCLIAGENTOPATCHCHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
-        EMCLIAGENTOPATCHCHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch/opatch version -jre $EMCLIAGENTOPATCHCHECK_GETHOME/oracle_common/jdk" -targets="$THEHOST:host" | $GREP Version | sed 's/.*: //'`
-
-        if [[ "$EMCLIAGENTOPATCHCHECK_GETVER" == "$AGENT_OPATCH_VERSION" ]]; then
-            echo -e "\tOK"
-        else
-            echo -e "\tFAILED"
-            FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $OPATCH_AGENT_VERSION"
-        fi
-        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIAGENTOPATCHCHECK_GETVER
-    done
-}
-
 
 paramcheck () {
 	WHICH_PARAM=$1
@@ -858,6 +684,197 @@ paramcheck () {
 	fi
 }
 
+javacheck () {
+	WHICH_JAVA=$1
+	JAVA_DIR=$2
+	JAVA_VER=$3
+
+	JAVACHECK_RETURN=`$JAVA_DIR/bin/java -version 2>&1 | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
+
+	if [[ "$JAVACHECK_RETURN" == "$JAVA_VER" ]]; then
+		echo -e "\tOK"
+	else
+		echo -e "\tFAILED"
+		FAIL_COUNT=$((FAIL_COUNT+1))
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_JAVA Java in ${JAVA_DIR}:Found incorrect version $JAVACHECK_RETURN"
+	fi
+	test $VERBOSE_CHECKSEC -ge 2 && echo $JAVACHECK_RETURN
+}
+
+
+
+emclijavacheck () {
+    JAVA_VERSION=$1
+
+    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
+        THEHOST=`echo $i | sed -e 's/:.*$//'`
+        echo -ne "\n\t(5b) Agent $i Java VERSION $JAVA_VERSION... "
+        EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+        EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
+
+        if [[ "$EMCLIJAVACHECK_GETVER" == "1.7.0_131" ]]; then
+            echo -e "\tOK"
+        else
+            echo -e "\tFAILED"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER"
+        fi
+        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
+    done
+}
+
+emclipluginpatchpresent () {
+    WHICH_TARGET_TYPE=$1
+    WHICH_PLUGIN=$2
+    WHICH_PLUGIN_TYPE=$3
+    WHICH_PLUGIN_VERSION=$4
+    WHICH_PATCH=$5
+    WHICH_LABEL=$6
+    WHICH_PATCH_DESC=$7
+
+    echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
+
+    PLUGIN_EXISTS=`$GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
+
+    if [[ -z "$PLUGIN_EXISTS" ]]; then
+        echo "OK - plugin not installed"
+    else
+        if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
+            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
+        else
+            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
+        fi
+
+        for j in $PLUGIN_EXISTS; do
+            EMCLICHECK_RETURN=""
+            EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
+            if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
+                EMCLICHECK_RETURN="OK"
+                break
+            fi
+        done
+
+	# OK at this point simply means plugin home exists on the agent
+	# Now check for existence of patch
+
+        if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
+            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
+
+            if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
+                echo -e "\tOK"
+            else
+                echo -e "\tFAILED"
+                FAIL_COUNT=$((FAIL_COUNT+1))
+                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
+            fi
+        else
+            echo -e "\tOK - plugin not installed"
+        fi
+    fi
+
+#    test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
+}
+
+emcliagentbundlepatchcheck () {
+    SECTION_NUM=$1
+
+    for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+        EMCLICHECK_RETURN="FAILED"
+        EMCLICHECK_FOUND_VERSION=0
+        EMCLICHECK_QUERY_RET=0
+        EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+        EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
+
+
+        $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+
+        emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+        emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 25501427 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+        emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
+        emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+        emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 j "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
+        emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 25362890 l "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+
+        (( SECTION_NUM+=1 ))
+
+        rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+    done
+}
+
+emcliagentselfsignedcerts() {
+	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+		EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
+		EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
+		echo -ne "\tChecking certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
+
+		EMCLIAGENTSELFSIGNEDCERTS_OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST:$EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
+
+		if [[ $EMCLIAGENTSELFSIGNEDCERTS_OPENSSL_SELFSIGNED_COUNT -eq "0" ]]; then
+			echo OK
+		else
+			echo FAILED - Found self-signed certificate
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTSELFSIGNEDCERTS_CHECK_COMPONENT @ ${EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST}:${EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT} found self-signed certificate"
+		fi
+	done
+}
+
+emcliagentdemocerts() {
+	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+		EMCLIAGENTDEMOCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
+		EMCLIAGENTDEMOCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
+		echo -ne "\tChecking demo certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
+
+		EMCLIAGENTDEMOCERTS_OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
+
+		if [[ $EMCLIAGENTDEMOCERTS_OPENSSL_DEMO_COUNT -eq "0" ]]; then
+			echo OK
+		else
+			echo FAILED - Found demonstration certificate
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTDEMOCERTS_CHECK_COMPONENT @ ${EMCLIAGENTDEMOCERTS_CHECK_HOST}:${EMCLIAGENTDEMOCERTS_CHECK_PORT} found demonstration certificate"
+		fi
+	done
+}
+
+### XXX TODO
+emcliagentprotocols() {
+	echo -e "\tNot yet implemented."
+}
+
+### XXX TODO
+emcliagentciphers() {
+	echo -e "\tNot yet implemented."
+}
+
+emcliagentopatch() {
+    SECTION=$1
+    AGENT_OPATCH_VERSION=$2
+
+    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
+        THEHOST=`echo $i | sed -e 's/:.*$//'`
+        echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
+
+        EMCLIAGENTOPATCHCHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+        EMCLIAGENTOPATCHCHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch/opatch version -jre $EMCLIAGENTOPATCHCHECK_GETHOME/oracle_common/jdk" -targets="$THEHOST:host" | $GREP Version | sed 's/.*: //'`
+
+        if [[ "$EMCLIAGENTOPATCHCHECK_GETVER" == "$AGENT_OPATCH_VERSION" ]]; then
+            echo -e "\tOK"
+        else
+            echo -e "\tFAILED"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $OPATCH_AGENT_VERSION"
+        fi
+        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIAGENTOPATCHCHECK_GETVER
+    done
+}
 
 
 ### MAIN SCRIPT HERE
@@ -998,14 +1015,14 @@ democertcheck OMSupload $OMSHOST $PORT_UPL
 democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tChecking for self-signed certificates on all agents"
-	emcliagentselfsignedcerts 3c
+	echo -e "\n\t(3c) Checking for self-signed certificates on all agents"
+	emcliagentselfsignedcerts
 
-	echo -e "\n\tChecking for demonstration certificates on all agents"
-	emcliagentdemocerts 3d
+	echo -e "\n\t(3d) Checking for demonstration certificates on all agents"
+	emcliagentdemocerts
 fi
 
-
+exit 0
 
 echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 822485.1, 1470197.1)"
 
