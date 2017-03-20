@@ -49,6 +49,11 @@
 #                  to EMCLI for instructions.  Login to EMCLI and run
 #                  the script to use the new functionality.
 #                  If not logged in, still runs all non-EMCLI checks.
+# Changes   v2.1:  Now checking OPatch versions on all agents using
+#                  EMCLI. Now checking self-signed/demo certs on all
+#                  agents using EMCLI. Now caching key EMCLI output
+#                  to decrease runtime.
+#
 #
 # From: @BrianPardy on Twitter
 #
@@ -115,7 +120,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.0.1"
+VERSION="2.0.2"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -219,7 +224,11 @@ $EMCLI sync
 EMCLI_NOT_LOGGED_IN=$?
 
 if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
-    EMCLI_CHECK=1
+	EMCLI_AGENTS_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+	EMCLI_AGENTS_CACHEFILE="agentlist_cache.${EMCLI_AGENTS_RAND}"
+	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTS_CACHEFILE
+
+	EMCLI_CHECK=1
 fi
 
 
@@ -229,7 +238,7 @@ patchercheck () {
 	PATCHER_CHECK_VERSION=$3
 
 	if [[ $PATCHER_CHECK_COMPONENT == "OPatch" ]]; then
-		PATCHER_RET=`$PATCHER_CHECK_OH/opatch version -jre $MW_HOME/oracle_common/jdk | grep Version | sed 's/.*: //'`
+		PATCHER_RET=`$PATCHER_CHECK_OH/opatch version -jre $MW_HOME/oracle_common/jdk | $GREP Version | sed 's/.*: //'`
 		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
 
 		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
@@ -243,7 +252,7 @@ patchercheck () {
 	fi
 
 	if [[ $PATCHER_CHECK_COMPONENT == "OMSPatcher" ]]; then
-		PATCHER_RET=`$PATCHER_CHECK_OH/omspatcher version -jre $MW_HOME/oracle_common/jdk | grep 'OMSPatcher Version' | sed 's/.*: //'`
+		PATCHER_RET=`$PATCHER_CHECK_OH/omspatcher version -jre $MW_HOME/oracle_common/jdk | $GREP 'OMSPatcher Version' | sed 's/.*: //'`
 		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
 
 		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
@@ -538,10 +547,11 @@ wlspatchcheck () {
 javacheck () {
 	WHICH_JAVA=$1
 	JAVA_DIR=$2
+	JAVA_VER=$3
 
 	JAVACHECK_RETURN=`$JAVA_DIR/bin/java -version 2>&1 | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
-	if [[ "$JAVACHECK_RETURN" == "1.7.0_131" ]]; then
+	if [[ "$JAVACHECK_RETURN" == "$JAVA_VER" ]]; then
 		echo -e "\tOK"
 	else
 		echo -e "\tFAILED"
@@ -552,12 +562,11 @@ javacheck () {
 }
 
 emclijavacheck () {
-    JAVA_VERSION="1.7.0_131"
-    ALL_AGENTS=`$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}'`
+    JAVA_VERSION=$1
 
-    for i in $ALL_AGENTS; do
+    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
         THEHOST=`echo $i | sed -e 's/:.*$//'`
-        echo -ne "\n\t(5b) Checking for Java $JAVA_VERSION in ORACLE_HOME for agent $i... "
+        echo -ne "\n\t(5b) Agent $i Java VERSION $JAVA_VERSION... "
         EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
         EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
@@ -625,17 +634,15 @@ pluginpatchpresent () {
 }
 
 emcliagentbundlepatchcheck () {
-    ALL_AGENTS=`$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}'`
-    SECTION_NUM=7
+    SECTION_NUM=$1
 
-    for curagent in $ALL_AGENTS; do
+    for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
         EMCLICHECK_RETURN="FAILED"
         EMCLICHECK_FOUND_VERSION=0
         EMCLICHECK_QUERY_RET=0
         EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
         EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
 
-        echo -ne "\n($SECTION_NUM) Agent plugin bundle check on ${curagent}... "
 
         $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
 
@@ -656,6 +663,48 @@ emcliagentbundlepatchcheck () {
         (( SECTION_NUM+=1 ))
 
         rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+    done
+}
+
+### XXX TODO
+emcliagentselfsignedcerts() {
+	echo -e "\tNot yet implemented."
+}
+
+### XXX TODO
+emcliagentdemocerts() {
+	echo -e "\tNot yet implemented."
+}
+
+### XXX TODO
+emcliagentprotocols() {
+	echo -e "\tNot yet implemented."
+}
+
+### XXX TODO
+emcliagentciphers() {
+	echo -e "\tNot yet implemented."
+}
+
+emcliagentopatch() {
+    SECTION=$1
+    AGENT_OPATCH_VERSION=$2
+
+    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
+        THEHOST=`echo $i | sed -e 's/:.*$//'`
+        echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
+
+        EMCLIAGENTOPATCHCHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+        EMCLIAGENTOPATCHCHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch/opatch version -jre $EMCLIAGENTOPATCHCHECK_GETHOME/oracle_common/jdk" -targets="$THEHOST:host" | $GREP Version | sed 's/.*: //'`
+
+        if [[ "$EMCLIAGENTOPATCHCHECK_GETVER" == "$AGENT_OPATCH_VERSION" ]]; then
+            echo -e "\tOK"
+        else
+            echo -e "\tFAILED"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $OPATCH_AGENT_VERSION"
+        fi
+        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIAGENTOPATCHCHECK_GETVER
     done
 }
 
@@ -810,6 +859,7 @@ paramcheck () {
 }
 
 
+
 ### MAIN SCRIPT HERE
 
 
@@ -850,6 +900,10 @@ sslcheck OMSconsole $OMSHOST $PORT_OMS ssl2
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA ssl2
 sslcheck OMSupload $OMSHOST $PORT_UPL ssl2
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER ssl2
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking SSLv2 on all agents"
+	emcliagentprotocols 1a ssl2
+fi
 
 echo -e "\n\t(1b) Forbid SSLv3 connections"
 sslcheck Agent $OMSHOST $PORT_AGENT ssl3
@@ -860,6 +914,10 @@ sslcheck OMSconsole $OMSHOST $PORT_OMS ssl3
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA ssl3
 sslcheck OMSupload $OMSHOST $PORT_UPL ssl3
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER ssl3
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking SSLv3 on all agents"
+	emcliagentprotocols 1b ssl3
+fi
 
 echo -e "\n\t(1c) $OPENSSL_PERMIT_FORBID_NON_TLS1_2 TLSv1 connections"
 sslcheck Agent $OMSHOST $PORT_AGENT tls1
@@ -870,8 +928,12 @@ sslcheck OMSconsole $OMSHOST $PORT_OMS tls1
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking TLSv1 on all agents"
+	emcliagentprotocols 1c tls1
+fi
 
-echo -e "\n\t(1c) $OPENSSL_PERMIT_FORBID_NON_TLS1_2 TLSv1.1 connections"
+echo -e "\n\t(1d) $OPENSSL_PERMIT_FORBID_NON_TLS1_2 TLSv1.1 connections"
 sslcheck Agent $OMSHOST $PORT_AGENT tls1_1
 sslcheck BIPublisher $OMSHOST $PORT_BIP tls1_1
 sslcheck NodeManager $OMSHOST $PORT_NODEMANAGER tls1_1
@@ -880,8 +942,12 @@ sslcheck OMSconsole $OMSHOST $PORT_OMS tls1_1
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1_1
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1_1
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1_1
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking TLSv1.1 on all agents"
+	emcliagentprotocols 1d tls1_1
+fi
 
-echo -e "\n\t(1c) Permit TLSv1.2 connections"
+echo -e "\n\t(1e) Permit TLSv1.2 connections"
 sslcheck Agent $OMSHOST $PORT_AGENT tls1_2
 sslcheck BIPublisher $OMSHOST $PORT_BIP tls1_2
 sslcheck NodeManager $OMSHOST $PORT_NODEMANAGER tls1_2
@@ -890,6 +956,10 @@ sslcheck OMSconsole $OMSHOST $PORT_OMS tls1_2
 sslcheck OMSproxy $OMSHOST $PORT_OMS_JAVA tls1_2
 sslcheck OMSupload $OMSHOST $PORT_UPL tls1_2
 sslcheck WLSadmin $OMSHOST $PORT_ADMINSERVER tls1_2
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking TLSv1.2 on all agents"
+	emcliagentprotocols 1e tls1_2
+fi
 
 echo -e "\n(2) Checking supported ciphers at SSL/TLS endpoints (see notes 2138391.1, 1067411.1)"
 ciphercheck Agent $OMSHOST $PORT_AGENT
@@ -900,24 +970,41 @@ ciphercheck OMSconsole $OMSHOST $PORT_OMS
 ciphercheck OMSproxy $OMSHOST $PORT_OMS_JAVA
 ciphercheck OMSupload $OMSHOST $PORT_UPL
 ciphercheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking supported ciphers on all agents"
+	emcliagentciphers 2b
+fi
 
 echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)"
+
+echo -e "\n\t(3a) Checking for self-signed certificates on OMS components"
 certcheck Agent $OMSHOST $PORT_AGENT
-democertcheck Agent $OMSHOST $PORT_AGENT
-certcheck BIPublisher $OMSHOST $PORT_BIP
-democertcheck BIPublisher $OMSHOST $PORT_BIP
-certcheck NodeManager $OMSHOST $PORT_NODEMANAGER
-democertcheck NodeManager $OMSHOST $PORT_NODEMANAGER
 certcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
-democertcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
+certcheck BIPublisher $OMSHOST $PORT_BIP
+certcheck NodeManager $OMSHOST $PORT_NODEMANAGER
 certcheck OMSconsole $OMSHOST $PORT_OMS
-democertcheck OMSconsole $OMSHOST $PORT_OMS
 certcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
-democertcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
 certcheck OMSupload $OMSHOST $PORT_UPL
-democertcheck OMSupload $OMSHOST $PORT_UPL
 certcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+
+echo -e "\n\t(3b) Checking for demonstration certificates on OMS components"
+democertcheck Agent $OMSHOST $PORT_AGENT
+democertcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
+democertcheck BIPublisher $OMSHOST $PORT_BIP
+democertcheck NodeManager $OMSHOST $PORT_NODEMANAGER
+democertcheck OMSconsole $OMSHOST $PORT_OMS
+democertcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
+democertcheck OMSupload $OMSHOST $PORT_UPL
 democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\tChecking for self-signed certificates on all agents"
+	emcliagentselfsignedcerts 3c
+
+	echo -e "\n\tChecking for demonstration certificates on all agents"
+	emcliagentdemocerts 3d
+fi
+
 
 
 echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 822485.1, 1470197.1)"
@@ -1012,15 +1099,16 @@ opatchcheck WLS $MW_HOME 24327938
 echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
 
 echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
-javacheck JAVA $MW_HOME/oracle_common/jdk
+JAVA_VER="1.7.0_131"
+javacheck JAVA $MW_HOME/oracle_common/jdk "$JAVA_VER"
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    echo -e "\nUsing EMCLI to check Java patch levels on all agents"
-    emclijavacheck 
+    echo -e "\n\tUsing EMCLI to check Java patch levels on all agents"
+    emclijavacheck "$JAVA_VER"
 else
-    echo -e "\nNot logged in to EMCLI, will only check Java patch levels on local host."
+    echo -e "\n\tNot logged in to EMCLI, will only check Java patch levels on local host."
     echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
-    javacheck JAVA $AGENT_HOME/oracle_common/jdk
+    javacheck JAVA $AGENT_HOME/oracle_common/jdk "$JAVA_VER"
 fi
 
 
@@ -1028,15 +1116,21 @@ fi
 
 echo -e "\n(6) Checking EM13cR2 OPatch/OMSPatcher patch levels against $PATCHDATE requirements (see patch 25197714 README, patches 6880880 and 19999993)"
 
-echo -ne "\n\t(6a) OPatch ($MW_HOME/OPatch) VERSION 13.9.1.0.0 or newer... "
+echo -ne "\n\t(6a) OMS OPatch ($MW_HOME/OPatch) VERSION 13.9.1.0.0 or newer... "
 patchercheck OPatch $MW_HOME/OPatch 13.9.1.0.0
 
 echo -ne "\n\t(6b) OMSPatcher ($MW_HOME/OPatch) VERSION 13.8.0.0.1 or newer... "
 patchercheck OMSPatcher $MW_HOME/OMSPatcher 13.8.0.0.1
 
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -e "\n\t(6c) Checking OPatch patch levels on all agents"
+	emcliagentopatch 6c 13.9.1.0.0
+fi
+
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    emcliagentbundlepatchcheck
+    echo -ne "\n(7) Agent plugin bundle patch checks on all agents... "
+    emcliagentbundlepatchcheck 7
 else
     echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
     echo -e "\n    with an OEM user that has configured default normal database credentials and default host"
@@ -1085,6 +1179,13 @@ fi
 echo
 echo
 
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -n "Cleaning up temporary files... "
+	rm $EMCLI_AGENTS_CACHEFILE
+
+	echo "done"
+fi
+
 if [[ $FAIL_COUNT -gt "0" ]]; then
 	echo "Failed test count: $FAIL_COUNT - Review output"
 	test $VERBOSE_CHECKSEC -ge 1 && echo -e $FAIL_TESTS
@@ -1094,7 +1195,8 @@ fi
 
 echo
 echo "Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for more information."
-echo "Download the latest version from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13R2.sh"
+echo "Download the latest release from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13R2.sh"
+echo "Download the latest beta release from https://raw.githubusercontent.com/brianpardy/em13c/beta/checksec13R2.sh"
 echo
 
 exit
