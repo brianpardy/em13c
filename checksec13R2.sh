@@ -53,6 +53,12 @@
 #                  EMCLI. Now checking self-signed/demo certs on all
 #                  agents using EMCLI. Now caching key EMCLI output
 #                  to decrease runtime.
+# Changes   v2.2:  Gather OPatch/OMSPatcher output at the beginning
+#                  of the script and cache it during the run to improve
+#                  runtime. Turned off verbose-by-default, added "-v"
+#                  commandline switch to enable verbose run.
+#                  Runs 22% faster when using EMCLI due to caching.
+#                  Runs 76% faster when not using EMCLI due to caching.
 #
 #
 # From: @BrianPardy on Twitter
@@ -114,13 +120,22 @@
 # Dedicated to our two Lhasa Apsos:
 #   Lucy (6/13/1998 - 3/13/2015)
 #   Ethel (6/13/1998 - 7/31/2015)
-# 
+
+### Begin user configurable section
+
+JAVA_CHECK_VERSION="1.7.0_131"
+OPATCH_CHECK_VERSION="13.9.1.0.0"
+OMSPATCHER_CHECK_VERSION="13.8.0.0.1"
+
+### End user configurable section
+
+
 
 SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.1"
+VERSION="2.1.1"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -222,14 +237,48 @@ if [[ "$REPOS_DB_HOST" == "$OMSHOST" ]]; then
 	fi
 fi
 
+
+getopts :v VERBOSE_FLAG
+if [[ "$VERBOSE_FLAG" == "v" ]]; then
+    VERBOSE_CHECKSEC=2
+else
+    VERBOSE_CHECKSEC=0
+fi
+
+echo -ne "Gathering information about targets and patches... "
+
+OPATCH_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+OMSPATCHER_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+
+OPATCH_OMS_CACHE_FILE="OPatch.OMS_HOME.$OPATCH_CACHE_RAND"
+$OPATCH lsinv -oh $OMS_HOME > $OPATCH_OMS_CACHE_FILE
+echo -ne "OPatch-OMS OK... "
+
+OPATCH_AGENT_CACHE_FILE="OPatch.AGENT.$OPATCH_CACHE_RAND"
+$OPATCH lsinv -oh $AGENT_HOME > $OPATCH_AGENT_CACHE_FILE
+echo -ne "OPatch-Agent OK... "
+
+OPATCH_REPOS_DB_CACHE_FILE="OPatch.REPOS_DB_HOME.$OPATCH_CACHE_RAND"
+if [[ "$RUN_DB_CHECK" -eq 1 ]]; then
+    $REPOS_DB_HOME/OPatch/opatch lsinv -oh $REPOS_DB_HOME > $OPATCH_REPOS_DB_CACHE_FILE
+    echo -ne "OPatch-REPODB OK... "
+fi
+
+OMSPATCHER_OMS_CACHE_FILE="OMSPatcher.OMS_HOME.$OMSPATCHER_CACHE_RAND"
+$OMSPATCHER lspatches -oh $OMS_HOME > $OMSPATCHER_OMS_CACHE_FILE
+echo -ne "OMSPatcher-OMS OK... "
+
+echo 
+
+
 EMCLI="$MW_HOME/bin/emcli"
 $EMCLI sync
 EMCLI_NOT_LOGGED_IN=$?
 
 if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 	EMCLI_AGENTS_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-	EMCLI_AGENTS_CACHEFILE="agentlist_cache.${EMCLI_AGENTS_RAND}"
-	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTS_CACHEFILE
+	EMCLI_AGENTS_CACHE_FILE="agentlist_cache.${EMCLI_AGENTS_RAND}"
+	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTS_CACHE_FILE
 
 	EMCLI_CHECK=1
 fi
@@ -350,9 +399,13 @@ opatchcheck () {
 	OPATCH_CHECK_PATCH=$3
 
 	if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
-		OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+		#OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_REPOS_DB_CACHE_FILE`
+    elif [[ "$OPATCH_CHECK_COMPONENT" == "Agent" ]]; then
+        OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
 	else
-		OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+		#OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_OMS_CACHE_FILE`
 	fi
 
 	if [[ -z "$OPATCH_RET" ]]; then
@@ -374,11 +427,12 @@ opatchplugincheck () {
     OPATCH_PLUGIN_DIR=$4
 
     if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}" ]]; then
-        if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
-            OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
-        else
-            OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
-        fi
+#        if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
+#            OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+#        else
+            #OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
+            OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
+#        fi
     else
             OPATCH_RET="Plugin dir $OPATCH_PLUGIN_DIR does not exist, not installed"
     fi
@@ -418,7 +472,8 @@ omspatchercheck () {
 	OMSPATCHER_CHECK_OH=$2
 	OMSPATCHER_CHECK_PATCH=$3
 
-	OMSPATCHER_RET=`$OMSPATCHER lspatches -oh $OMSPATCHER_CHECK_OH | $GREP $OMSPATCHER_CHECK_PATCH`
+	#OMSPATCHER_RET=`$OMSPATCHER lspatches -oh $OMSPATCHER_CHECK_OH | $GREP $OMSPATCHER_CHECK_PATCH`
+	OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
 
 	if [[ -z "$OMSPATCHER_RET" ]]; then
 		echo FAILED
@@ -707,13 +762,13 @@ javacheck () {
 emclijavacheck () {
     JAVA_VERSION=$1
 
-    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
+    for i in `cat $EMCLI_AGENTS_CACHE_FILE`; do
         THEHOST=`echo $i | sed -e 's/:.*$//'`
         echo -ne "\n\t(5b) Agent $i Java VERSION $JAVA_VERSION... "
         EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
         EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
-        if [[ "$EMCLIJAVACHECK_GETVER" == "1.7.0_131" ]]; then
+        if [[ "$EMCLIJAVACHECK_GETVER" == "$JAVA_CHECK_VERSION" ]]; then
             echo -e "\tOK"
         else
             echo -e "\tFAILED"
@@ -779,7 +834,7 @@ emclipluginpatchpresent () {
 emcliagentbundlepatchcheck () {
     SECTION_NUM=$1
 
-    for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+    for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
         EMCLICHECK_RETURN="FAILED"
         EMCLICHECK_FOUND_VERSION=0
         EMCLICHECK_QUERY_RET=0
@@ -810,7 +865,7 @@ emcliagentbundlepatchcheck () {
 }
 
 emcliagentselfsignedcerts() {
-	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 		echo -ne "\tChecking certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
@@ -828,7 +883,7 @@ emcliagentselfsignedcerts() {
 }
 
 emcliagentdemocerts() {
-	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
 		EMCLIAGENTDEMOCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTDEMOCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 		echo -ne "\tChecking demo certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
@@ -860,7 +915,7 @@ emcliagentprotocols() {
 		return
 	fi
 
-	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
 		EMCLIAGENTPROTOCOLS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTPROTOCOLS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
@@ -917,7 +972,7 @@ emcliagentprotocols() {
 emcliagentciphers() {
 	EMCLIAGENTCIPHERS_SECTION=$1
 
-	for curagent in `cat $EMCLI_AGENTS_CACHEFILE`; do
+	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
 		EMCLIAGENTCIPHERS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTCIPHERS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
@@ -966,7 +1021,7 @@ emcliagentopatch() {
     SECTION=$1
     AGENT_OPATCH_VERSION=$2
 
-    for i in `cat $EMCLI_AGENTS_CACHEFILE`; do
+    for i in `cat $EMCLI_AGENTS_CACHE_FILE`; do
         THEHOST=`echo $i | sed -e 's/:.*$//'`
         echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
 
@@ -1209,11 +1264,11 @@ omspatchercheck OMS $OMS_HOME 25221285
 echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... "
 omspatchercheck OMS $OMS_HOME 25501489
 
-echo -ne "\n\t(4d) OMS HOME ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
-opatchcheck WLS $MW_HOME 24904852
+echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
+opatchcheck WLS $OMS_HOME 24904852
 
-echo -ne "\n\t(4d) OMS HOME ($MW_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
-opatchcheck WLS $MW_HOME 24327938
+echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
+opatchcheck WLS $OMS_HOME 24327938
 
 
 
@@ -1221,17 +1276,16 @@ opatchcheck WLS $MW_HOME 24327938
 
 echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
 
-echo -ne "\n\t(5a) Common Java ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
-JAVA_VER="1.7.0_131"
-javacheck JAVA $MW_HOME/oracle_common/jdk "$JAVA_VER"
+echo -ne "\n\t(5a) Common Java ($OMS_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
+javacheck JAVA $OMS_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
     echo -e "\n\tUsing EMCLI to check Java patch levels on all agents"
-    emclijavacheck "$JAVA_VER"
+    emclijavacheck "$JAVA_CHECK_VERSION"
 else
     echo -e "\n\tNot logged in to EMCLI, will only check Java patch levels on local host."
-    echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
-    javacheck JAVA $AGENT_HOME/oracle_common/jdk "$JAVA_VER"
+    echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
+    javacheck JAVA $AGENT_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
 fi
 
 
@@ -1239,15 +1293,15 @@ fi
 
 echo -e "\n(6) Checking EM13cR2 OPatch/OMSPatcher patch levels against $PATCHDATE requirements (see patch 25197714 README, patches 6880880 and 19999993)"
 
-echo -ne "\n\t(6a) OMS OPatch ($MW_HOME/OPatch) VERSION 13.9.1.0.0 or newer... "
-patchercheck OPatch $MW_HOME/OPatch 13.9.1.0.0
+echo -ne "\n\t(6a) OMS OPatch ($OMS_HOME/OPatch) VERSION $OPATCH_CHECK_VERSION or newer... "
+patchercheck OPatch $OMS_HOME/OPatch $OPATCH_CHECK_VERSION
 
-echo -ne "\n\t(6b) OMSPatcher ($MW_HOME/OPatch) VERSION 13.8.0.0.1 or newer... "
-patchercheck OMSPatcher $MW_HOME/OMSPatcher 13.8.0.0.1
+echo -ne "\n\t(6b) OMSPatcher ($OMS_HOME/OPatch) VERSION $OMSPATCHER_CHECK_VERSION or newer... "
+patchercheck OMSPatcher $OMS_HOME/OMSPatcher $OMSPATCHER_CHECK_VERSION
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\t(6c) Checking OPatch patch levels on all agents"
-	emcliagentopatch 6c 13.9.1.0.0
+	echo -e "\n\tChecking OPatch patch levels on all agents"
+	emcliagentopatch 6c $OPATCH_CHECK_VERSION
 fi
 
 
@@ -1256,8 +1310,8 @@ if [[ "$EMCLI_CHECK" -eq 1 ]]; then
     emcliagentbundlepatchcheck 7
 else
     echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
-    echo -e "\n    with an OEM user that has configured default normal database credentials and default host"
-    echo -e "\n    credentials for your repository database target, then run this script again."
+    echo    "    with an OEM user that has configured default normal database credentials and default host"
+    echo    "    credentials for your repository database target, then run this script again."
 
     echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
     opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
@@ -1302,16 +1356,20 @@ fi
 echo
 echo
 
-if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -n "Cleaning up temporary files... "
-	rm $EMCLI_AGENTS_CACHEFILE
+echo -n "Cleaning up temporary files... "
+rm $OPATCH_OMS_CACHE_FILE 2> /dev/null
+rm $OPATCH_AGENT_CACHE_FILE 2> /dev/null
+rm $OPATCH_REPOS_DB_CACHE_FILE 2> /dev/null
+rm $OMSPATCHER_OMS_CACHE_FILE 2> /dev/null
 
-	echo "done"
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	rm $EMCLI_AGENTS_CACHE_FILE 2> /dev/null
 fi
+echo "done"
 
 if [[ $FAIL_COUNT -gt "0" ]]; then
 	echo "Failed test count: $FAIL_COUNT - Review output"
-	test $VERBOSE_CHECKSEC -ge 1 && echo -e $FAIL_TESTS
+	echo -e $FAIL_TESTS
 else
 	echo "All tests succeeded."
 fi
