@@ -7,6 +7,7 @@ This repository contains various utilities for Oracle Enterprise Manager 13c, fo
 The checksec13R2.sh script implements checks for all of the security configuration I go through for an EM13c R2 environment. It accesses the various configuration files that OEM leaves in place to identify the ports used by, and directories containing, all of your OEM components. 
 
 The provided checks confirm that: 
+
     * OMS/agent components refuse SSLv2, SSLv3, TLSv1, and TLSv1.1 connections
     * OMS/agent components accept TLSv1.2 connections
     * OMS/agent components refuse LOW and MEDIUM strength cipher suites requested by clients.
