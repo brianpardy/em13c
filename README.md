@@ -4,7 +4,7 @@ This repository contains various utilities for Oracle Enterprise Manager 13c, fo
 
 ## EM13c Security ##
 
-The checksec13R2.sh script implements checks for all of the security configuration I go through for an EM13c R2 environment. It accesses the various configuration files that OEM leaves in place to identify the ports used by, and directories containing, all of your OEM components. 
+The checksec13R2.sh script implements checks for all of the security configuration I go through for an EM13c R2 environment. It accesses the various configuration files that OEM leaves in place to identify the ports used by, and directories containing, all of your OEM components. See the sample\* files in this repository for examples of the output provided.
 
 The provided checks confirm that: 
 
