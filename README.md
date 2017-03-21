@@ -65,4 +65,4 @@ Why create this script?  I found the security console in EM13c, though useful, t
 
 ## More information ##
 
-See my blog at https://pardydba.wordpress.com/ for more information. Please report any bugs you find or 
+See my blog at https://pardydba.wordpress.com/ for more information. Please report any bugs you find by filing an issue.
