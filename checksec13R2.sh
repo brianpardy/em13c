@@ -59,6 +59,7 @@
 #                  commandline switch to enable verbose run.
 #                  Runs 22% faster when using EMCLI due to caching.
 #                  Runs 76% faster when not using EMCLI due to caching.
+#                  Now checks agent bundle patch presence on all agents
 #
 #
 # From: @BrianPardy on Twitter
@@ -135,7 +136,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.1.1"
+VERSION="2.1.2"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -779,6 +780,28 @@ emclijavacheck () {
     done
 }
 
+emcliagentbundlecheck() {
+    EMCLIAGENTBUNDLE_SECTION=$1
+    EMCLIAGENTBUNDLE_PATCH=$2
+    EMCLIAGENTBUNDLE_DESC=$3
+    
+    for i in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+        THEHOST=`echo $i | sed -e 's/:.*$//'`
+        echo -ne "\n\t($EMCLIAGENTBUNDLE_SECTION) Agent $i $EMCLIAGENTBUNDLE_DESC ($EMCLIAGENTBUNDLE_PATCH)... "
+
+        EMCLIAGENTBUNDLE_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $EMCLIAGENTBUNDLE_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '$i')" | $GREP -c PATCH_INSTALLED`
+
+
+        if [[ "$EMCLIAGENTBUNDLE_QUERY_RET" -eq 1 ]]; then
+            echo -e "\tOK"
+        else
+            echo -e "\tFAILED"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTBUNDLE_PATCH missing on $i"
+        fi
+    done
+}
+
 emclipluginpatchpresent () {
     WHICH_TARGET_TYPE=$1
     WHICH_PLUGIN=$2
@@ -1240,35 +1263,43 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 fi
 
-echo -ne "\n\t(4c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
-opatchcheck Agent $AGENT_HOME 25414194
-
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
 omspatchercheck OMS $OMS_HOME 25163555
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... "
 omspatchercheck OMS $OMS_HOME 25322055
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... "
 omspatchercheck OMS $OMS_HOME 24329181
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
 omspatchercheck OMS $OMS_HOME 25604219
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
 omspatchercheck OMS $OMS_HOME 25221285
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... "
 omspatchercheck OMS $OMS_HOME 25501489
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
 opatchcheck WLS $OMS_HOME 24904852
 
-echo -ne "\n\t(4d) OMS HOME ($OMS_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
 opatchcheck WLS $OMS_HOME 24327938
+
+
+if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+    echo -e "\n\tUsing EMCLI to check for agent bundle patch on all agents"
+    emcliagentbundlecheck 4d 25414194 "EM-AGENT BUNDLE PATCH 13.2.0.0.170228"
+else
+    echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
+    echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
+    opatchcheck Agent $AGENT_HOME 25414194
+fi
+
 
 
 
