@@ -59,7 +59,8 @@
 #                  commandline switch to enable verbose run.
 #                  Runs 22% faster when using EMCLI due to caching.
 #                  Runs 76% faster when not using EMCLI due to caching.
-#                  Now checks agent bundle patch presence on all agents
+#                  Now checks agent bundle patch presence on all agents.
+#                  Cache execute_sql plugin check output to improve runtime.
 #
 #
 # From: @BrianPardy on Twitter
@@ -136,7 +137,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.1.2"
+VERSION="2.1.3"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -837,7 +838,8 @@ emclipluginpatchpresent () {
 	# Now check for existence of patch
 
         if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
-            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
+#            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
+            EMCLICHECK_QUERY_RET=`$GREP -c $WHICH_PATCH $EMCLICHECK_QUERY_CACHEFILE`
 
             if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
                 echo -e "\tOK"
@@ -854,7 +856,7 @@ emclipluginpatchpresent () {
 #    test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
 }
 
-emcliagentbundlepatchcheck () {
+emcliagentbundlepluginpatchcheck () {
     SECTION_NUM=$1
 
     for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
@@ -863,9 +865,11 @@ emcliagentbundlepatchcheck () {
         EMCLICHECK_QUERY_RET=0
         EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
         EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
-
+        EMCLICHECK_QUERY_CACHEFILE="plugins_${curagent}_repos_cache.${EMCLICHECK_RAND}"
 
         $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+
+        $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch from sysman.mgmt\$applied_patches where host = (select host_name from sysman.mgmt\$target where target_name = '${curagent}')" > $EMCLICHECK_QUERY_CACHEFILE
 
         emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
@@ -884,6 +888,7 @@ emcliagentbundlepatchcheck () {
         (( SECTION_NUM+=1 ))
 
         rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+        rm $EMCLICHECK_QUERY_CACHEFILE
     done
 }
 
@@ -1338,7 +1343,7 @@ fi
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
     echo -ne "\n(7) Agent plugin bundle patch checks on all agents... "
-    emcliagentbundlepatchcheck 7
+    emcliagentbundlepluginpatchcheck 7
 else
     echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
     echo    "    with an OEM user that has configured default normal database credentials and default host"
