@@ -1,5 +1,16 @@
-Synchronized successfully
-Performing EM13c R2 security checkup version 2.0.2 on omshost.domain.com at Mon Mar 20 12:48:53 EDT 2017.
+Performing EM13c R2 security checkup version 2.2 on omshost.domain.com at Fri Mar 24 11:29:42 EDT 2017.
+
+Gathering info... 
+	EM13c config... OK
+	Repos DB... 12.1.0.2.0 OK
+	OPatch-OMS... OK
+	OPatch-Agent... OK
+	OPatch-Repos DB... OK
+	OMSPatcher-OMS... OK
+	EMCLI login... OK
+	EMCLI-Agent list... OK
+	EMCLI-Agent patches... OK
+	EMCLI-Agent homes... OK
 
 Using port definitions from configuration files 
 	/etc/oragchomelist
@@ -100,25 +111,25 @@ Using port definitions from configuration files
 
 	Checking TLSv1 on all agents
 
-	Confirming tls1 disabled for agent at host01.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host02.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host03.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host04.usa.domain.com:1830... OK
-	Confirming tls1 disabled for agent at host05.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host06.domain.com:1830... OK
-	Confirming tls1 disabled for agent at host07.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host08.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host09.domain.com:1830... OK
-	Confirming tls1 disabled for agent at host10.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host11.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host12.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host13.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host14.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host15.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host16.domain.com:3872... OK
-	Confirming tls1 disabled for agent at omshost.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host17.domain.com:3872... OK
-	Confirming tls1 disabled for agent at host18.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host01.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host02.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host03.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host04.usa.domain.com:1830... OK
+	Confirming tls1 disabled for Agent at host05.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host06.domain.com:1830... OK
+	Confirming tls1 disabled for Agent at host07.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host08.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host09.domain.com:1830... OK
+	Confirming tls1 disabled for Agent at host10.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host11.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host12.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host13.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host14.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host15.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host16.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host17.domain.com:3872... OK
+	Confirming tls1 disabled for Agent at host18.domain.com:3872... OK
 
 	(1d) Forbid TLSv1.1 connections
 	Confirming tls1_1 disabled for Agent at omshost.domain.com:3872... OK
@@ -132,25 +143,25 @@ Using port definitions from configuration files
 
 	Checking TLSv1.1 on all agents
 
-	Confirming tls1_1 disabled for agent at host01.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host02.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host03.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host04.usa.domain.com:1830... OK
-	Confirming tls1_1 disabled for agent at host05.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host06.domain.com:1830... OK
-	Confirming tls1_1 disabled for agent at host07.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host08.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host09.domain.com:1830... OK
-	Confirming tls1_1 disabled for agent at host10.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host11.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host12.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host13.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host14.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host15.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host16.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at omshost.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host17.domain.com:3872... OK
-	Confirming tls1_1 disabled for agent at host18.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host01.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host02.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host03.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host04.usa.domain.com:1830... OK
+	Confirming tls1_1 disabled for Agent at host05.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host06.domain.com:1830... OK
+	Confirming tls1_1 disabled for Agent at host07.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host08.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host09.domain.com:1830... OK
+	Confirming tls1_1 disabled for Agent at host10.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host11.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host12.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host13.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host14.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host15.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host16.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at omshost.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host17.domain.com:3872... OK
+	Confirming tls1_1 disabled for Agent at host18.domain.com:3872... OK
 
 	(1e) Permit TLSv1.2 connections
 	Confirming tls1_2 available for Agent at omshost.domain.com:3872... OK
@@ -164,25 +175,25 @@ Using port definitions from configuration files
 
 	Checking TLSv1.2 on all agents
 
-	Confirming tls1_2 available for agent at host01.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host02.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host03.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host04.usa.domain.com:1830... OK
-	Confirming tls1_2 available for agent at host05.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host06.domain.com:1830... OK
-	Confirming tls1_2 available for agent at host07.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host08.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host09.domain.com:1830... OK
-	Confirming tls1_2 available for agent at host10.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host11.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host12.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host13.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host14.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host15.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host16.domain.com:3872... OK
-	Confirming tls1_2 available for agent at omshost.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host17.domain.com:3872... OK
-	Confirming tls1_2 available for agent at host18.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host01.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host02.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host03.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host04.usa.domain.com:1830... OK
+	Confirming tls1_2 available for Agent at host05.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host06.domain.com:1830... OK
+	Confirming tls1_2 available for Agent at host07.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host08.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host09.domain.com:1830... OK
+	Confirming tls1_2 available for Agent at host10.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host11.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host12.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host13.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host14.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host15.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host16.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at omshost.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host17.domain.com:3872... OK
+	Confirming tls1_2 available for Agent at host18.domain.com:3872... OK
 
 (2) Checking supported ciphers at SSL/TLS endpoints (see notes 2138391.1, 1067411.1)
 	(2a) Checking LOW strength ciphers on Agent (omshost.domain.com:3872, protocol tls1_2)...	OK
@@ -220,81 +231,81 @@ Using port definitions from configuration files
 
 	Checking supported ciphers on all agents
 
-	(2i) Checking LOW strength ciphers on agent host01.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host01.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host01.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host01.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host01.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host01.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host02.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host02.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host02.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host02.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host02.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host02.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host03.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host03.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host03.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host03.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host03.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host03.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host04.usa.domain.com:1830 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host04.usa.domain.com:1830 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host04.usa.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host04.usa.domain.com:1830, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host04.usa.domain.com:1830)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host04.usa.domain.com:1830)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host05.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host05.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host05.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host05.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host05.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host05.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host06.domain.com:1830 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host06.domain.com:1830 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host06.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host06.domain.com:1830, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host06.domain.com:1830)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host06.domain.com:1830)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host07.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host07.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host07.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host07.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host07.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host07.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host08.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host08.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host08.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host08.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host08.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host08.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host09.domain.com:1830 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host09.domain.com:1830 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host09.domain.com:1830 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host09.domain.com:1830, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host09.domain.com:1830)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host09.domain.com:1830)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host10.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host10.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host10.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host10.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host10.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host10.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host11.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host11.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host11.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host11.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host11.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host11.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host12.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host12.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host12.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host12.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host12.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host12.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host13.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host13.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host13.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host13.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host13.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host13.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host14.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host14.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host14.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host14.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host14.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host14.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host15.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host15.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host15.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host15.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host15.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host15.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host16.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host16.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host16.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host16.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host16.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host16.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent omshost.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent omshost.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent omshost.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (omshost.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (omshost.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (omshost.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host17.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host17.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host17.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host17.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host17.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host17.domain.com:3872)...	OK
 
-	(2i) Checking LOW strength ciphers on agent host18.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking MEDIUM strength ciphers on agent host18.domain.com:3872 (protocol tls1_2)...	OK
-	(2i) Checking HIGH strength ciphers on agent host18.domain.com:3872 (protocol tls1_2)...	OK
+	(2i) Checking LOW strength ciphers on Agent (host18.domain.com:3872, protocol tls1_2)...	OK
+	(2i) Checking MEDIUM strength ciphers on Agent (host18.domain.com:3872)...	OK
+	(2i) Checking HIGH strength ciphers on Agent (host18.domain.com:3872)...	OK
 
 
 (3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)
@@ -321,191 +332,183 @@ Using port definitions from configuration files
 
 	(3c) Checking for self-signed certificates on all agents
 
-	Checking certificate at host01.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host02.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host03.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host04.usa.domain.com:1830 (protocol tls1_2)... OK
-	Checking certificate at host05.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host06.domain.com:1830 (protocol tls1_2)... OK
-	Checking certificate at host07.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host08.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host09.domain.com:1830 (protocol tls1_2)... OK
-	Checking certificate at host10.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host11.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host12.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host13.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host14.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host15.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host16.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at omshost.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host17.domain.com:3872 (protocol tls1_2)... OK
-	Checking certificate at host18.domain.com:3872 (protocol tls1_2)... OK
+	Checking certificate at Agent (host01.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host02.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host03.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host04.usa.domain.com:1830, protocol tls1_2)... OK
+	Checking certificate at Agent (host05.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host06.domain.com:1830, protocol tls1_2)... OK
+	Checking certificate at Agent (host07.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host08.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host09.domain.com:1830, protocol tls1_2)... OK
+	Checking certificate at Agent (host10.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host11.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host12.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host13.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host14.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host15.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host16.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (omshost.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host17.domain.com:3872, protocol tls1_2)... OK
+	Checking certificate at Agent (host18.domain.com:3872, protocol tls1_2)... OK
 
 	(3d) Checking for demonstration certificates on all agents
 
-	Checking demo certificate at host01.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host02.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host03.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host04.usa.domain.com:1830 (protocol tls1_2)... OK
-	Checking demo certificate at host05.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host06.domain.com:1830 (protocol tls1_2)... OK
-	Checking demo certificate at host07.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host08.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host09.domain.com:1830 (protocol tls1_2)... OK
-	Checking demo certificate at host10.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host11.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host12.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host13.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host14.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host15.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host16.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at omshost.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host17.domain.com:3872 (protocol tls1_2)... OK
-	Checking demo certificate at host18.domain.com:3872 (protocol tls1_2)... OK
+	Checking demo certificate at Agent (host01.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host02.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host03.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host04.usa.domain.com:1830, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host05.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host06.domain.com:1830, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host07.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host08.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host09.domain.com:1830, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host10.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host11.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host12.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host13.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host14.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host15.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host16.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (omshost.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host17.domain.com:3872, protocol tls1_2)... OK
+	Checking demo certificate at Agent (host18.domain.com:3872, protocol tls1_2)... OK
 
 (4) Checking EM13c Oracle home patch levels against 28 Feb 2017 baseline (see notes 1664074.1, 2219797.1, 822485.1, 1470197.1)
 
 	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) DATABASE BUNDLE PATCH: 12.1.0.2.170117 (JAN2017) (24732088)... OK
-24732088 24732088 Patch 24732088 : applied on Thu Jan 19 11:36:03 EST 2017 Patch description: "DATABASE BUNDLE PATCH: 12.1.0.2.170117 (24732088)"
 
 	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) Database PSU 12.1.0.2.170117, Oracle JavaVM Component (JAN2017) (24917972)... OK
-Patch 24917972 : applied on Thu Jan 19 11:44:05 EST 2017 24917972, 25067795, 24534298, 25076732, 25076756, 24315824, 21659726
 
 	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) OCW Interim patch for 25101514 (25101514)... OK
-Patch 25101514 : applied on Thu Jan 19 11:35:06 EST 2017 Patch description: "OCW Interim patch for 25101514"
 
 	(4a) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... OK
-Patch 20243268 : applied on Thu Jan 19 11:36:45 EST 2017 20243268
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_TYPES_SERVER parameter (76629.1, 2167682.1)... OK
-(AES128,AES256,AES192,3DES168)
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_SERVER parameter (76629.1, 2167682.1)... OK
-requested
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_TYPES_CLIENT parameter (76629.1, 2167682.1)... OK
-(AES128,AES256,AES192,3DES168)
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.ENCRYPTION_CLIENT parameter (76629.1, 2167682.1)... OK
-requested
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_TYPES_SERVER parameter (76629.1, 2167682.1)... OK
-(SHA1)
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_SERVER parameter (76629.1, 2167682.1)... OK
-requested
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_TYPES_CLIENT parameter (76629.1, 2167682.1)... OK
-(SHA1)
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SQLNET.CRYPTO_CHECKSUM_CLIENT parameter (76629.1, 2167682.1)... OK
-requested
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SSL_VERSION parameter (1545816.1)... OK
-1.0
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) sqlnet.ora SSL_CIPHER_SUITES parameter (1545816.1)... OK
-(SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_AES_256_CBC_SHA)
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) listener.ora SSL_VERSION parameter (1545816.1)... OK
-1.0
 
 	(4b) OMS REPOSITORY DATABASE HOME (/oracle/oem/product/12.1.0/db) listener.ora SSL_CIPHER_SUITES parameter (1545816.1)... OK
-(SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_AES_256_CBC_SHA)
 
-	(4c) OMS CHAINED AGENT HOME (/oracle/oem/agent13cR1/agent_13.2.0.0.0) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... OK
-Patch 25414194 : applied on Wed Mar 01 11:12:28 EST 2017 25414194, 23478148, 25297713, 25342677, 25125856, 25113676, 24598039
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... OK
-23603592 23742814 23603592 23742821 23603592 23742810 23603592 25062489
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... OK
-oracle.sysman.top.oms/13.2.0.0.0 Core 25163555 25163555
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... OK
-oracle.jrf.adfrt/12.1.3.0.0 Core N/A 25322055 One-off
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... OK
-oracle.ohs2/12.1.3.0.0 Core N/A 24329181 One-off
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... OK
-25604219 25604219
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... OK
-oracle.opss.wls/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.jrf.iau/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.opss.jrf/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.rcu.iau/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117 oracle.opss.core/12.1.3.0.0 Core N/A 25221285 OPSS-OPC Bundle Patch 12.1.3.0.170117
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... OK
-oracle.sysman.db.oms.plugin/13.2.1.0.0 Plugin 25501489 25414281 EM DB Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.si.oms.plugin/13.2.1.0.0 Plugin 25501489 25414339 EM SI Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.cfw.oms.plugin/13.2.1.0.0 Plugin 25501489 25414245 EM CFW Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.xa.oms.plugin/13.2.1.0.0 Plugin 25501489 25414294 EM Exadata Plugin Bundle Patch 13.2.1.0.170228 oracle.sysman.emas.oms.plugin/13.2.1.0.0 Plugin 25501489 25414317 EM FMW Plugin Bundle Patch 13.2.1.0.170228
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... OK
-Patch 24904852 : applied on Thu Jan 26 12:26:31 EST 2017
+	(4c) OMS HOME (/oracle/oem/Middleware13cR2) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... OK
 
-	(4d) OMS HOME (/oracle/oem/Middleware13cR2) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... OK
-Patch 24327938 : applied on Mon Mar 06 10:37:05 EST 2017
+	Using EMCLI to check for agent bundle patch on all agents
+
+	(4d) Agent host01.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host02.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host03.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host04.usa.domain.com:1830 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host05.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host06.domain.com:1830 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host07.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host08.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host09.domain.com:1830 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host10.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host11.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host12.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host13.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host14.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host15.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host16.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent omshost.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host17.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
+
+	(4d) Agent host18.domain.com:3872 EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... 	OK
 
 (5) Checking EM13cR2 Java patch levels against 28 Feb 2017 baseline (see notes 2241373.1, 2241358.1)
 
-	(5a) Common Java (/oracle/oem/Middleware13cR2/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... 	OK
-1.7.0_131
+	(5a) Common Java (/oracle/oem/Middleware13cR2/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0_131 (13079846)... 	OK
 
 	Using EMCLI to check Java patch levels on all agents
 
-	(5b) Agent host01.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host01.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host02.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host02.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host03.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host03.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host04.usa.domain.com:1830 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host04.usa.domain.com:1830 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host05.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host05.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host06.domain.com:1830 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host06.domain.com:1830 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host07.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host07.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host08.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host08.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host09.domain.com:1830 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host09.domain.com:1830 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host10.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host10.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host11.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host11.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host12.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host12.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host13.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host13.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host14.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host14.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host15.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host15.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host16.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host16.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
 	(5b) Agent omshost.domain.com:3872 Java VERSION 1.7.0_131... 	OK
-1.7.0_131
 
-	(5b) Agent host17.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host17.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
-	(5b) Agent host18.domain.com:3872 Java VERSION 1.7.0_131... 	FAILED
-1.7.0_111
+	(5b) Agent host18.domain.com:3872 Java VERSION 1.7.0_131... 	OK
 
 (6) Checking EM13cR2 OPatch/OMSPatcher patch levels against 28 Feb 2017 requirements (see patch 25197714 README, patches 6880880 and 19999993)
 
@@ -513,64 +516,45 @@ Patch 24327938 : applied on Mon Mar 06 10:37:05 EST 2017
 
 	(6b) OMSPatcher (/oracle/oem/Middleware13cR2/OPatch) VERSION 13.8.0.0.1 or newer... OK
 
-	(6c) Checking OPatch patch levels on all agents
+	Checking OPatch patch levels on all agents
 
 	(6c) Agent host01.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host02.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host03.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host04.usa.domain.com:1830 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host05.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host06.domain.com:1830 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host07.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host08.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host09.domain.com:1830 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host10.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host11.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host12.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host13.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host14.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host15.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host16.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent omshost.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host17.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 	(6c) Agent host18.domain.com:3872 ORACLE_HOME OPatch VERSION 13.9.1.0.0... 	OK
-13.9.1.0.0
 
 (7) Agent plugin bundle patch checks on all agents... 
 	(7a) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING @ host01.domain.com:3872 (25501452)... 	OK
@@ -1069,26 +1053,7 @@ Patch 24327938 : applied on Mon Mar 06 10:37:05 EST 2017
 
 
 Cleaning up temporary files... done
-Failed test count: 18 - Review output
-
-emclijavacheck:Java in host01.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host02.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host03.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host04.usa.domain.com:E:gent13cgent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host05.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host06.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host07.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host08.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host09.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host10.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host11.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host12.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host13.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host14.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host15.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host16.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host17.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
-emclijavacheck:Java in host18.domain.com:/oraagent/agent13c/agent_13.2.0.0.0/jdk:Found incorrect version 1.7.0_111
+All tests succeeded.
 
 Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for more information.
 Download the latest release from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13R2.sh
