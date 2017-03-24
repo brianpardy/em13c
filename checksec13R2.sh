@@ -57,10 +57,10 @@
 #                  of the script and cache it during the run to improve
 #                  runtime. Turned off verbose-by-default, added "-v"
 #                  commandline switch to enable verbose run.
-#                  Runs 22% faster when using EMCLI due to caching.
-#                  Runs 76% faster when not using EMCLI due to caching.
 #                  Now checks agent bundle patch presence on all agents.
-#                  Cache execute_sql plugin check output to improve runtime.
+#                  Cache execute_sql agent patch output to improve runtime.
+#                  Cache agent home list to improve runtime.
+#                  Huge runtime improvements vs previous release.
 #
 #
 # From: @BrianPardy on Twitter
@@ -137,7 +137,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.1.3"
+VERSION="2.1.4"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -145,12 +145,19 @@ RUN_DB_CHECK=0
 VERBOSE_CHECKSEC=2
 EMCLI_CHECK=0
 
+EMCLI="$MW_HOME/bin/emcli"
+
 HOST_OS=`uname -s`
 HOST_ARCH=`uname -m`
 
 ORAGCHOMELIST="/etc/oragchomelist"
 ORATAB="/etc/oratab"
 OPENSSL=`which openssl`
+
+
+echo -e "Performing EM13c R2 security checkup version $VERSION on $OMSHOST at `date`.\n"
+
+echo "Gathering info... "
 
 if [[ -x "/usr/bin/openssl1" && -f "/etc/SuSE-release" ]]; then
 	OPENSSL=`which openssl1`
@@ -222,20 +229,25 @@ REPOS_DB_CONNDESC=`$GREP EM_REPOS_CONNECTDESCRIPTOR $EMGC_PROPS | sed -e 's/EM_R
 REPOS_DB_HOST=`echo $REPOS_DB_CONNDESC | sed -e 's/^.*HOST=//' | sed -e 's/).*$//'`
 REPOS_DB_SID=`echo $REPOS_DB_CONNDESC | sed -e 's/^.*SID=//' | sed -e 's/).*$//'`
 
+echo -e "\tEM13c config... OK"
+
 if [[ "$REPOS_DB_HOST" == "$OMSHOST" ]]; then
+    echo -ne "\tRepos DB... "
 	REPOS_DB_HOME=`$GREP "$REPOS_DB_SID:" $ORATAB | awk -F: '{print $2}'`
 	REPOS_DB_VERSION=`$REPOS_DB_HOME/OPatch/opatch lsinventory -oh $REPOS_DB_HOME | $GREP 'Oracle Database' | awk '{print $4}'`
 
 	if [[ "$REPOS_DB_VERSION" == "11.2.0.4.0" ]]; then
 		RUN_DB_CHECK=1
+        echo "$REPOS_DB_VERSION OK"
 	fi
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
+        echo "$REPOS_DB_VERSION OK"
 		RUN_DB_CHECK=1
 	fi
 
 	if [[ "$RUN_DB_CHECK" -eq 0 ]]; then
-		echo -e "\tSkipping local repository DB patch check, only 11.2.0.4 or 12.1.0.2 supported by this script for now"
+        echo "$REPOS_DB_VERSION not supported, skipping"
 	fi
 fi
 
@@ -247,48 +259,92 @@ else
     VERBOSE_CHECKSEC=0
 fi
 
-echo -ne "Gathering information about targets and patches... "
 
-OPATCH_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-OMSPATCHER_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+# Gather random seeds for tempfiles
+OPATCH_OMS_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+OPATCH_CHAINED_AGENT_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+OMSPATCHER_OMS_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 
-OPATCH_OMS_CACHE_FILE="OPatch.OMS_HOME.$OPATCH_CACHE_RAND"
+# Cache OMS OPatch output
+echo -ne "\tOPatch-OMS... "
+OPATCH_OMS_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.OMS_HOME.$OPATCH_OMS_CACHE_RAND"
 $OPATCH lsinv -oh $OMS_HOME > $OPATCH_OMS_CACHE_FILE
-echo -ne "OPatch-OMS OK... "
+echo "OK"
 
-OPATCH_AGENT_CACHE_FILE="OPatch.AGENT.$OPATCH_CACHE_RAND"
+# Cache chained agent OPatch output
+echo -ne "\tOPatch-Agent... "
+OPATCH_AGENT_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.AGENT.$OPATCH_CHAINED_AGENT_CACHE_RAND"
 $OPATCH lsinv -oh $AGENT_HOME > $OPATCH_AGENT_CACHE_FILE
-echo -ne "OPatch-Agent OK... "
+echo "OK"
 
-OPATCH_REPOS_DB_CACHE_FILE="OPatch.REPOS_DB_HOME.$OPATCH_CACHE_RAND"
+# Cache repository DB OPatch output
+OPATCH_REPOS_DB_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.REPOS_DB_HOME.$OPATCH_REPOS_DB_CACHE_RAND"
 if [[ "$RUN_DB_CHECK" -eq 1 ]]; then
+    echo -ne "\tOPatch-Repos DB... "
+    OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
     $REPOS_DB_HOME/OPatch/opatch lsinv -oh $REPOS_DB_HOME > $OPATCH_REPOS_DB_CACHE_FILE
-    echo -ne "OPatch-REPODB OK... "
+    echo "OK"
 fi
 
-OMSPATCHER_OMS_CACHE_FILE="OMSPatcher.OMS_HOME.$OMSPATCHER_CACHE_RAND"
+# Cache OMS OMSPatcher output
+echo -ne "\tOMSPatcher-OMS... "
+OMSPATCHER_OMS_CACHE_FILE="${SCRIPTNAME}_cache.OMSPatcher.OMS_HOME.$OMSPATCHER_OMS_CACHE_RAND"
 $OMSPATCHER lspatches -oh $OMS_HOME > $OMSPATCHER_OMS_CACHE_FILE
-echo -ne "OMSPatcher-OMS OK... "
-
-echo 
+echo "OK"
 
 
-EMCLI="$MW_HOME/bin/emcli"
-$EMCLI sync
+$EMCLI sync >& /dev/null
 EMCLI_NOT_LOGGED_IN=$?
 
 if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
-	EMCLI_AGENTS_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-	EMCLI_AGENTS_CACHE_FILE="agentlist_cache.${EMCLI_AGENTS_RAND}"
-	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTS_CACHE_FILE
+    echo -e "\tEMCLI login... OK"
+	EMCLI_AGENTLIST_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+	EMCLI_AGENTPATCHES_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+	EMCLI_AGENTHOMES_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+
+
+    # Cache list of all agents
+    echo -ne "\tEMCLI-Agent list... "
+	EMCLI_AGENTLIST_CACHE_FILE="${SCRIPTNAME}_cache.agentlist.$EMCLI_AGENTLIST_RAND"
+	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
+    echo "OK"
+
+    # Cache list of all patches on agents and their plugins
+    echo -ne "\tEMCLI-Agent patches... "
+    EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
+    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
+    echo "OK"
+
+    # Cache list of all agent homes
+    echo -ne "\tEMCLI-Agent homes... "
+    EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
+    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd') and home_location like '%%13.2.0.0.0%%'" > $EMCLI_AGENTHOMES_CACHE_FILE
+    echo "OK"
 
 	EMCLI_CHECK=1
+else
+    echo "EMCLI login unavailable, skipping... "
 fi
 
+echo
+
+# cleantemp used to cleanup leftover temp files
+cleantemp () {
+    echo -n "Cleaning up temporary files... "
+    rm $OPATCH_OMS_CACHE_FILE 2> /dev/null
+    rm $OPATCH_AGENT_CACHE_FILE 2> /dev/null
+    rm $OPATCH_REPOS_DB_CACHE_FILE 2> /dev/null
+    rm $OMSPATCHER_OMS_CACHE_FILE 2> /dev/null
+
+    if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+        rm $EMCLI_AGENTLIST_CACHE_FILE 2> /dev/null
+        rm $EMCLI_AGENTPATCHES_CACHE_FILE 2> /dev/null
+    fi
+    echo "done"
+}
 
 
-
-
+# patchercheck used to validate OPatch and/or OMSPatcher versions on a target
 patchercheck () {
 	PATCHER_CHECK_COMPONENT=$1
 	PATCHER_CHECK_OH=$2
@@ -324,7 +380,7 @@ patchercheck () {
 }
 
 
-
+# sslcheck checks for enabled/disabled status of SSL/TLS protocols using OpenSSL 
 sslcheck () {
 	OPENSSL_CHECK_COMPONENT=$1
 	OPENSSL_CHECK_HOST=$2
@@ -342,9 +398,7 @@ sslcheck () {
 		return
 	fi
 
-
 	OPENSSL_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CHECK_PROTO 2>&1 | $GREP Cipher | $GREP -c 0000`
-	
 
 	if [[ $OPENSSL_CHECK_PROTO == "tls1" || $OPENSSL_CHECK_PROTO == "tls1_1" || $OPENSSL_CHECK_PROTO == "tls1_2" ]]; then
 
@@ -379,8 +433,6 @@ sslcheck () {
 				FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:$OPENSSL_CHECK_PROTO protocol connection allowed"
 			fi
 		fi
-
-
 	fi
 
 	if [[ $OPENSSL_CHECK_PROTO == "ssl2" || $OPENSSL_CHECK_PROTO == "ssl3" ]]; then
@@ -395,18 +447,17 @@ sslcheck () {
 	fi
 }
 
+# opatchcheck uses OPatch output cache files to check for patches on repos/agent/middleware targets
 opatchcheck () {
 	OPATCH_CHECK_COMPONENT=$1
 	OPATCH_CHECK_OH=$2
 	OPATCH_CHECK_PATCH=$3
 
 	if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
-		#OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
 		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_REPOS_DB_CACHE_FILE`
     elif [[ "$OPATCH_CHECK_COMPONENT" == "Agent" ]]; then
         OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
 	else
-		#OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
 		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_OMS_CACHE_FILE`
 	fi
 
@@ -422,6 +473,7 @@ opatchcheck () {
 
 }
 
+# opatchplugincheck uses agent OPatch output cache file to check for patches on chained agent. Not used when EMCLI available.
 opatchplugincheck () {
 	OPATCH_CHECK_COMPONENT=$1
 	OPATCH_CHECK_OH=$2
@@ -429,12 +481,7 @@ opatchplugincheck () {
     OPATCH_PLUGIN_DIR=$4
 
     if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}" ]]; then
-#        if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
-#            OPATCH_RET=`$OPATCH_CHECK_OH/OPatch/opatch lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
-#        else
-            #OPATCH_RET=`$OPATCH lsinv -oh $OPATCH_CHECK_OH | $GREP $OPATCH_CHECK_PATCH`
             OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
-#        fi
     else
             OPATCH_RET="Plugin dir $OPATCH_PLUGIN_DIR does not exist, not installed"
     fi
@@ -450,31 +497,13 @@ opatchplugincheck () {
 	test $VERBOSE_CHECKSEC -ge 2 && echo $OPATCH_RET
 }
 
-opatchautocheck () {
-	OPATCHAUTO_CHECK_COMPONENT=$1
-	OPATCHAUTO_CHECK_OH=$2
-	OPATCHAUTO_CHECK_PATCH=$3
 
-	OPATCHAUTO_RET=`$OPATCHAUTO lspatches -oh $OPATCHAUTO_CHECK_OH | $GREP $OPATCHAUTO_CHECK_PATCH`
-
-	if [[ -z "$OPATCHAUTO_RET" ]]; then
-		echo FAILED
-		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPATCHAUTO_CHECK_COMPONENT @ ${OPATCHAUTO_CHECK_OH}:Patch $OPATCHAUTO_CHECK_PATCH not found"
-	else
-		echo OK
-	fi
-
-	test $VERBOSE_CHECKSEC -ge 2 && echo $OPATCHAUTO_RET
-
-}
-
+# check OMS OMSPatcher cache file for existence of a patch
 omspatchercheck () {
 	OMSPATCHER_CHECK_COMPONENT=$1
 	OMSPATCHER_CHECK_OH=$2
 	OMSPATCHER_CHECK_PATCH=$3
 
-	#OMSPATCHER_RET=`$OMSPATCHER lspatches -oh $OMSPATCHER_CHECK_OH | $GREP $OMSPATCHER_CHECK_PATCH`
 	OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
 
 	if [[ -z "$OMSPATCHER_RET" ]]; then
@@ -486,16 +515,15 @@ omspatchercheck () {
 	fi
 
 	test $VERBOSE_CHECKSEC -ge 2 && echo $OMSPATCHER_RET
-
 }
 
+# certcheck checks for presence of a self-signed certificate on a component
 certcheck () {
 	CERTCHECK_CHECK_COMPONENT=$1
 	CERTCHECK_CHECK_HOST=$2
 	CERTCHECK_CHECK_PORT=$3
 
 	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
-
 
 	OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
 
@@ -508,6 +536,7 @@ certcheck () {
 	fi
 }
 
+# democertcheck checks for presence of an Oracle-provided demonstration certificate on a component
 democertcheck () {
 	DEMOCERTCHECK_CHECK_COMPONENT=$1
 	DEMOCERTCHECK_CHECK_HOST=$2
@@ -527,6 +556,7 @@ democertcheck () {
 }
 
 
+# ciphercheck confirms LOW/MEDIUM strength ciphers not accepted, and HIGH strength ciphers accepted, on a component
 ciphercheck () {
 	OPENSSL_CHECK_COMPONENT=$1
 	OPENSSL_CHECK_HOST=$2
@@ -534,7 +564,6 @@ ciphercheck () {
 	CIPHERCHECK_SECTION=$4
 
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
-
 	OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
 	if [[ $OPENSSL_LOW_RETURN -eq "0" ]]; then
@@ -547,7 +576,6 @@ ciphercheck () {
 
 
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking MEDIUM strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
-
 	OPENSSL_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
 	if [[ $OPENSSL_MEDIUM_RETURN -eq "0" ]]; then
@@ -559,9 +587,7 @@ ciphercheck () {
 	fi
 
 
-
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking HIGH strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
-
 	OPENSSL_HIGH_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher HIGH 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
 	if [[ $OPENSSL_HIGH_RETURN -eq "0" ]]; then
@@ -574,25 +600,8 @@ ciphercheck () {
 	echo
 }
 
-wlspatchcheck () {
-	WLSDIR=$1
-	WLSPATCH=$2
 
-	WLSCHECK_RETURN=`( cd $MW_HOME/utils/bsu && $MW_HOME/utils/bsu/bsu.sh -report ) | $GREP $WLSPATCH`
-	WLSCHECK_COUNT=`echo $WLSCHECK_RETURN | wc -l`
-
-	if [[ $WLSCHECK_COUNT -ge "1" ]]; then
-		echo -e "\tOK"
-	else
-		echo -e "\tFAILED - PATCH NOT FOUND"
-		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WLSDIR:Patch $WLSPATCH not found"
-	fi
-
-	test $VERBOSE_CHECKSEC -ge 2 && echo $WLSCHECK_RETURN
-	
-}
-
+# paramcheck validates parameters in the repository DB configuration files
 paramcheck () {
 	WHICH_PARAM=$1
 	WHICH_ORACLE_HOME=$2
@@ -742,6 +751,7 @@ paramcheck () {
 	fi
 }
 
+# javacheck checks the version of java used by a component on the local host
 javacheck () {
 	WHICH_JAVA=$1
 	JAVA_DIR=$2
@@ -760,14 +770,15 @@ javacheck () {
 }
 
 
-
+# emclijavacheck uses emcli execute_sql to identify the agent home directory and execute_hostcmd to validate java version
 emclijavacheck () {
     JAVA_VERSION=$1
 
-    for i in `cat $EMCLI_AGENTS_CACHE_FILE`; do
-        THEHOST=`echo $i | sed -e 's/:.*$//'`
-        echo -ne "\n\t(5b) Agent $i Java VERSION $JAVA_VERSION... "
-        EMCLIJAVACHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+    for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
+        THEHOST=`echo $curagent | sed -e 's/:.*$//'`
+        echo -ne "\n\t(5b) Agent $curagent Java VERSION $JAVA_VERSION... "
+        EMCLIJAVACHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
+        EMCLIJAVACHECK_GETHOME=`echo $EMCLIJAVACHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
         EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
         if [[ "$EMCLIJAVACHECK_GETVER" == "$JAVA_CHECK_VERSION" ]]; then
@@ -781,17 +792,17 @@ emclijavacheck () {
     done
 }
 
+# emcliagentbundlecheck uses the agent patch list cache files to check for existence of a patch on an agent
 emcliagentbundlecheck() {
     EMCLIAGENTBUNDLE_SECTION=$1
     EMCLIAGENTBUNDLE_PATCH=$2
     EMCLIAGENTBUNDLE_DESC=$3
     
-    for i in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+    for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
         THEHOST=`echo $i | sed -e 's/:.*$//'`
         echo -ne "\n\t($EMCLIAGENTBUNDLE_SECTION) Agent $i $EMCLIAGENTBUNDLE_DESC ($EMCLIAGENTBUNDLE_PATCH)... "
 
-        EMCLIAGENTBUNDLE_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $EMCLIAGENTBUNDLE_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '$i')" | $GREP -c PATCH_INSTALLED`
-
+       EMCLIAGENTBUNDLE_QUERY_RET=`$GREP $THEHOST $EMCLI_AGENTPATCHES_CACHE_FILE | $GREP -c $EMCLIAGENTBUNDLE_PATCH`
 
         if [[ "$EMCLIAGENTBUNDLE_QUERY_RET" -eq 1 ]]; then
             echo -e "\tOK"
@@ -803,6 +814,8 @@ emcliagentbundlecheck() {
     done
 }
 
+# emclipluginpatchpresent uses the agent plugins cache file and agent patch cache file to check for presence
+# of a plugin on an agent, as well as presence of specific patch on an agent
 emclipluginpatchpresent () {
     WHICH_TARGET_TYPE=$1
     WHICH_PLUGIN=$2
@@ -811,6 +824,7 @@ emclipluginpatchpresent () {
     WHICH_PATCH=$5
     WHICH_LABEL=$6
     WHICH_PATCH_DESC=$7
+    EMCLI_PLUGINPATCHPRESENT_HOST=`echo $curagent | sed 's/:.*$//'`
 
     echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
 
@@ -838,8 +852,7 @@ emclipluginpatchpresent () {
 	# Now check for existence of patch
 
         if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
-#            EMCLICHECK_QUERY_RET=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'PATCH_INSTALLED' from sysman.mgmt\\\$applied_patches where patch = $WHICH_PATCH and host = (select host_name from sysman.mgmt\\\$target where target_name = '${curagent}')" | $GREP -c PATCH_INSTALLED`
-            EMCLICHECK_QUERY_RET=`$GREP -c $WHICH_PATCH $EMCLICHECK_QUERY_CACHEFILE`
+            EMCLICHECK_QUERY_RET=`$GREP $EMCLI_PLUGINPATCHPRESENT_HOST $EMCLI_AGENTPATCHES_CACHE_FILE | $GREP -c $WHICH_PATCH`
 
             if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
                 echo -e "\tOK"
@@ -856,20 +869,18 @@ emclipluginpatchpresent () {
 #    test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
 }
 
+# emcliagentbundlepluginpatchcheck caches agent plugin lists and calls emclipluginpatchpresent to check patch presence
+# TODO: speed up the agent plugin list with a cache file
 emcliagentbundlepluginpatchcheck () {
     SECTION_NUM=$1
 
-    for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+    for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
         EMCLICHECK_RETURN="FAILED"
         EMCLICHECK_FOUND_VERSION=0
-        EMCLICHECK_QUERY_RET=0
         EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
         EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
-        EMCLICHECK_QUERY_CACHEFILE="plugins_${curagent}_repos_cache.${EMCLICHECK_RAND}"
 
         $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
-
-        $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch from sysman.mgmt\$applied_patches where host = (select host_name from sysman.mgmt\$target where target_name = '${curagent}')" > $EMCLICHECK_QUERY_CACHEFILE
 
         emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
@@ -888,12 +899,13 @@ emcliagentbundlepluginpatchcheck () {
         (( SECTION_NUM+=1 ))
 
         rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
-        rm $EMCLICHECK_QUERY_CACHEFILE
     done
 }
 
+# emcliagentselfsignedcerts uses the agent list cache file to identify agents and check for self signed certs at each endpoint
+# TODO: unnecessarily duplicates certcheck, should use that instead
 emcliagentselfsignedcerts() {
-	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 		echo -ne "\tChecking certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
@@ -910,8 +922,10 @@ emcliagentselfsignedcerts() {
 	done
 }
 
+# emcliagentdemocerts uses the agent list cache file to identify agents and check for use of demonstration certs at each endpoint
+# TODO: unnecessarily duplicates democertcheck, should use that instead
 emcliagentdemocerts() {
-	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTDEMOCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTDEMOCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 		echo -ne "\tChecking demo certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
@@ -928,6 +942,8 @@ emcliagentdemocerts() {
 	done
 }
 
+# emcliagentprotocols uses the agent list cache file to identify agents and check SSL/TLS protocols on each endpoint
+# TODO: unnecessarily duplicates sslcheck and should use that instead
 emcliagentprotocols() {
 	EMCLIAGENTPROTOCOLS_SECTION=$1
 	EMCLIAGENTPROTOCOLS_CHECK_PROTO=$2
@@ -943,7 +959,7 @@ emcliagentprotocols() {
 		return
 	fi
 
-	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTPROTOCOLS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTPROTOCOLS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
@@ -997,10 +1013,12 @@ emcliagentprotocols() {
 	done
 }
 
+# emcliagentciphers uses the agent list cache file to identify agents and check ciphersuites available on each endpoint
+# TODO: unnecessarily duplicates ciphercheck, should use that instead
 emcliagentciphers() {
 	EMCLIAGENTCIPHERS_SECTION=$1
 
-	for curagent in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTCIPHERS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTCIPHERS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
@@ -1015,7 +1033,6 @@ emcliagentciphers() {
 		else
 			echo -e "\tOK"
 		fi
-
 
 
 		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking MEDIUM strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
@@ -1045,15 +1062,17 @@ emcliagentciphers() {
 	done
 }
 
+# emcliagentopatch uses execute_sql and execute_hostcmd to check the OPatch version on every agent
 emcliagentopatch() {
     SECTION=$1
     AGENT_OPATCH_VERSION=$2
 
-    for i in `cat $EMCLI_AGENTS_CACHE_FILE`; do
+    for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
         THEHOST=`echo $i | sed -e 's/:.*$//'`
         echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
 
-        EMCLIAGENTOPATCHCHECK_GETHOME=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location from sysman.mgmt\\\$applied_patches where host = (select host_name from sysman.mgmt\\\$target where target_name = '$i') and home_location like '%%13.2.0.0.0%%'" | $GREP 13.2.0.0.0`
+        EMCLIAGENTOPATCHCHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
+        EMCLIAGENTOPATCHCHECK_GETHOME=`echo $EMCLIAGENTOPATCHCHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
         EMCLIAGENTOPATCHCHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch/opatch version -jre $EMCLIAGENTOPATCHCHECK_GETHOME/oracle_common/jdk" -targets="$THEHOST:host" | $GREP Version | sed 's/.*: //'`
 
         if [[ "$EMCLIAGENTOPATCHCHECK_GETVER" == "$AGENT_OPATCH_VERSION" ]]; then
@@ -1071,7 +1090,6 @@ emcliagentopatch() {
 ### MAIN SCRIPT HERE
 
 
-echo -e "Performing EM13c R2 security checkup version $VERSION on $OMSHOST at `date`.\n"
 
 echo "Using port definitions from configuration files "
 echo -e "\t/etc/oragchomelist"
@@ -1308,8 +1326,6 @@ fi
 
 
 
-
-
 echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
 
 echo -ne "\n\t(5a) Common Java ($OMS_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
@@ -1392,16 +1408,7 @@ fi
 echo
 echo
 
-echo -n "Cleaning up temporary files... "
-rm $OPATCH_OMS_CACHE_FILE 2> /dev/null
-rm $OPATCH_AGENT_CACHE_FILE 2> /dev/null
-rm $OPATCH_REPOS_DB_CACHE_FILE 2> /dev/null
-rm $OMSPATCHER_OMS_CACHE_FILE 2> /dev/null
-
-if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	rm $EMCLI_AGENTS_CACHE_FILE 2> /dev/null
-fi
-echo "done"
+cleantemp
 
 if [[ $FAIL_COUNT -gt "0" ]]; then
 	echo "Failed test count: $FAIL_COUNT - Review output"
