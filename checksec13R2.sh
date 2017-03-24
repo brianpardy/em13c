@@ -61,6 +61,7 @@
 #                  Cache execute_sql agent patch output to improve runtime.
 #                  Cache agent home list to improve runtime.
 #                  Huge runtime improvements vs previous release.
+#                  Remove duplicated code for cert checks
 #
 #
 # From: @BrianPardy on Twitter
@@ -137,7 +138,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="28 Feb 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.1.4"
+VERSION="2.1.5"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -263,6 +264,7 @@ fi
 # Gather random seeds for tempfiles
 OPATCH_OMS_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 OPATCH_CHAINED_AGENT_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 OMSPATCHER_OMS_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 
 # Cache OMS OPatch output
@@ -339,6 +341,7 @@ cleantemp () {
     if [[ "$EMCLI_CHECK" -eq 1 ]]; then
         rm $EMCLI_AGENTLIST_CACHE_FILE 2> /dev/null
         rm $EMCLI_AGENTPATCHES_CACHE_FILE 2> /dev/null
+        rm $EMCLI_AGENTHOMES_CACHE_FILE 2> /dev/null
     fi
     echo "done"
 }
@@ -870,7 +873,7 @@ emclipluginpatchpresent () {
 }
 
 # emcliagentbundlepluginpatchcheck caches agent plugin lists and calls emclipluginpatchpresent to check patch presence
-# TODO: speed up the agent plugin list with a cache file
+# TODO: maybe speed up the agent plugin list with a cache file
 emcliagentbundlepluginpatchcheck () {
     SECTION_NUM=$1
 
@@ -903,118 +906,40 @@ emcliagentbundlepluginpatchcheck () {
 }
 
 # emcliagentselfsignedcerts uses the agent list cache file to identify agents and check for self signed certs at each endpoint
-# TODO: unnecessarily duplicates certcheck, should use that instead
 emcliagentselfsignedcerts() {
 	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
-		echo -ne "\tChecking certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
 
-		EMCLIAGENTSELFSIGNEDCERTS_OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST:$EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
-
-		if [[ $EMCLIAGENTSELFSIGNEDCERTS_OPENSSL_SELFSIGNED_COUNT -eq "0" ]]; then
-			echo OK
-		else
-			echo FAILED - Found self-signed certificate
-			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ ${EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST}:${EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT} found self-signed certificate"
-		fi
+        certcheck Agent $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST $EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT
 	done
 }
 
 # emcliagentdemocerts uses the agent list cache file to identify agents and check for use of demonstration certs at each endpoint
-# TODO: unnecessarily duplicates democertcheck, should use that instead
 emcliagentdemocerts() {
 	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTDEMOCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTDEMOCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
-		echo -ne "\tChecking demo certificate at $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
 
-		EMCLIAGENTDEMOCERTS_OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
-
-		if [[ $EMCLIAGENTDEMOCERTS_OPENSSL_DEMO_COUNT -eq "0" ]]; then
-			echo OK
-		else
-			echo FAILED - Found demonstration certificate
-			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ ${EMCLIAGENTDEMOCERTS_CHECK_HOST}:${EMCLIAGENTDEMOCERTS_CHECK_PORT} found demonstration certificate"
-		fi
+        democertcheck Agent $EMCLIAGENTDEMOCERTS_CHECK_HOST $EMCLIAGENTDEMOCERTS_CHECK_PORT
 	done
 }
 
 # emcliagentprotocols uses the agent list cache file to identify agents and check SSL/TLS protocols on each endpoint
-# TODO: unnecessarily duplicates sslcheck and should use that instead
 emcliagentprotocols() {
 	EMCLIAGENTPROTOCOLS_SECTION=$1
 	EMCLIAGENTPROTOCOLS_CHECK_PROTO=$2
 	OPENSSL_AVAILABLE_OR_DISABLED="disabled"
 
-	if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_1" && $OPENSSL_HAS_TLS1_1 == 0 ]]; then
-		echo -en "\tYour OpenSSL ($OPENSSL) does not support $EMCLIAGENTPROTOCOLS_CHECK_PROTO. Skipping.\n"
-		return
-	fi
-
-	if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_2" && $OPENSSL_HAS_TLS1_2 == 0 ]]; then
-		echo -en "\tYour OpenSSL ($OPENSSL) does not support $EMCLIAGENTPROTOCOLS_CHECK_PROTO. Skipping.\n"
-		return
-	fi
-
 	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
 		EMCLIAGENTPROTOCOLS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTPROTOCOLS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-		EMCLIAGENTPROTOCOLS_OPENSSL_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTPROTOCOLS_CHECK_HOST:$EMCLIAGENTPROTOCOLS_CHECK_PORT -$EMCLIAGENTPROTOCOLS_CHECK_PROTO 2>&1 | $GREP Cipher | $GREP -c 0000`
-
-		if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1" || $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_1" || $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_2" ]]; then
-			if [[ $OPENSSL_ALLOW_TLS1_2_ONLY > 0 ]]; then
-				if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "tls1_2" ]]; then
-					OPENSSL_AVAILABLE_OR_DISABLED="available"
-				fi
-			fi
-
-			if [[ $OPENSSL_ALLOW_TLS1_2_ONLY == 0 ]]; then
-				OPENSSL_AVAILABLE_OR_DISABLED="available"
-			fi
-
-			echo -en "\tConfirming $EMCLIAGENTPROTOCOLS_CHECK_PROTO $OPENSSL_AVAILABLE_OR_DISABLED for agent at $EMCLIAGENTPROTOCOLS_CHECK_HOST:$EMCLIAGENTPROTOCOLS_CHECK_PORT... "
-
-			if [[ $OPENSSL_AVAILABLE_OR_DISABLED == "available" ]]; then
-				if [[ $EMCLIAGENTPROTOCOLS_OPENSSL_RETURN -eq "0" ]]; then
-					echo OK
-				else
-					echo FAILED
-					FAIL_COUNT=$((FAIL_COUNT+1))
-					FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ $EMCLIAGENTPROTOCOLS_CHECK_HOST:${EMCLIAGENTPROTOCOLS_CHECK_PORT}:$EMCLIAGENTPROTOCOLS_CHECK_PROTO protocol connection failed"
-				fi
-			fi
-
-			if [[ $OPENSSL_AVAILABLE_OR_DISABLED == "disabled" ]]; then
-				if [[ $EMCLIAGENTPROTOCOLS_OPENSSL_RETURN -ne "0" ]]; then
-					echo OK
-				else
-					echo FAILED
-					FAIL_COUNT=$((FAIL_COUNT+1))
-					FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ $EMCLIAGENTPROTOCOLS_CHECK_HOST:${EMCLIAGENTPROTOCOLS_CHECK_PORT}:$EMCLIAGENTPROTOCOLS_CHECK_PROTO protocol connection allowed"
-				fi
-			fi
-		fi
-
-		if [[ $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "ssl2" || $EMCLIAGENTPROTOCOLS_CHECK_PROTO == "ssl3" ]]; then
-			echo -en "\tConfirming $EMCLIAGENTPROTOCOLS_CHECK_PROTO $OPENSSL_AVAILABLE_OR_DISABLED for Agent at $EMCLIAGENTPROTOCOLS_CHECK_HOST:$EMCLIAGENTPROTOCOLS_CHECK_PORT... "
-			if [[ $EMCLIAGENTPROTOCOLS_OPENSSL_RETURN -ne "0" ]]; then
-				echo OK
-			else
-				echo FAILED
-				FAIL_COUNT=$((FAIL_COUNT+1))
-				FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Agent @ $EMCLIAGENTPROTOCOLS_CHECK_HOST:${EMCLIAGENTPROTOCOLS_CHECK_PORT}:$EMCLIAGENTPROTOCOLS_CHECK_PROTO protocol connection succeeded"
-			fi
-		fi
-
+        sslcheck Agent $EMCLIAGENTPROTOCOLS_CHECK_HOST $EMCLIAGENTPROTOCOLS_CHECK_PORT $EMCLIAGENTPROTOCOLS_CHECK_PROTO
 	done
 }
 
 # emcliagentciphers uses the agent list cache file to identify agents and check ciphersuites available on each endpoint
-# TODO: unnecessarily duplicates ciphercheck, should use that instead
 emcliagentciphers() {
 	EMCLIAGENTCIPHERS_SECTION=$1
 
@@ -1022,43 +947,7 @@ emcliagentciphers() {
 		EMCLIAGENTCIPHERS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTCIPHERS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking LOW strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
-
-		EMCLIAGENTCIPHERS_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTCIPHERS_CHECK_HOST:$EMCLIAGENTCIPHERS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
-
-		if [[ $EMCLIAGENTCIPHERS_LOW_RETURN -eq "0" ]]; then
-			echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
-			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTCIPHERS_CHECK_COMPONENT @ $EMCLIAGENTCIPHERS_CHECK_HOST:${EMCLIAGENTCIPHERS_CHECK_PORT}:Permits LOW strength ciphers"
-		else
-			echo -e "\tOK"
-		fi
-
-
-		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking MEDIUM strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
-		EMCLIAGENTCIPHERS_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTCIPHERS_CHECK_HOST:$EMCLIAGENTCIPHERS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
-
-		if [[ $EMCLIAGENTCIPHERS_MEDIUM_RETURN -eq "0" ]]; then
-			echo -e "\tFAILED - PERMITS MEDIUM STRENGTH CIPHER CONNECTIONS"
-			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTCIPHERS_CHECK_COMPONENT @ $EMCLIAGENTCIPHERS_CHECK_HOST:${EMCLIAGENTCIPHERS_CHECK_PORT}:Permits MEDIUM strength ciphers"
-		else
-			echo -e "\tOK"
-		fi
-
-
-		echo -ne "\t($EMCLIAGENTCIPHERS_SECTION) Checking HIGH strength ciphers on agent $curagent (protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
-
-		EMCLIAGENTCIPHERS_HIGH_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $EMCLIAGENTCIPHERS_CHECK_HOST:$EMCLIAGENTCIPHERS_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher HIGH 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
-
-		if [[ $EMCLIAGENTCIPHERS_HIGH_RETURN -eq "0" ]]; then
-			echo -e "\tOK"
-		else
-			echo -e "\tFAILED - CANNOT CONNECT WITH HIGH STRENGTH CIPHER"
-			FAIL_COUNT=$((FAIL_COUNT+1))
-			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTCIPHERS_CHECK_COMPONENT @ $EMCLIAGENTCIPHERS_CHECK_HOST:${EMCLIAGENTCIPHERS_CHECK_PORT}:Rejects HIGH strength ciphers"
-		fi
-		echo
+        ciphercheck Agent $EMCLIAGENTCIPHERS_CHECK_HOST $EMCLIAGENTCIPHERS_CHECK_PORT $EMCLIAGENTCIPHERS_SECTION
 	done
 }
 
