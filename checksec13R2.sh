@@ -62,6 +62,8 @@
 #                  Cache agent home list to improve runtime.
 #                  Huge runtime improvements vs previous release.
 #                  Remove duplicated code for cert checks
+# Changes   v2.3:  Get agent home directories from a different repo table
+#                  Update OPatch/OMSPatcher versions
 #
 #
 # From: @BrianPardy on Twitter
@@ -127,8 +129,8 @@
 ### Begin user configurable section
 
 JAVA_CHECK_VERSION="1.7.0_131"
-OPATCH_CHECK_VERSION="13.9.1.0.0"
-OMSPATCHER_CHECK_VERSION="13.8.0.0.1"
+OPATCH_CHECK_VERSION="13.9.1.3.0"
+OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 ### End user configurable section
 
@@ -291,7 +293,7 @@ fi
 # Cache OMS OMSPatcher output
 echo -ne "\tOMSPatcher-OMS... "
 OMSPATCHER_OMS_CACHE_FILE="${SCRIPTNAME}_cache.OMSPatcher.OMS_HOME.$OMSPATCHER_OMS_CACHE_RAND"
-$OMSPATCHER lspatches -oh $OMS_HOME > $OMSPATCHER_OMS_CACHE_FILE
+$OMSPATCHER lspatches -oh $OMS_HOME -jdk $MW_HOME/oracle_common/jdk > $OMSPATCHER_OMS_CACHE_FILE
 echo "OK"
 
 
@@ -314,13 +316,15 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
     # Cache list of all patches on agents and their plugins
     echo -ne "\tEMCLI-Agent patches... "
     EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
+#    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
     $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
     echo "OK"
 
     # Cache list of all agent homes
     echo -ne "\tEMCLI-Agent homes... "
     EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
-    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd') and home_location like '%%13.2.0.0.0%%'" > $EMCLI_AGENTHOMES_CACHE_FILE
+#    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd') and home_location like '%%13.2.0.0.0%%'" > $EMCLI_AGENTHOMES_CACHE_FILE
+    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
     echo "OK"
 
 	EMCLI_CHECK=1
@@ -862,7 +866,7 @@ emclipluginpatchpresent () {
             else
                 echo -e "\tFAILED"
                 FAIL_COUNT=$((FAIL_COUNT+1))
-                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $i"
+                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $EMCLI_PLUGINPATCHPRESENT_HOST"
             fi
         else
             echo -e "\tOK - plugin not installed"
