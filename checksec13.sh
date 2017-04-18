@@ -25,7 +25,8 @@
 # Changes   v0.9:  Plugin updates for 20160920
 #                  Support TLSv1.2 when available in certcheck,
 #                  democertcheck, and ciphercheck
-# Changed   v1.0:  Blind update for 20170117 patches
+# Changes   v1.0:  Blind update for 20170117 patches
+# Changes   v1.1:  Blind update for 20170418 PSU and Java 1.7.0-131
 #
 # From: @BrianPardy on Twitter
 #
@@ -67,9 +68,9 @@
 # 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="17 Jan 2017"
+PATCHDATE="18 Apr 2017"
 OMSHOST=`hostname -f`
-VERSION="1.0"
+VERSION="1.1"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -426,7 +427,7 @@ javacheck () {
 
 	JAVACHECK_RETURN=`$JAVA_DIR/bin/java -version 2>&1 | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
-	if [[ "$JAVACHECK_RETURN" == "1.7.0_111" ]]; then
+	if [[ "$JAVACHECK_RETURN" == "1.7.0_131" ]]; then
 		echo -e "\tOK"
 	else
 		#echo -e "\tFAILED - Found version $JAVACHECK_RETURN"
@@ -812,12 +813,12 @@ omspatchercheck OMS $OMS_HOME 25343201
 echo -ne "\n\t(4e) *UPDATED* ($MW_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
 opatchcheck WLS $MW_HOME 24904852
 
-echo -ne "\n\t(4f) *UPDATED* OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM PATCH SET UPDATE 13.1.0.0.170117 (24897689)... "
-omspatchercheck OMS $MW_HOME 24897689
+echo -ne "\n\t(4f) *UPDATED* OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM PATCH SET UPDATE 13.1.0.0.170418 (25387198)... "
+omspatchercheck OMS $MW_HOME 25387198
 
 echo -e "\n(5) Checking EM13c Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1)"
 
-echo -ne "\n\t(5a) WLS ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-111 (13079846)... "
+echo -ne "\n\t(5a) WLS ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
 javacheck WLSJAVA $MW_HOME/oracle_common/jdk
 
 
