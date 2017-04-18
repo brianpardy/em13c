@@ -64,6 +64,7 @@
 #                  Remove duplicated code for cert checks
 # Changes   v2.3:  Get agent home directories from a different repo table
 #                  Update OPatch/OMSPatcher versions
+# Changes   v2.4:  Include 20170418 PSU
 #
 #
 # From: @BrianPardy on Twitter
@@ -137,10 +138,10 @@ OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="28 Feb 2017"
+PATCHDATE="18 Apr 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.2"
+VERSION="2.4"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -1179,11 +1180,15 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 fi
 
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170418 PSU (25387277)... "
+omspatchercheck OMS $OMS_HOME 25387277
+
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
-omspatchercheck OMS $OMS_HOME 25163555
+# Replaced by PSU 170418
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
+#omspatchercheck OMS $OMS_HOME 25163555
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... "
 omspatchercheck OMS $OMS_HOME 25322055
@@ -1191,8 +1196,9 @@ omspatchercheck OMS $OMS_HOME 25322055
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... "
 omspatchercheck OMS $OMS_HOME 24329181
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
-omspatchercheck OMS $OMS_HOME 25604219
+# Replaced by PSU 170418
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
+#omspatchercheck OMS $OMS_HOME 25604219
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
 omspatchercheck OMS $OMS_HOME 25221285
