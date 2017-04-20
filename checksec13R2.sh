@@ -66,6 +66,7 @@
 #                  Update OPatch/OMSPatcher versions
 # Changes   v2.4:  Include 20170418 PSU
 # Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141 
+#                  Update MOS note references
 #
 #
 # From: @BrianPardy on Twitter
@@ -121,7 +122,7 @@
 # The create_user_for_checksec13R2.sh script provided in the same repo
 # as this script will create a user with the necessary permissions and 
 # prompt for the necessary named credentials. Download it from:
-# https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh"
+# https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh
 #
 # 
 # Dedicated to our two Lhasa Apsos:
@@ -513,7 +514,13 @@ omspatchercheck () {
 	OMSPATCHER_CHECK_OH=$2
 	OMSPATCHER_CHECK_PATCH=$3
 
-	OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
+    if [[ "$OMSPATCHER_CHECK_PATCH" -eq "25672422" ]]; then
+        # special case handling for 13.2.1 plugin bundle update when 13.2.2 plugins have been installed
+        OMSPATCHER_RET=`$GREP -e 25414339 -e 25414317 -e 25414294 -e 25414245 -e 25672422 $OMSPATCHER_OMS_CACHE_FILE`
+    else
+        OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
+    fi
+
 
 	if [[ -z "$OMSPATCHER_RET" ]]; then
 		echo FAILED
@@ -1096,7 +1103,7 @@ if [[ "$EMCLI_CHECK" -eq 1 ]]; then
 	emcliagentciphers 2i
 fi
 
-echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)"
+echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 2202569.1, 1367988.1, 1914184.1, 2213661.1, 2220788.1, 123033.1, 1937457.1)"
 
 echo -e "\n\t(3a) Checking for self-signed certificates on OMS components"
 certcheck Agent $OMSHOST $PORT_AGENT
@@ -1226,7 +1233,7 @@ fi
 
 
 
-echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
+echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 1506916.1, 2241373.1, 2241358.1)"
 
 echo -ne "\n\t(5a) Common Java ($OMS_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
 javacheck JAVA $OMS_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
