@@ -65,6 +65,8 @@
 # Changes   v2.3:  Get agent home directories from a different repo table
 #                  Update OPatch/OMSPatcher versions
 # Changes   v2.4:  Include 20170418 PSU
+# Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141 
+#                  Update MOS note references
 #
 #
 # From: @BrianPardy on Twitter
@@ -120,7 +122,7 @@
 # The create_user_for_checksec13R2.sh script provided in the same repo
 # as this script will create a user with the necessary permissions and 
 # prompt for the necessary named credentials. Download it from:
-# https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh"
+# https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh
 #
 # 
 # Dedicated to our two Lhasa Apsos:
@@ -129,7 +131,7 @@
 
 ### Begin user configurable section
 
-JAVA_CHECK_VERSION="1.7.0_131"
+JAVA_CHECK_VERSION="1.7.0_141"
 OPATCH_CHECK_VERSION="13.9.1.3.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
@@ -141,7 +143,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="18 Apr 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.4"
+VERSION="2.5"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -512,7 +514,13 @@ omspatchercheck () {
 	OMSPATCHER_CHECK_OH=$2
 	OMSPATCHER_CHECK_PATCH=$3
 
-	OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
+    if [[ "$OMSPATCHER_CHECK_PATCH" -eq "25672422" ]]; then
+        # special case handling for 13.2.1 plugin bundle update when 13.2.2 plugins have been installed
+        OMSPATCHER_RET=`$GREP -e 25414339 -e 25414317 -e 25414294 -e 25414245 -e 25672422 $OMSPATCHER_OMS_CACHE_FILE`
+    else
+        OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
+    fi
+
 
 	if [[ -z "$OMSPATCHER_RET" ]]; then
 		echo FAILED
@@ -1095,7 +1103,7 @@ if [[ "$EMCLI_CHECK" -eq 1 ]]; then
 	emcliagentciphers 2i
 fi
 
-echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 1367988.1, 1399293.1, 1593183.1, 1527874.1, 123033.1, 1937457.1)"
+echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 2202569.1, 1367988.1, 1914184.1, 2213661.1, 2220788.1, 123033.1, 1937457.1)"
 
 echo -e "\n\t(3a) Checking for self-signed certificates on OMS components"
 certcheck Agent $OMSHOST $PORT_AGENT
@@ -1130,14 +1138,14 @@ echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseli
 if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170117 (JAN2017) (24732088)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 24732088
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170418 (APR2017) (25397136)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 25397136
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170117, Oracle JavaVM Component (JAN2017) (24917972)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 24917972
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170418, Oracle JavaVM Component (APR2017) (25437695)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 25437695
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Interim patch for 25101514 (25101514)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25101514
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Interim patch for 25481150 (25481150)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 25481150
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 20243268
@@ -1203,11 +1211,11 @@ omspatchercheck OMS $OMS_HOME 24329181
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
 omspatchercheck OMS $OMS_HOME 25221285
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170228 (25501489)... "
-omspatchercheck OMS $OMS_HOME 25501489
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170331 (Not used for 13.2.2 plugins) (25672422)... "
+omspatchercheck OMS $OMS_HOME 25672422
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170117 (24904852)... "
-opatchcheck WLS $OMS_HOME 24904852
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170418 (25388793)... "
+opatchcheck WLS $OMS_HOME 25388793
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
 opatchcheck WLS $OMS_HOME 24327938
@@ -1225,7 +1233,7 @@ fi
 
 
 
-echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 2241373.1, 2241358.1)"
+echo -e "\n(5) Checking EM13cR2 Java patch levels against $PATCHDATE baseline (see notes 1506916.1, 2241373.1, 2241358.1)"
 
 echo -ne "\n\t(5a) Common Java ($OMS_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
 javacheck JAVA $OMS_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
