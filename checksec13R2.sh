@@ -2,10 +2,10 @@
 #
 # This script should examine your EM13c environment, identify the ports
 # each component uses, and check for usage of encryption protocols older
-# then TLSv1.2, as well as make sure that weak and medium strength 
+# then TLSv1.2, as well as make sure that weak and medium strength
 # cipher suites get rejected.  It will also validate your system comparing
-# against the latest recommended patches and also flags the use of demo 
-# or self-signed certificates. 
+# against the latest recommended patches and also flags the use of demo
+# or self-signed certificates.
 #
 # Released  v0.1:  Initial beta release 5 Apr 2016
 # Changes   v0.2:  Updated for current patches
@@ -15,7 +15,7 @@
 # Changes   v0.6:  Plugin/OMS/DB updates for 20160719 CPU + Java check
 # Changes   v0.7:  Plugin/OMS updates for 20160816 bundles
 #                  Support for SLES11 OpenSSL 1 parallel package
-#                  Add checks for TLSv1.1, TLSv1.2 
+#                  Add checks for TLSv1.1, TLSv1.2
 #                  Permit only TLSv1.2 where supported by OpenSSL
 # Changes   v0.8:  Fix broken check for SSL_CIPHER_SUITES
 #                  Add checks for ENCRYPTION_SERVER, ENCRYPTION_CLIENT,
@@ -27,9 +27,9 @@
 #                  democertcheck, and ciphercheck
 # Changes   v1.0:  Converted to EM13cR2, converted repository DB checks
 #                  to use DBBP Bundle Patch (aka Exadata patch), not PSU
-# Changes   v1.1:  Updated for 20161231 EM13cR2 patches. 
+# Changes   v1.1:  Updated for 20161231 EM13cR2 patches.
 #                  Updated for 20170117 security patches.
-#                  Add check for OPatch and OMSPatcher versions. 
+#                  Add check for OPatch and OMSPatcher versions.
 # Changes   v1.2:  Updated for 20170131 bundle patches.
 # Changes   v1.3:  Updated for 20170228 bundle patches.
 # Changes   v1.4:  Added patches 25604219 and 24327938
@@ -65,8 +65,10 @@
 # Changes   v2.3:  Get agent home directories from a different repo table
 #                  Update OPatch/OMSPatcher versions
 # Changes   v2.4:  Include 20170418 PSU
-# Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141 
-#                  Update MOS note references
+# Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141
+#                  Update MOS note references, add agent bundle 20170331
+# Changes   v2.6:  Add agent bundle 20170331, ADF 21849941, OPSS 22748215
+#                  Update plugin bundle patches for 13.2.1 plugin line
 #
 #
 # From: @BrianPardy on Twitter
@@ -76,18 +78,18 @@
 # Run this script as the Oracle EM13c software owner, with your environment
 # fully up and running.
 #
-# Thanks to Dave Corsar, who tested a previous version on Solaris and 
+# Thanks to Dave Corsar, who tested a previous version on Solaris and
 # let me know the changes needed to make the script work on Solaris.
 #
 # Thanks to opa tropa who confirmed AIX functionality on a previous
-# version and noted the use of GNU extensions to grep, which I have 
+# version and noted the use of GNU extensions to grep, which I have
 # since removed.
 #
 # Thanks to Bob Schuppin who noted the use of TLS1 when using
 # openssl to check ciphers/certificates/demo-certs, which I have
 # now fixed.
 #
-# Thanks to Paige, who informed me of a broken check for the 
+# Thanks to Paige, who informed me of a broken check for the
 # SSL_CIPHER_SUITES parameter that led me to add the additional checks
 # for SQL*Net encryption
 #
@@ -109,22 +111,22 @@
 # before running the script:
 #
 # - Login to EMCLI using an OEM user account
-# - Make sure the OEM user account can execute EMCLI execute_sql and 
+# - Make sure the OEM user account can execute EMCLI execute_sql and
 #   execute_hostcmd
 # - Make sure the OEM user account has specified default normal database
 #   credentials and default host credentials for the repository database
 #   target.
 #      * This will enable plugin bundle patch checks on all agents.
-# - Make sure the OEM user account has specified preferred credentials for 
+# - Make sure the OEM user account has specified preferred credentials for
 #   all host targets where agents run
 #      * This will enable Java version checks on all agents.
 #
 # The create_user_for_checksec13R2.sh script provided in the same repo
-# as this script will create a user with the necessary permissions and 
+# as this script will create a user with the necessary permissions and
 # prompt for the necessary named credentials. Download it from:
 # https://raw.githubusercontent.com/brianpardy/em13c/master/create_user_for_checksec13R2.sh
 #
-# 
+#
 # Dedicated to our two Lhasa Apsos:
 #   Lucy (6/13/1998 - 3/13/2015)
 #   Ethel (6/13/1998 - 7/31/2015)
@@ -143,7 +145,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="18 Apr 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.5"
+VERSION="2.6"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -390,7 +392,7 @@ patchercheck () {
 }
 
 
-# sslcheck checks for enabled/disabled status of SSL/TLS protocols using OpenSSL 
+# sslcheck checks for enabled/disabled status of SSL/TLS protocols using OpenSSL
 sslcheck () {
 	OPENSSL_CHECK_COMPONENT=$1
 	OPENSSL_CHECK_HOST=$2
@@ -813,7 +815,7 @@ emcliagentbundlecheck() {
     EMCLIAGENTBUNDLE_SECTION=$1
     EMCLIAGENTBUNDLE_PATCH=$2
     EMCLIAGENTBUNDLE_DESC=$3
-    
+
     for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
         THEHOST=`echo $i | sed -e 's/:.*$//'`
         echo -ne "\n\t($EMCLIAGENTBUNDLE_SECTION) Agent $i $EMCLIAGENTBUNDLE_DESC ($EMCLIAGENTBUNDLE_PATCH)... "
@@ -1010,7 +1012,7 @@ echo -e "\tWLSadmin found at $OMSHOST:$PORT_ADMINSERVER"
 echo
 echo -e "\tRepository DB version=$REPOS_DB_VERSION SID=$REPOS_DB_SID host=$REPOS_DB_HOST"
 echo -e "\tRepository DB target name=$REPOS_DB_TARGET_NAME"
-echo 
+echo
 echo -e "\tUsing OPENSSL=$OPENSSL (has TLS1_2=$OPENSSL_HAS_TLS1_2)"
 
 if [[ $RUN_DB_CHECK -eq "1" ]]; then
@@ -1204,12 +1206,19 @@ omspatchercheck OMS $OMS_HOME 25322055
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... "
 omspatchercheck OMS $OMS_HOME 24329181
 
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 19485414 20022048 (21849941)... "
+omspatchercheck OMS $OMS_HOME 21849941
+
 # Replaced by PSU 170418
 #echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
 #omspatchercheck OMS $OMS_HOME 25604219
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
-omspatchercheck OMS $OMS_HOME 25221285
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS BUNDLE PATCH 12.1.3.0.170418 (22748215)... "
+omspatchercheck OMS $OMS_HOME 22748215
+
+# Replaced by 22748215
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
+#omspatchercheck OMS $OMS_HOME 25221285
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170331 (Not used for 13.2.2 plugins) (25672422)... "
 omspatchercheck OMS $OMS_HOME 25672422
@@ -1223,11 +1232,14 @@ opatchcheck WLS $OMS_HOME 24327938
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
     echo -e "\n\tUsing EMCLI to check for agent bundle patch on all agents"
-    emcliagentbundlecheck 4d 25414194 "EM-AGENT BUNDLE PATCH 13.2.0.0.170228"
+    #emcliagentbundlecheck 4d 25414194 "EM-AGENT BUNDLE PATCH 13.2.0.0.170228"
+    emcliagentbundlecheck 4d 25580746 "EM-AGENT BUNDLE PATCH 13.2.0.0.170331"
 else
     echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
-    echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
-    opatchcheck Agent $AGENT_HOME 25414194
+    #echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
+    #opatchcheck Agent $AGENT_HOME 25414194
+    echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170331 (25580746)... "
+    opatchcheck Agent $AGENT_HOME 25580746
 fi
 
 
@@ -1272,8 +1284,12 @@ else
     echo    "    with an OEM user that has configured default normal database credentials and default host"
     echo    "    credentials for your repository database target, then run this script again."
 
-    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
-    opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
+    # Replaced by 25672093
+    #echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
+    #opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING (25672093)... "
+    opatchplugincheck Agent $AGENT_HOME 25672093 oracle.sysman.db.agent.plugin_13.2.1.0.0
 
     echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197692)... "
     opatchplugincheck Agent $AGENT_HOME 25197692 oracle.sysman.db.discovery.plugin_13.2.1.0.0
@@ -1284,8 +1300,12 @@ else
     echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
     opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
-    opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
+    # Replaced by 25682670
+    #echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
+    #opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING (25682670)... "
+    opatchplugincheck Agent $AGENT_HOME 25682670 oracle.sysman.si.agent.plugin_13.2.1.0.0
 
     echo -ne "\n\t(7f) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
     opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
