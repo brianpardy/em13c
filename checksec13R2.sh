@@ -67,7 +67,8 @@
 # Changes   v2.4:  Include 20170418 PSU
 # Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141
 #                  Update MOS note references, add agent bundle 20170331
-# Changes   v2.6:  Add agent bundle 20170331
+# Changes   v2.6:  Add agent bundle 20170331, ADF 21849941, OPSS 22748215
+#                  Update plugin bundle patches for 13.2.1 plugin line
 #
 #
 # From: @BrianPardy on Twitter
@@ -1205,12 +1206,19 @@ omspatchercheck OMS $OMS_HOME 25322055
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 22557350 19901079 20222451 (24329181)... "
 omspatchercheck OMS $OMS_HOME 24329181
 
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 19485414 20022048 (21849941)... "
+omspatchercheck OMS $OMS_HOME 21849941
+
 # Replaced by PSU 170418
 #echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
 #omspatchercheck OMS $OMS_HOME 25604219
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
-omspatchercheck OMS $OMS_HOME 25221285
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS BUNDLE PATCH 12.1.3.0.170418 (22748215)... "
+omspatchercheck OMS $OMS_HOME 22748215
+
+# Replaced by 22748215
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
+#omspatchercheck OMS $OMS_HOME 25221285
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170331 (Not used for 13.2.2 plugins) (25672422)... "
 omspatchercheck OMS $OMS_HOME 25672422
@@ -1276,8 +1284,12 @@ else
     echo    "    with an OEM user that has configured default normal database credentials and default host"
     echo    "    credentials for your repository database target, then run this script again."
 
-    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
-    opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
+    # Replaced by 25672093
+    #echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
+    #opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING (25672093)... "
+    opatchplugincheck Agent $AGENT_HOME 25672093 oracle.sysman.db.agent.plugin_13.2.1.0.0
 
     echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197692)... "
     opatchplugincheck Agent $AGENT_HOME 25197692 oracle.sysman.db.discovery.plugin_13.2.1.0.0
@@ -1288,8 +1300,12 @@ else
     echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
     opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
-    opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
+    # Replaced by 25682670
+    #echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
+    #opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING (25682670)... "
+    opatchplugincheck Agent $AGENT_HOME 25682670 oracle.sysman.si.agent.plugin_13.2.1.0.0
 
     echo -ne "\n\t(7f) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
     opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
