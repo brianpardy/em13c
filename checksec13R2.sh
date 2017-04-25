@@ -69,6 +69,8 @@
 #                  Update MOS note references, add agent bundle 20170331
 # Changes   v2.6:  Add agent bundle 20170331, ADF 21849941, OPSS 22748215
 #                  Update plugin bundle patches for 13.2.1 plugin line
+# Changes   v2.7:  Add check for APEX version on repository DB
+#                  Handle cases where OpenSSL has no LOW strength ciphers
 #
 #
 # From: @BrianPardy on Twitter
@@ -92,6 +94,10 @@
 # Thanks to Paige, who informed me of a broken check for the
 # SSL_CIPHER_SUITES parameter that led me to add the additional checks
 # for SQL*Net encryption
+#
+# Thanks to Rafał Ramocki, who noted an issue with OpenSSL on Oracle Linux
+# 6.9 where OpenSSL does not have LOW strength ciphers available, causing
+# an error in the script.
 #
 # In order to check selections for ENCRYPTION_TYPES and CRYPTO_CHECKSUM_TYPES
 # I have to make some judgement calls. Due to MD5's known issues, I consider
@@ -145,7 +151,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="18 Apr 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.6"
+VERSION="2.7"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -355,6 +361,25 @@ cleantemp () {
     echo "done"
 }
 
+# apexcheck used to validate installed version of APEX
+apexcheck () {
+    APEX_CHECK_VERSION=$1
+
+    APEX_COMPARE_MIN=`echo $APEX_CHECK_VERSION | sed 's/\.//g'`
+
+    APEXVERSION=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'apexver:' || version from dba_registry where comp_name = 'Oracle Application Express'" | $GREP apexver | awk -F: '{print $2}'`
+
+    APEX_COMPARE_CUR=`echo $APEXVERSION | sed 's/\.//g'`
+
+    if [[ $APEX_COMPARE_CUR < $APEX_COMPARE_MIN ]]; then
+        echo FAILED
+        FAIL_COUNT=$((FAIL_COUNT+1))
+        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:APEX @ $REPOS_DB_TARGET_NAME: fails minimum version requirement $APEXVERSION vs $APEX_CHECK_VERSION"
+    else
+        echo OK
+    fi
+    return
+}
 
 # patchercheck used to validate OPatch and/or OMSPatcher versions on a target
 patchercheck () {
@@ -582,15 +607,31 @@ ciphercheck () {
 	CIPHERCHECK_SECTION=$4
 
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
-	OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
-	if [[ $OPENSSL_LOW_RETURN -eq "0" ]]; then
-		echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
+    # Added 20170425, issue #4: Wrong detection of LOW security ciphers on agents
+    #
+    # Some OpenSSL deployments do not have any LOW strength ciphers available
+    #
+    # $ openssl ciphers LOW
+    # Error in cipher list
+    # 140665824761672:error:1410D0B9:SSL routines:SSL_CTX_set_cipher_list:no cipher match:ssl_lib.c:1314:
+
+    OPENSSL_CHECK_NO_LOW_CIPHERS=`$OPENSSL ciphers LOW | $GREP -c "Error in cipher list"`
+    if [[ $OPENSSL_CHECK_NO_LOW_CIPHERS -eq "1" ]]; then
+        echo -e "\tN/A - OpenSSL LOW strength ciphers not available"
 		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:Permits LOW strength ciphers"
-	else
-		echo -e "\tOK"
-	fi
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:Unable to check LOW strength ciphers, not supported by installed OpenSSL"
+    else
+        OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+
+        if [[ $OPENSSL_LOW_RETURN -eq "0" ]]; then
+            echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
+            FAIL_COUNT=$((FAIL_COUNT+1))
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:Permits LOW strength ciphers"
+        else
+            echo -e "\tOK"
+        fi
+    fi
 
 
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking MEDIUM strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
@@ -1188,6 +1229,9 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) listener.ora SSL_CIPHER_SUITES parameter (1545816.1)... "
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
+
+	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
+	apexcheck 5.0.4.00.12
 fi
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170418 PSU (25387277)... "
@@ -1195,10 +1239,6 @@ omspatchercheck OMS $OMS_HOME 25387277
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
-
-# Replaced by PSU 170418
-#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG FOR BACK-PORTING 24588124 OMS SIDE FIX (25163555)... "
-#omspatchercheck OMS $OMS_HOME 25163555
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 24571979 24335626 (25322055)... "
 omspatchercheck OMS $OMS_HOME 25322055
@@ -1209,16 +1249,8 @@ omspatchercheck OMS $OMS_HOME 24329181
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 12.1.3.0.0 FOR BUGS 19485414 20022048 (21849941)... "
 omspatchercheck OMS $OMS_HOME 21849941
 
-# Replaced by PSU 170418
-#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) MERGE REQUEST ON TOP OF 13.2.0.0.0 FOR BUGS 25497622 25497731 25506784 (25604219)... "
-#omspatchercheck OMS $OMS_HOME 25604219
-
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS BUNDLE PATCH 12.1.3.0.170418 (22748215)... "
 omspatchercheck OMS $OMS_HOME 22748215
-
-# Replaced by 22748215
-#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) OPSS-OPC Bundle Patch 12.1.3.0.170117 (25221285)... "
-#omspatchercheck OMS $OMS_HOME 25221285
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.0.0.170331 (Not used for 13.2.2 plugins) (25672422)... "
 omspatchercheck OMS $OMS_HOME 25672422
@@ -1232,12 +1264,9 @@ opatchcheck WLS $OMS_HOME 24327938
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
     echo -e "\n\tUsing EMCLI to check for agent bundle patch on all agents"
-    #emcliagentbundlecheck 4d 25414194 "EM-AGENT BUNDLE PATCH 13.2.0.0.170228"
     emcliagentbundlecheck 4d 25580746 "EM-AGENT BUNDLE PATCH 13.2.0.0.170331"
 else
     echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
-    #echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170228 (25414194)... "
-    #opatchcheck Agent $AGENT_HOME 25414194
     echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170331 (25580746)... "
     opatchcheck Agent $AGENT_HOME 25580746
 fi
@@ -1284,10 +1313,6 @@ else
     echo    "    with an OEM user that has configured default normal database credentials and default host"
     echo    "    credentials for your repository database target, then run this script again."
 
-    # Replaced by 25672093
-    #echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501452)... "
-    #opatchplugincheck Agent $AGENT_HOME 25501452 oracle.sysman.db.agent.plugin_13.2.1.0.0
-
     echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING (25672093)... "
     opatchplugincheck Agent $AGENT_HOME 25672093 oracle.sysman.db.agent.plugin_13.2.1.0.0
 
@@ -1299,10 +1324,6 @@ else
 
     echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
     opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
-
-    # Replaced by 25682670
-    #echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501408)... "
-    #opatchplugincheck Agent $AGENT_HOME 25501408 oracle.sysman.si.agent.plugin_13.2.1.0.0
 
     echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING (25682670)... "
     opatchplugincheck Agent $AGENT_HOME 25682670 oracle.sysman.si.agent.plugin_13.2.1.0.0
