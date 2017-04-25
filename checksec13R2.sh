@@ -616,7 +616,7 @@ ciphercheck () {
     # Error in cipher list
     # 140665824761672:error:1410D0B9:SSL routines:SSL_CTX_set_cipher_list:no cipher match:ssl_lib.c:1314:
 
-    OPENSSL_CHECK_NO_LOW_CIPHERS=`$OPENSSL ciphers LOW | $GREP -c "Error in cipher list"`
+    OPENSSL_CHECK_NO_LOW_CIPHERS=`$OPENSSL ciphers LOW 2>&1 | $GREP -c "Error in cipher list"`
     if [[ $OPENSSL_CHECK_NO_LOW_CIPHERS -eq "1" ]]; then
         echo -e "\tN/A - OpenSSL LOW strength ciphers not available"
 		FAIL_COUNT=$((FAIL_COUNT+1))
