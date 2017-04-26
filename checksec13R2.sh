@@ -71,6 +71,9 @@
 #                  Update plugin bundle patches for 13.2.1 plugin line
 # Changes   v2.7:  Add check for APEX version on repository DB
 #                  Handle cases where OpenSSL has no LOW strength ciphers
+#                  Fix opatchplugincheck for directories leftover from
+#                  install of previous plugin versions.
+#                  Fixed some missing bundle patches in EMCLI agent checks.
 #
 #
 # From: @BrianPardy on Twitter
@@ -517,7 +520,7 @@ opatchplugincheck () {
 	OPATCH_CHECK_PATCH=$3
     OPATCH_PLUGIN_DIR=$4
 
-    if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}" ]]; then
+    if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}/META-INF" ]]; then
             OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
     else
             OPATCH_RET="Plugin dir $OPATCH_PLUGIN_DIR does not exist, not installed"
@@ -941,11 +944,11 @@ emcliagentbundlepluginpatchcheck () {
 
         $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
 
-        emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25501452 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 25672093 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 25197692 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
         emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 25501427 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25501408 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+        emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25682670 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170331 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
         emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
         emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
@@ -1230,8 +1233,10 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) listener.ora SSL_CIPHER_SUITES parameter (1545816.1)... "
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 
-	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
-	apexcheck 5.0.4.00.12
+    if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+        echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
+        apexcheck 5.0.4.00.12
+    fi
 fi
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170418 PSU (25387277)... "
