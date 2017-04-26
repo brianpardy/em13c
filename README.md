@@ -10,13 +10,14 @@ The provided checks confirm that:
 
     * OMS/agent components refuse SSLv2, SSLv3, TLSv1, and TLSv1.1 connections
     * OMS/agent components accept TLSv1.2 connections
-    * OMS/agent components refuse LOW and MEDIUM strength cipher suites requested by clients.
+    * OMS/agent components refuse LOW and MEDIUM strength cipher suites requested by clients
     * OMS/agent components accept HIGH strength cipher suites requested by clients.
     * OMS/agent components do not use the default demonstration SSL/TLS certificates distributed with OEM
     * OMS/agent components do not use self-signed SSL/TLS certificates
     * Repository database runs the latest Database Bundle and JavaVM security patches
     * Repository database contains all patches required by EM13c R2
     * Repository database has secure settings for SQL\*Net encryption settings
+    * Repository database has an APEX version resolving known security issues
     * OMS chained agent contains the latest agent bundle patch
     * OMS home contains all the latest recommended, required, and security patches
     * OMS and all agents contain the latest supported Java 7 release
