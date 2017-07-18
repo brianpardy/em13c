@@ -78,6 +78,7 @@
 # Changes   v2.8:  Update for 20170531 patch release
 # Changes   v2.9:  Update for first set of 13.2.2 plugin bundle patches
 # Changes   v2.10: Update for 20170630 plugin bundle patches
+# Changes   v2.11: Update for 20170718 OMS PSU release
 #
 #
 # From: @BrianPardy on Twitter
@@ -155,10 +156,10 @@ OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="30 Jun 2017"
+PATCHDATE="18 Jul 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.10"
+VERSION="2.11"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -1268,8 +1269,8 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
     fi
 fi
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170418 PSU (25387277)... "
-omspatchercheck OMS $OMS_HOME 25387277
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170718 PSU (25731746)... "
+omspatchercheck OMS $OMS_HOME 25731746
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
