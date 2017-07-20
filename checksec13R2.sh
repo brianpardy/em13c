@@ -78,7 +78,7 @@
 # Changes   v2.8:  Update for 20170531 patch release
 # Changes   v2.9:  Update for first set of 13.2.2 plugin bundle patches
 # Changes   v2.10: Update for 20170630 plugin bundle patches
-# Changes   v2.11: Update for 20170718 OMS PSU release
+# Changes   v2.11: Update for 20170718 OMS, DB, WLS PSU releases
 #
 #
 # From: @BrianPardy on Twitter
@@ -150,6 +150,7 @@
 JAVA_CHECK_VERSION="1.7.0_141"
 OPATCH_CHECK_VERSION="13.9.1.3.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
+
 
 ### End user configurable section
 
@@ -1214,14 +1215,14 @@ echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseli
 if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170418 (APR2017) (25397136)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25397136
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170718 (JUL2017) (25869760)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 25869760
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170418, Oracle JavaVM Component (APR2017) (25437695)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25437695
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170718, Oracle JavaVM Component (JUL2017) (26027162)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 26027162
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Interim patch for 25481150 (25481150)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25481150
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.170718 (25869825)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 25869825
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 20243268
@@ -1302,8 +1303,11 @@ omspatchercheck OMS $OMS_HOME 26238526
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.2.0.170630 (Not used for 13.2.1 plugins) (26238574)... "
 omspatchercheck OMS $OMS_HOME 26238574
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170418 (25388793)... "
-opatchcheck WLS $OMS_HOME 25388793
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170418 (25388793)... "
+#opatchcheck WLS $OMS_HOME 25388793
+
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170718 (25869659)... "
+opatchcheck WLS $OMS_HOME 25869659
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TOPLINK SECURITY PATCH UPDATE CPUJUL2016 (24327938)... "
 opatchcheck WLS $OMS_HOME 24327938
