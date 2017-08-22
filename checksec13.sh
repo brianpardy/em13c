@@ -28,7 +28,7 @@
 # Changes   v1.0:  Blind update for 20170117 patches
 # Changes   v1.1:  Blind update for 20170418 PSU and Java 1.7.0-131
 # Changes   v1.2:  Blind update for 20170718 DB PSU and 201704 BPs
-# Changes   v1.3:  Blind update for 20170814 off cycle DB PSU
+# Changes   v1.3:  Blind update for 20170814 off cycle DB PSU, Java 1.7.0-141
 #
 # From: @BrianPardy on Twitter
 #
@@ -429,7 +429,7 @@ javacheck () {
 
 	JAVACHECK_RETURN=`$JAVA_DIR/bin/java -version 2>&1 | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
-	if [[ "$JAVACHECK_RETURN" == "1.7.0_131" ]]; then
+	if [[ "$JAVACHECK_RETURN" == "1.7.0_141" ]]; then
 		echo -e "\tOK"
 	else
 		#echo -e "\tFAILED - Found version $JAVACHECK_RETURN"
