@@ -28,6 +28,7 @@
 # Changes   v1.0:  Blind update for 20170117 patches
 # Changes   v1.1:  Blind update for 20170418 PSU and Java 1.7.0-131
 # Changes   v1.2:  Blind update for 20170718 DB PSU and 201704 BPs
+# Changes   v1.3:  Blind update for 20170814 off cycle DB PSU
 #
 # From: @BrianPardy on Twitter
 #
@@ -69,10 +70,9 @@
 # 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="18 Apr 2017"
+PATCHDATE="14 Aug 2017"
 OMSHOST=`hostname -f`
-VERSION="1.1"
-VERSION="1.2"
+VERSION="1.3"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -706,8 +706,8 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 		#echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170117 (JAN2017) (24732088)... "
 		#opatchcheck ReposDBHome $REPOS_DB_HOME 24732088
 
-		echo -ne "\n\t(4a) *UPDATED* OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170718 (JUL2017) (25869760)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25869760
+		echo -ne "\n\t(4a) *UPDATED* OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170814 (AUG2017) (26609798)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 26609798
 
 #		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170117, Oracle JavaVM Component (JAN2017) (24917972)... "
 #		opatchcheck ReposDBHome $REPOS_DB_HOME 24917972
@@ -718,8 +718,8 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 		#echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Interim patch for 25101514 (25101514)... "
 		#opatchcheck ReposDBHome $REPOS_DB_HOME 25101514
 
-		echo -ne "\n\t(4a) *UPDATED* OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.170718 (25869825)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25869825
+		echo -ne "\n\t(4a) *UPDATED* OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.170814 (26609945)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 26609945
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 20243268
