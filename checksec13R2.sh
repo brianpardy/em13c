@@ -80,6 +80,7 @@
 # Changes   v2.10: Update for 20170630 plugin bundle patches
 # Changes   v2.11: Update for 20170718 OMS, DB, WLS PSU releases
 # Changes   v2.12: Update for 20170731 plugin bundle patches
+# Changes   v2.13: Update for 20170814 off cycle DB PSU
 #
 #
 # From: @BrianPardy on Twitter
@@ -162,10 +163,10 @@ OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="31 Jul 2017"
+PATCHDATE="14 Aug 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.12"
+VERSION="2.13"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -1203,14 +1204,14 @@ echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseli
 if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170718 (JUL2017) (25869760)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25869760
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170814 (AUG2017) (26609798)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 26609798
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170718, Oracle JavaVM Component (JUL2017) (26027162)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 26027162
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.170718 (25869825)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 25869825
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.170814 (26609945)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 26609945
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 20243268
