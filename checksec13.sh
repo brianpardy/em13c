@@ -827,7 +827,7 @@ omspatchercheck OMS $MW_HOME 25387198
 
 echo -e "\n(5) Checking EM13c Java patch levels against $PATCHDATE baseline (see notes 1492980.1, 1616397.1)"
 
-echo -ne "\n\t(5a) WLS ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-131 (13079846)... "
+echo -ne "\n\t(5a) WLS ($MW_HOME/oracle_common/jdk) JAVA SE JDK VERSION 1.7.0-141 (13079846)... "
 javacheck WLSJAVA $MW_HOME/oracle_common/jdk
 
 
