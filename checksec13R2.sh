@@ -83,6 +83,7 @@
 # Changes   v2.13: Update for 20170814 off cycle DB PSU
 # Changes   v2.14: Update for 20170831 plugin bundle patches
 # Changes   v2.15: Update for 20170930 plugin bundle patches + 13.2.3 
+# Changes   v2.16: Add Cloud Services Management plugin
 #
 #
 # From: @BrianPardy on Twitter
@@ -175,7 +176,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="30 Sep 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.15"
+VERSION="2.16"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -991,6 +992,7 @@ emcliagentbundlepluginpatchcheck () {
         emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.2.0.0 26832251 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 26741689 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
         emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 n "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+        emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.2.0.0 26817793 n "EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
 
         (( SECTION_NUM+=1 ))
 
@@ -1459,6 +1461,9 @@ else
 
     echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
     opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
+
+    echo -ne "\n\t(7n) OMS CHAINED AGENT HOME ($AGENT_HOME) EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817793)... "
+    opatchplugincheck Agent $AGENT_HOME 26817793 oracle.sysman.csm.agent.plugin_13.2.2.0.0
 fi
 
 echo
