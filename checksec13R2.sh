@@ -84,6 +84,7 @@
 # Changes   v2.14: Update for 20170831 plugin bundle patches
 # Changes   v2.15: Update for 20170930 plugin bundle patches + 13.2.3 
 # Changes   v2.16: Add Cloud Services Management plugin, OMS PSU 171017
+# Changes   v2.17: Update for DB PROACTIVE PSU 171017
 #
 #
 # From: @BrianPardy on Twitter
@@ -171,6 +172,11 @@ OMSSIDE1323DATE=20170930
 OMSPSUPATCH=26625183
 OMSPSUDATE=171017
 OMSPSUDESC="ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.$OMSPSUDATE PSU ($OMSPSUPATCH)" 
+
+DB12102PSUPATCH=26635880
+DB12102PSUDATE=171017
+DB12102PSUDESC="DATABASE PROACTIVE BUNDLE PATCH 12.1.0.2.$DB12102PSUDATE ($DB12102PSUPATCH)"
+
 
 
 ### End user configurable section
@@ -1225,8 +1231,11 @@ echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseli
 if [[ $RUN_DB_CHECK -eq 1 ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170814 (AUG2017) (26609798)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 26609798
+#		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) DATABASE BUNDLE PATCH: 12.1.0.2.170814 (AUG2017) (26609798)... "
+#		opatchcheck ReposDBHome $REPOS_DB_HOME 26609798
+
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) $DB12102PSUDESC... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME $DB12102PSUPATCH
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170718, Oracle JavaVM Component (JUL2017) (26027162)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 26027162
