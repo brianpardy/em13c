@@ -85,6 +85,7 @@
 # Changes   v2.15: Update for 20170930 plugin bundle patches + 13.2.3 
 # Changes   v2.16: Add Cloud Services Management plugin, OMS PSU 171017
 # Changes   v2.17: Update for DB PROACTIVE PSU 171017 & OCW PSU (JVM PSU TBD?)
+# Changes   v2.18: Update JVM PSU 171017
 #
 #
 # From: @BrianPardy on Twitter
@@ -187,7 +188,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="17 Oct 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.17"
+VERSION="2.18"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
