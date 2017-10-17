@@ -83,7 +83,7 @@
 # Changes   v2.13: Update for 20170814 off cycle DB PSU
 # Changes   v2.14: Update for 20170831 plugin bundle patches
 # Changes   v2.15: Update for 20170930 plugin bundle patches + 13.2.3 
-# Changes   v2.16: Add Cloud Services Management plugin
+# Changes   v2.16: Add Cloud Services Management plugin, OMS PSU 171017
 #
 #
 # From: @BrianPardy on Twitter
@@ -168,12 +168,17 @@ OMSSIDE1322DATE=20170930
 OMSSIDE1323=26716250
 OMSSIDE1323DATE=20170930
 
+OMSPSUPATCH=26625183
+OMSPSUDATE=171017
+OMSPSUDESC="ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.$OMSPSUDATE PSU ($OMSPSUPATCH)" 
+
+
 ### End user configurable section
 
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="30 Sep 2017"
+PATCHDATE="17 Oct 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
 VERSION="2.16"
@@ -859,7 +864,7 @@ emclijavacheck () {
 
     for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
         THEHOST=`echo $curagent | sed -e 's/:.*$//'`
-        echo -ne "\n\t(5b) Agent $curagent Java VERSION $JAVA_VERSION... "
+        echo -ne "\n\t(5b) Agent $curagent JAVA VERSION $JAVA_VERSION... "
         EMCLIJAVACHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
         EMCLIJAVACHECK_GETHOME=`echo $EMCLIJAVACHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
         EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
@@ -1275,8 +1280,11 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
     fi
 fi
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170718 PSU (25731746)... "
-omspatchercheck OMS $OMS_HOME 25731746
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170718 PSU (25731746)... "
+#omspatchercheck OMS $OMS_HOME 25731746
+
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) $OMSPSUDESC... "
+omspatchercheck OMS $OMS_HOME $OMSPSUPATCH
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
