@@ -1244,7 +1244,7 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 #		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.170718, Oracle JavaVM Component (JUL2017) (26027162)... "
 #		opatchcheck ReposDBHome $REPOS_DB_HOME 26027162
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.171017, Oracle JavaVM Component (JUL2017) (26635845)... "
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) Database PSU 12.1.0.2.171017, Oracle JavaVM Component (OCT2017) (26635845)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 26635845
 
 #		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.170814 (26609945)... "
