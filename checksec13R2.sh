@@ -87,6 +87,7 @@
 # Changes   v2.17: Update for DB PROACTIVE PSU 171017 & OCW PSU (JVM PSU TBD?)
 # Changes   v2.18: Update JVM PSU 171017
 # Changes   v2.19: Add OSS CPUOCT2017, update WLS PSU 171017
+# Changes   v2.20: Update SSL_VERSION check to 1.2, Java JDK to 1.7.0_161
 #
 #
 # From: @BrianPardy on Twitter
@@ -159,7 +160,7 @@
 
 ### Begin user configurable section
 
-JAVA_CHECK_VERSION="1.7.0_141"
+JAVA_CHECK_VERSION="1.7.0_161"
 OPATCH_CHECK_VERSION="13.9.1.3.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
@@ -191,7 +192,7 @@ SCRIPTNAME=`basename $0`
 PATCHDATE="18 Oct 2017"
 PATCHNOTE="1664074.1, 2219797.1"
 OMSHOST=`hostname -f`
-VERSION="2.19"
+VERSION="2.20"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -715,7 +716,7 @@ paramcheck () {
 
 	PARAMCHECK_RETURN=`$GREP $WHICH_PARAM $WHICH_ORACLE_HOME/network/admin/$WHICH_FILE | $GREP -v '^#'  | awk -F= '{print $2}' | sed -e 's/\s//g'`
 	if [[ "$WHICH_PARAM" == "SSL_VERSION" ]]; then
-		if [[ "$PARAMCHECK_RETURN" == "1.0" ]]; then
+		if [[ "$PARAMCHECK_RETURN" == "1.2" ]]; then
 			echo -e "OK"
 		else
 			echo -e "FAILED - Found $WHICH_PARAM = $PARAMCHECK_RETURN"
