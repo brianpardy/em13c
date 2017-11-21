@@ -960,7 +960,7 @@ javacheck () {
 	else
 		echo -e "\tFAILED"
 		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_JAVA Java in ${JAVA_DIR}:Found incorrect version $JAVACHECK_RETURN"
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_JAVA Java in ${JAVA_DIR}:Found incorrect version $JAVACHECK_RETURN vs $JAVA_VER"
 	fi
 	test $VERBOSE_CHECKSEC -ge 2 && echo $JAVACHECK_RETURN
 }
@@ -982,7 +982,7 @@ emclijavacheck () {
         else
             echo -e "\tFAILED"
             FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER"
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER vs $JAVA_CHECK_VERSION"
         fi
         test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
     done
@@ -1178,7 +1178,7 @@ emcliagentopatch() {
         else
             echo -e "\tFAILED"
             FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $OPATCH_AGENT_VERSION"
+            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $AGENT_OPATCH_VERSION"
         fi
         test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIAGENTOPATCHCHECK_GETVER
     done
