@@ -205,7 +205,6 @@ RUN_DB_CHECK=0
 VERBOSE_CHECKSEC=2
 EMCLI_CHECK=0
 
-EMCLI="$MW_HOME/bin/emcli"
 
 HOST_OS=`uname -s`
 HOST_ARCH=`uname -m`
@@ -289,6 +288,8 @@ PORT_AGENT=`$AGENT_HOME/bin/emctl status agent | $GREP 'Agent URL' | sed -e 's/\
 REPOS_DB_CONNDESC=`$GREP EM_REPOS_CONNECTDESCRIPTOR $EMGC_PROPS | sed -e 's/EM_REPOS_CONNECTDESCRIPTOR=//' | sed -e 's/\\\\//g'`
 REPOS_DB_HOST=`echo $REPOS_DB_CONNDESC | sed -e 's/^.*HOST=//' | sed -e 's/).*$//'`
 REPOS_DB_SID=`echo $REPOS_DB_CONNDESC | sed -e 's/^.*SID=//' | sed -e 's/).*$//'`
+
+EMCLI="$MW_HOME/bin/emcli"
 
 echo -e "\tEM13c config... OK"
 
@@ -433,7 +434,7 @@ patchercheck () {
 	PATCHER_CHECK_VERSION=$3
 
 	if [[ $PATCHER_CHECK_COMPONENT == "OPatch" ]]; then
-		PATCHER_RET=`$PATCHER_CHECK_OH/opatch version -jre $MW_HOME/oracle_common/jdk | $GREP Version | sed 's/.*: //'`
+		PATCHER_RET=`$PATCHER_CHECK_OH/opatch version -jre $MW_HOME/oracle_common/jdk -oh $MW_HOME | $GREP Version | sed 's/.*: //'`
 		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
 
 		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
@@ -447,7 +448,7 @@ patchercheck () {
 	fi
 
 	if [[ $PATCHER_CHECK_COMPONENT == "OMSPatcher" ]]; then
-		PATCHER_RET=`$PATCHER_CHECK_OH/omspatcher version -jre $MW_HOME/oracle_common/jdk | $GREP 'OMSPatcher Version' | sed 's/.*: //'`
+		PATCHER_RET=`$PATCHER_CHECK_OH/omspatcher version -jre $MW_HOME/oracle_common/jdk -oh $MW_HOME | $GREP 'OMSPatcher Version' | sed 's/.*: //'`
 		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
 
 		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
