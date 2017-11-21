@@ -21,9 +21,10 @@
 # set up your own EMCLI user account and login to it before running checksec13R2.sh,
 # or just login as SYSMAN if you wish.
 #
+# Changes   v1.1:  Grant ACCESS_EMCLI_SQL_LIST_VERB to emcli checksec user
 
-VERSION=1.0
-RELDATE="20170314"
+VERSION=1.1
+RELDATE="20171121"
 
 EMCLI="$MW_HOME/bin/emcli"
 OEM_USER=CHECKSEC
@@ -113,7 +114,7 @@ fi
 
 
 
-$EMCLI create_user -name=$OEM_USER -password="$OEM_USER_PW" -privilege="VIEW_ANY_TARGET" -privilege="CONNECT_TARGET;$REPOS_DB_TARGET_NAME:oracle_database" -privilege="CREATE_JOB" -privilege="DB_RUN_SQL;$REPOS_DB_TARGET_NAME:oracle_database" -role="EM_ALL_OPERATOR"
+$EMCLI create_user -name=$OEM_USER -password="$OEM_USER_PW" -privilege="VIEW_ANY_TARGET" -privilege="CONNECT_TARGET;$REPOS_DB_TARGET_NAME:oracle_database" -privilege="ACCESS_EMCLI_SQL_LIST_VERB" -privilege="CREATE_JOB" -privilege="DB_RUN_SQL;$REPOS_DB_TARGET_NAME:oracle_database" -role="EM_ALL_OPERATOR"
 CREATERET=$?
 if [[ $CREATERET > 0 ]]; then
 	echo "Failed to create $OEM_USER account, aborting."
