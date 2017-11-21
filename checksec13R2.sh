@@ -89,6 +89,13 @@
 # Changes   v2.19: Add OSS CPUOCT2017, update WLS PSU 171017
 # Changes   v2.20: Update SSL_VERSION check to 1.2, Java JDK to 1.7.0_161
 # Changes   v2.21: Update for 20171031 bundle patches released 20171110, new ZDLRA patch
+#                  Bug fixes reported by JS - EMCLI definition, AIX hostname -f 
+#                                             -oh $MW_HOME in patchercheck
+#                  Enhancements from JS: improve minimum version calculation for OPatch
+#                                        merge certcheck/democertcheck
+#                                        use emcli list, not emcli execute_sql
+#                                        needs execute ad hoc sql using EMCLI list verb 
+#                                        ACCESS_EMCLI_SQL_LIST_VERB
 #
 #
 # From: @BrianPardy on Twitter
@@ -381,13 +388,15 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
     # Cache list of all patches on agents and their plugins
     echo -ne "\tEMCLI-Agent patches... "
     EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
-    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
+    $EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.     mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >                 $EMCLI_AGENTPATCHES_CACHE_FILE
+#    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
     echo "OK"
 
     # Cache list of all agent homes
     echo -ne "\tEMCLI-Agent homes... "
     EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
-    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
+    $EMCLI list -format="name:script" -noheader -columns="INFO:200" -sql="select distinct home_location || ',' || host_name info  from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
+#    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
     echo "OK"
 
 	EMCLI_CHECK=1
@@ -433,6 +442,43 @@ apexcheck () {
     return
 }
 
+# returnminversion [JS] - given two multidot version strings, return the minimum
+# return_min_version used to compare two version-strings in dot-separated format
+# missing version-fields will be filled with "0"
+function returnminversion() {
+    local LV_VERSION_1="$1"
+    local LV_VERSION_2="$2"
+    declare -a LV_VERS_1_ARR
+    LV_VERS_1_ARR=( $(echo "${LV_VERSION_1}" | sed 's/\./ /g') )
+    declare -a LV_VERS_2_ARR
+    LV_VERS_2_ARR=( $(echo "${LV_VERSION_2}" | sed 's/\./ /g') )
+
+    while [[ ${#LV_VERS_1_ARR[@]} -lt ${#LV_VERS_2_ARR[@]} ]]
+    do
+        LV_VERS_1_ARR[${#LV_VERS_1_ARR[@]}]=0
+    done
+    while [[ ${#LV_VERS_2_ARR[@]} -lt ${#LV_VERS_1_ARR[@]} ]]
+    do
+        LV_VERS_2_ARR[${#LV_VERS_2_ARR[@]}]=0
+    done
+
+    local LV_FIELD=0
+    while [[ ${LV_FIELD} -lt ${#LV_VERS_1_ARR[@]} ]]
+    do
+        if [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -lt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
+        then
+            echo "${LV_VERSION_1}"
+            return
+        elif [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -gt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
+        then
+            echo "${LV_VERSION_2}"
+            return
+        fi
+        (( LV_FIELD = LV_FIELD + 1 ))
+    done
+    echo "${LV_VERSION_1}"
+}
+
 # patchercheck used to validate OPatch and/or OMSPatcher versions on a target
 patchercheck () {
 	PATCHER_CHECK_COMPONENT=$1
@@ -441,7 +487,8 @@ patchercheck () {
 
 	if [[ $PATCHER_CHECK_COMPONENT == "OPatch" ]]; then
 		PATCHER_RET=`$PATCHER_CHECK_OH/opatch version -jre $MW_HOME/oracle_common/jdk -oh $MW_HOME | $GREP Version | sed 's/.*: //'`
-		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
+		PATCHER_MINVER=`returnminversion ${PATCHER_RET} ${PATCHER_CHECK_VERSION}`
+		#PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
 
 		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
 			echo OK
@@ -455,7 +502,8 @@ patchercheck () {
 
 	if [[ $PATCHER_CHECK_COMPONENT == "OMSPatcher" ]]; then
 		PATCHER_RET=`$PATCHER_CHECK_OH/omspatcher version -jre $MW_HOME/oracle_common/jdk -oh $MW_HOME | $GREP 'OMSPatcher Version' | sed 's/.*: //'`
-		PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
+		PATCHER_MINVER=`returnminversion ${PATCHER_RET} ${PATCHER_CHECK_VERSION}`
+		#PATCHER_MINVER=`echo -e ${PATCHER_RET}\\\\n${PATCHER_CHECK_VERSION} | sort -t. -g | head -n 1`
 
 		if [[ $PATCHER_MINVER == $PATCHER_CHECK_VERSION ]]; then
 			echo OK
@@ -611,6 +659,37 @@ omspatchercheck () {
 
 	test $VERBOSE_CHECKSEC -ge 2 && echo $OMSPATCHER_RET
 }
+
+# combinedcertcheck checks for presence of a self-signed or demo certificate on a component
+combinedcertcheck () {
+    CERTCHECK_CHECK_COMPONENT=$1
+    CERTCHECK_CHECK_HOST=$2
+    CERTCHECK_CHECK_PORT=$3
+
+    echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol           $OPENSSL_CERTCHECK_PROTOCOL)... "
+
+    OPENSSL_RESULT="`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -                      $OPENSSL_CERTCHECK_PROTOCOL 2>&1`"
+    OPENSSL_CHECK_FAILED=`echo "${OPENSSL_RESULT}" | $GREP -ci ":wrong version number:"`
+    OPENSSL_SELFSIGNED_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "self signed certificate"`
+    OPENSSL_DEMO_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
+
+    if [[ $OPENSSL_CHECK_FAILED -ne "0" ]]; then
+        echo FAILED - SSL handshake failed
+        FAIL_COUNT=$((FAIL_COUNT+1))
+        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} SSL      handshake failed"
+    elif [[ $OPENSSL_SELFSIGNED_COUNT -ne "0" ]]; then
+        echo FAILED - Found self-signed certificate
+        FAIL_COUNT=$((FAIL_COUNT+1))
+        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found    self-signed certificate"
+    elif [[ $OPENSSL_DEMO_COUNT -ne "0" ]]; then
+        echo FAILED - Found demonstration certificate
+        FAIL_COUNT=$((FAIL_COUNT+1))
+        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:                         ${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
+    else
+        echo OK
+    fi
+}
+
 
 # certcheck checks for presence of a self-signed certificate on a component
 certcheck () {
