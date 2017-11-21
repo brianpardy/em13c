@@ -697,43 +697,43 @@ combinedcertcheck () {
 }
 
 
-# certcheck checks for presence of a self-signed certificate on a component
-certcheck () {
-	CERTCHECK_CHECK_COMPONENT=$1
-	CERTCHECK_CHECK_HOST=$2
-	CERTCHECK_CHECK_PORT=$3
-
-	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
-
-	OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
-
-	if [[ $OPENSSL_SELFSIGNED_COUNT -eq "0" ]]; then
-		echo OK
-	else
-		echo FAILED - Found self-signed certificate
-		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found self-signed certificate"
-	fi
-}
-
-# democertcheck checks for presence of an Oracle-provided demonstration certificate on a component
-democertcheck () {
-	DEMOCERTCHECK_CHECK_COMPONENT=$1
-	DEMOCERTCHECK_CHECK_HOST=$2
-	DEMOCERTCHECK_CHECK_PORT=$3
-
-	echo -ne "\tChecking demo certificate at $DEMOCERTCHECK_CHECK_COMPONENT ($DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
-
-	OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
-
-	if [[ $OPENSSL_DEMO_COUNT -eq "0" ]]; then
-		echo OK
-	else
-		echo FAILED - Found demonstration certificate
-		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
-	fi
-}
+# # certcheck checks for presence of a self-signed certificate on a component
+# certcheck () {
+# 	CERTCHECK_CHECK_COMPONENT=$1
+# 	CERTCHECK_CHECK_HOST=$2
+# 	CERTCHECK_CHECK_PORT=$3
+# 
+# 	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
+# 
+# 	OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
+# 
+# 	if [[ $OPENSSL_SELFSIGNED_COUNT -eq "0" ]]; then
+# 		echo OK
+# 	else
+# 		echo FAILED - Found self-signed certificate
+# 		FAIL_COUNT=$((FAIL_COUNT+1))
+# 		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found self-signed certificate"
+# 	fi
+# }
+# 
+# # democertcheck checks for presence of an Oracle-provided demonstration certificate on a component
+# democertcheck () {
+# 	DEMOCERTCHECK_CHECK_COMPONENT=$1
+# 	DEMOCERTCHECK_CHECK_HOST=$2
+# 	DEMOCERTCHECK_CHECK_PORT=$3
+# 
+# 	echo -ne "\tChecking demo certificate at $DEMOCERTCHECK_CHECK_COMPONENT ($DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
+# 
+# 	OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
+# 
+# 	if [[ $OPENSSL_DEMO_COUNT -eq "0" ]]; then
+# 		echo OK
+# 	else
+# 		echo FAILED - Found demonstration certificate
+# 		FAIL_COUNT=$((FAIL_COUNT+1))
+# 		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
+# 	fi
+# }
 
 
 # ciphercheck confirms LOW/MEDIUM strength ciphers not accepted, and HIGH strength ciphers accepted, on a component
@@ -1332,10 +1332,10 @@ combinedcertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 #democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\t(3c) Checking for self-signed certificates on all agents\n"
+	echo -e "\n\t(3b) Checking for self-signed certificates on all agents\n"
 	emcliagentselfsignedcerts
 
-	echo -e "\n\t(3d) Checking for demonstration certificates on all agents\n"
+	echo -e "\n\t(3c) Checking for demonstration certificates on all agents\n"
 	emcliagentdemocerts
 fi
 
