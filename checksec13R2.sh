@@ -281,6 +281,12 @@ MW_HOME=$OMS_HOME
 COMMON_HOME="$MW_HOME/oracle_common"
 
 AGENT_HOME=`$GREP -vi REMOVED $ORAINVENTORY/ContentsXML/inventory.xml | $GREP "HOME NAME=\"agent13c" | awk '{print $3}' | sed -e 's/LOC=\"//' | sed -e 's/"//'`
+
+if [[ -z "${AGENT_HOME}" ]]; then
+	echo "AGENT_HOME not found in oraInventory, exiting..." 1>&2
+	exit 1
+fi
+
 AGENT_TARGETS_XML="$AGENT_HOME/../agent_inst/sysman/emd/targets.xml"
 REPOS_DB_TARGET_NAME=`$GREP 'Member TYPE="oracle_database"' $AGENT_TARGETS_XML | uniq | sed 's/^.*NAME="//' | sed 's/".*$//'`
 
