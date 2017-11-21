@@ -162,7 +162,7 @@
 ### Begin user configurable section
 
 JAVA_CHECK_VERSION="1.7.0_161"
-OPATCH_CHECK_VERSION="13.9.1.3.0"
+OPATCH_CHECK_VERSION="13.9.2.1.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 ### Group the main set of frequently revised patches here
