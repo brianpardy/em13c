@@ -375,7 +375,7 @@ $OMSPATCHER lspatches -oh $OMS_HOME -jdk $MW_HOME/oracle_common/jdk > $OMSPATCHE
 echo "OK"
 
 
-$EMCLI sync >& /dev/null
+$EMCLI sync > /dev/null 2>&1
 EMCLI_NOT_LOGGED_IN=$?
 
 if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
@@ -672,9 +672,9 @@ combinedcertcheck () {
     CERTCHECK_CHECK_HOST=$2
     CERTCHECK_CHECK_PORT=$3
 
-    echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol           $OPENSSL_CERTCHECK_PROTOCOL)... "
+    echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
 
-    OPENSSL_RESULT="`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -                      $OPENSSL_CERTCHECK_PROTOCOL 2>&1`"
+    OPENSSL_RESULT="`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1`"
     OPENSSL_CHECK_FAILED=`echo "${OPENSSL_RESULT}" | $GREP -ci ":wrong version number:"`
     OPENSSL_SELFSIGNED_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "self signed certificate"`
     OPENSSL_DEMO_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
@@ -1301,25 +1301,35 @@ fi
 
 echo -e "\n(3) Checking self-signed and demonstration certificates at SSL/TLS endpoints (see notes 2202569.1, 1367988.1, 1914184.1, 2213661.1, 2220788.1, 123033.1, 1937457.1)"
 
-echo -e "\n\t(3a) Checking for self-signed certificates on OMS components"
-certcheck Agent $OMSHOST $PORT_AGENT
-certcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
-certcheck BIPublisher $OMSHOST $PORT_BIP
-certcheck NodeManager $OMSHOST $PORT_NODEMANAGER
-certcheck OMSconsole $OMSHOST $PORT_OMS
-certcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
-certcheck OMSupload $OMSHOST $PORT_UPL
-certcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+echo -e "\n\t(3a) Checking for self-signed and demonstration certificates on OMS components"
+combinedcertcheck Agent $OMSHOST $PORT_AGENT
+combinedcertcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
+combinedcertcheck BIPublisher $OMSHOST $PORT_BIP
+combinedcertcheck NodeManager $OMSHOST $PORT_NODEMANAGER
+combinedcertcheck OMSconsole $OMSHOST $PORT_OMS
+combinedcertcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
+combinedcertcheck OMSupload $OMSHOST $PORT_UPL
+combinedcertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
-echo -e "\n\t(3b) Checking for demonstration certificates on OMS components"
-democertcheck Agent $OMSHOST $PORT_AGENT
-democertcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
-democertcheck BIPublisher $OMSHOST $PORT_BIP
-democertcheck NodeManager $OMSHOST $PORT_NODEMANAGER
-democertcheck OMSconsole $OMSHOST $PORT_OMS
-democertcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
-democertcheck OMSupload $OMSHOST $PORT_UPL
-democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+#echo -e "\n\t(3a) Checking for self-signed certificates on OMS components"
+#certcheck Agent $OMSHOST $PORT_AGENT
+#certcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
+#certcheck BIPublisher $OMSHOST $PORT_BIP
+#certcheck NodeManager $OMSHOST $PORT_NODEMANAGER
+#certcheck OMSconsole $OMSHOST $PORT_OMS
+#certcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
+#certcheck OMSupload $OMSHOST $PORT_UPL
+#certcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
+#
+#echo -e "\n\t(3b) Checking for demonstration certificates on OMS components"
+#democertcheck Agent $OMSHOST $PORT_AGENT
+#democertcheck BIPublisherOHS $OMSHOST $PORT_BIP_OHS
+#democertcheck BIPublisher $OMSHOST $PORT_BIP
+#democertcheck NodeManager $OMSHOST $PORT_NODEMANAGER
+#democertcheck OMSconsole $OMSHOST $PORT_OMS
+#democertcheck OMSproxy $OMSHOST $PORT_OMS_JAVA
+#democertcheck OMSupload $OMSHOST $PORT_UPL
+#democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
 	echo -e "\n\t(3c) Checking for self-signed certificates on all agents\n"
