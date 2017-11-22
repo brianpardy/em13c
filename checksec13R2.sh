@@ -150,8 +150,8 @@
 # before running the script:
 #
 # - Login to EMCLI using an OEM user account
-# - Make sure the OEM user account can execute EMCLI execute_sql and
-#   execute_hostcmd
+# - Make sure the OEM user account can execute EMCLI execute_sql, 
+#   execute_hostcmd, and list 
 # - Make sure the OEM user account has specified default normal database
 #   credentials and default host credentials for the repository database
 #   target.
@@ -695,51 +695,11 @@ combinedcertcheck () {
 	elif [[ $OPENSSL_DEMO_COUNT -ne "0" ]]; then
 		echo FAILED - Found demonstration certificate
 		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:			 ${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found demonstration certificate"
 	else
 		echo OK
 	fi
 }
-
-
-# # certcheck checks for presence of a self-signed certificate on a component
-# certcheck () {
-# 	CERTCHECK_CHECK_COMPONENT=$1
-# 	CERTCHECK_CHECK_HOST=$2
-# 	CERTCHECK_CHECK_PORT=$3
-# 
-# 	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
-# 
-# 	OPENSSL_SELFSIGNED_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "self signed certificate"`
-# 
-# 	if [[ $OPENSSL_SELFSIGNED_COUNT -eq "0" ]]; then
-# 		echo OK
-# 	else
-# 		echo FAILED - Found self-signed certificate
-# 		FAIL_COUNT=$((FAIL_COUNT+1))
-# 		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found self-signed certificate"
-# 	fi
-# }
-# 
-# # democertcheck checks for presence of an Oracle-provided demonstration certificate on a component
-# democertcheck () {
-# 	DEMOCERTCHECK_CHECK_COMPONENT=$1
-# 	DEMOCERTCHECK_CHECK_HOST=$2
-# 	DEMOCERTCHECK_CHECK_PORT=$3
-# 
-# 	echo -ne "\tChecking demo certificate at $DEMOCERTCHECK_CHECK_COMPONENT ($DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
-# 
-# 	OPENSSL_DEMO_COUNT=`echo Q | $OPENSSL s_client -prexit -connect $DEMOCERTCHECK_CHECK_HOST:$DEMOCERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1 | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
-# 
-# 	if [[ $OPENSSL_DEMO_COUNT -eq "0" ]]; then
-# 		echo OK
-# 	else
-# 		echo FAILED - Found demonstration certificate
-# 		FAIL_COUNT=$((FAIL_COUNT+1))
-# 		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
-# 	fi
-# }
-
 
 # ciphercheck confirms LOW/MEDIUM strength ciphers not accepted, and HIGH strength ciphers accepted, on a component
 ciphercheck () {
@@ -1124,7 +1084,8 @@ emcliagentselfsignedcerts() {
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-		certcheck Agent $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST $EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT
+		combinedcertcheck Agent $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST $EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT
+		#certcheck Agent $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST $EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT
 	done
 }
 
@@ -1336,11 +1297,11 @@ combinedcertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 #democertcheck WLSadmin $OMSHOST $PORT_ADMINSERVER
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\t(3b) Checking for self-signed certificates on all agents\n"
+	echo -e "\n\t(3b) Checking for self-signed/demonstration certificates on all agents\n"
 	emcliagentselfsignedcerts
 
-	echo -e "\n\t(3c) Checking for demonstration certificates on all agents\n"
-	emcliagentdemocerts
+	#echo -e "\n\t(3c) Checking for demonstration certificates on all agents\n"
+	#emcliagentdemocerts
 fi
 
 echo -e "\n(4) Checking EM13c Oracle home patch levels against $PATCHDATE baseline (see notes $PATCHNOTE, 822485.1, 1470197.1)"
@@ -1459,16 +1420,16 @@ opatchcheck WLS $OMS_HOME 26591558
 
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -e "\n\tUsing EMCLI to check for agent bundle patch on all agents"
-	#emcliagentbundlecheck 4d 26448382 "EM-AGENT BUNDLE PATCH 13.2.0.0.170831"
-	#emcliagentbundlecheck 4d 26649994 "EM-AGENT BUNDLE PATCH 13.2.0.0.170930"
+	echo -e "\n\tUsing EMCLI check for agent bundle patch on all agents"
 	emcliagentbundlecheck 4d $AGTBUNDLEPATCH $AGTBUNDLEDESC
 else
 	echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
 	#echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170831 (26448382)... "
 	#opatchcheck Agent $AGENT_HOME 26448382
-	echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170930 (26649994)... "
-	opatchcheck Agent $AGENT_HOME 26649994
+	#echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170930 (26649994)... "
+	#opatchcheck Agent $AGENT_HOME 26649994
+	echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) $AGTBUNDLEDESC... "
+	opatchcheck Agent $AGENT_HOME $AGTBUNDLEPATCH
 fi
 
 
