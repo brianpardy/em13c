@@ -7,6 +7,8 @@
 # against the latest recommended patches and also flags the use of demo
 # or self-signed certificates.
 #
+# LICENSE: PUBLIC DOMAIN, USE AT YOUR OWN RISK
+#
 # Released  v0.1:  Initial beta release 5 Apr 2016
 # Changes   v0.2:  Updated for current patches
 # Changes   v0.3:  APR2016 patchset added
@@ -124,6 +126,12 @@
 # 6.9 where OpenSSL does not have LOW strength ciphers available, causing
 # an error in the script.
 #
+# Thanks to Jan Schnackenberg who reported many general and AIX-specific issues 
+# and provided patches to resolve them, including a merged replacement for
+# the self-signed and demo certificate checks, a greatly improved multi-dot
+# version string comparison, better handling for endpoints not supporting
+# TLSv1.2, and bugfixes for the patchercheck and variable definitions.
+#
 # In order to check selections for ENCRYPTION_TYPES and CRYPTO_CHECKSUM_TYPES
 # I have to make some judgement calls. Due to MD5's known issues, I consider
 # it unacceptable for CRYPTO_CHECKSUM_TYPES. Unfortunately SHA256, the
@@ -207,20 +215,18 @@ VERSION="2.21"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
+RUN_DB_CHECK=0
+VERBOSE_CHECKSEC=2
+EMCLI_CHECK=0
+
+HOST_OS=`uname -s`
+HOST_ARCH=`uname -m`
+
 if [[ "${HOST_OS}" == "AIX" ]]; then
    OMSHOST=`hostname`
 else
    OMSHOST=`hostname -f`
 fi
-
-
-RUN_DB_CHECK=0
-VERBOSE_CHECKSEC=2
-EMCLI_CHECK=0
-
-
-HOST_OS=`uname -s`
-HOST_ARCH=`uname -m`
 
 ORAGCHOMELIST="/etc/oragchomelist"
 ORATAB="/etc/oratab"
