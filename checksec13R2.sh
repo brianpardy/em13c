@@ -385,6 +385,8 @@ EMCLI_NOT_LOGGED_IN=$?
 
 if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 	echo -e "\tEMCLI login... OK"
+
+	echo -e "\tNOTE: If you experience problems with EMCLI integration since version 2.21, grant ACCESS_EMCLI_SQL_LIST_VERB to your EMCLI user."
 	EMCLI_AGENTLIST_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 	EMCLI_AGENTPATCHES_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 	EMCLI_AGENTHOMES_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
