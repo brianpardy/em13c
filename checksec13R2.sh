@@ -16,67 +16,67 @@
 # Changes   v0.5:  Plugin updates for 20160531
 # Changes   v0.6:  Plugin/OMS/DB updates for 20160719 CPU + Java check
 # Changes   v0.7:  Plugin/OMS updates for 20160816 bundles
-#                  Support for SLES11 OpenSSL 1 parallel package
-#                  Add checks for TLSv1.1, TLSv1.2
-#                  Permit only TLSv1.2 where supported by OpenSSL
+#		  Support for SLES11 OpenSSL 1 parallel package
+#		  Add checks for TLSv1.1, TLSv1.2
+#		  Permit only TLSv1.2 where supported by OpenSSL
 # Changes   v0.8:  Fix broken check for SSL_CIPHER_SUITES
-#                  Add checks for ENCRYPTION_SERVER, ENCRYPTION_CLIENT,
-#                  CRYPTO_CHECKSUM_SERVER, CRYPTO_CHECKSUM_CLIENT,
-#                  ENCRYPTION_TYPES_SERVER, ENCRYPTION_TYPES_CLIENT,
-#                  CRYPTO_CHECKSUM_TYPES_SERVER, CRYPTO_CHECKSUM_TYPES_CLIENT
+#		  Add checks for ENCRYPTION_SERVER, ENCRYPTION_CLIENT,
+#		  CRYPTO_CHECKSUM_SERVER, CRYPTO_CHECKSUM_CLIENT,
+#		  ENCRYPTION_TYPES_SERVER, ENCRYPTION_TYPES_CLIENT,
+#		  CRYPTO_CHECKSUM_TYPES_SERVER, CRYPTO_CHECKSUM_TYPES_CLIENT
 # Changes   v0.9:  Plugin updates for 20160920
-#                  Support TLSv1.2 when available in certcheck,
-#                  democertcheck, and ciphercheck
+#		  Support TLSv1.2 when available in certcheck,
+#		  democertcheck, and ciphercheck
 # Changes   v1.0:  Converted to EM13cR2, converted repository DB checks
-#                  to use DBBP Bundle Patch (aka Exadata patch), not PSU
+#		  to use DBBP Bundle Patch (aka Exadata patch), not PSU
 # Changes   v1.1:  Updated for 20161231 EM13cR2 patches.
-#                  Updated for 20170117 security patches.
-#                  Add check for OPatch and OMSPatcher versions.
+#		  Updated for 20170117 security patches.
+#		  Add check for OPatch and OMSPatcher versions.
 # Changes   v1.2:  Updated for 20170131 bundle patches.
 # Changes   v1.3:  Updated for 20170228 bundle patches.
 # Changes   v1.4:  Added patches 25604219 and 24327938
-#                  Updated Java check to 1.7.0_131
+#		  Updated Java check to 1.7.0_131
 # Changes   v1.5:  Add check for chained agent Java version
 # Changes   v1.6:  Updated note references.
-#                  Added plugin patch checks for OMS chained agent
-#                  for non-default discovery/monitoring plugins
-#                  not previously checked. If you do not have
-#                  those plugins installed, the script will not
-#                  indicate failure due to the missing patch.
-#                  Added EMCLI check. If you login to EMCLI
-#                  before running ./checksec13R2.sh, the script
-#                  will soon check additional items using EMCLI.
+#		  Added plugin patch checks for OMS chained agent
+#		  for non-default discovery/monitoring plugins
+#		  not previously checked. If you do not have
+#		  those plugins installed, the script will not
+#		  indicate failure due to the missing patch.
+#		  Added EMCLI check. If you login to EMCLI
+#		  before running ./checksec13R2.sh, the script
+#		  will soon check additional items using EMCLI.
 # Changes   v2.0:  Now checking plugin bundle patches on all agents
-#                  using EMCLI.  Run the script while not logged in
-#                  to EMCLI for instructions.  Login to EMCLI and run
-#                  the script to use the new functionality.
-#                  If not logged in, still runs all non-EMCLI checks.
+#		  using EMCLI.  Run the script while not logged in
+#		  to EMCLI for instructions.  Login to EMCLI and run
+#		  the script to use the new functionality.
+#		  If not logged in, still runs all non-EMCLI checks.
 # Changes   v2.1:  Now checking OPatch versions on all agents using
-#                  EMCLI. Now checking self-signed/demo certs on all
-#                  agents using EMCLI. Now caching key EMCLI output
-#                  to decrease runtime.
+#		  EMCLI. Now checking self-signed/demo certs on all
+#		  agents using EMCLI. Now caching key EMCLI output
+#		  to decrease runtime.
 # Changes   v2.2:  Gather OPatch/OMSPatcher output at the beginning
-#                  of the script and cache it during the run to improve
-#                  runtime. Turned off verbose-by-default, added "-v"
-#                  commandline switch to enable verbose run.
-#                  Now checks agent bundle patch presence on all agents.
-#                  Cache execute_sql agent patch output to improve runtime.
-#                  Cache agent home list to improve runtime.
-#                  Huge runtime improvements vs previous release.
-#                  Remove duplicated code for cert checks
+#		  of the script and cache it during the run to improve
+#		  runtime. Turned off verbose-by-default, added "-v"
+#		  commandline switch to enable verbose run.
+#		  Now checks agent bundle patch presence on all agents.
+#		  Cache execute_sql agent patch output to improve runtime.
+#		  Cache agent home list to improve runtime.
+#		  Huge runtime improvements vs previous release.
+#		  Remove duplicated code for cert checks
 # Changes   v2.3:  Get agent home directories from a different repo table
-#                  Update OPatch/OMSPatcher versions
+#		  Update OPatch/OMSPatcher versions
 # Changes   v2.4:  Include 20170418 PSU
 # Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141
-#                  Update MOS note references, add agent bundle 20170331
+#		  Update MOS note references, add agent bundle 20170331
 # Changes   v2.6:  Add agent bundle 20170331, ADF 21849941, OPSS 22748215
-#                  Update plugin bundle patches for 13.2.1 plugin line
+#		  Update plugin bundle patches for 13.2.1 plugin line
 # Changes   v2.7:  Add check for APEX version on repository DB
-#                  Handle cases where OpenSSL has no LOW strength ciphers
-#                  Fix opatchplugincheck for directories leftover from
-#                  install of previous plugin versions.
-#                  Fixed some missing bundle patches in EMCLI agent checks.
-#                  Update agent+plugin bundle patches to 20170430
+#		  Handle cases where OpenSSL has no LOW strength ciphers
+#		  Fix opatchplugincheck for directories leftover from
+#		  install of previous plugin versions.
+#		  Fixed some missing bundle patches in EMCLI agent checks.
+#		  Update agent+plugin bundle patches to 20170430
 # Changes   v2.8:  Update for 20170531 patch release
 # Changes   v2.9:  Update for first set of 13.2.2 plugin bundle patches
 # Changes   v2.10: Update for 20170630 plugin bundle patches
@@ -91,13 +91,13 @@
 # Changes   v2.19: Add OSS CPUOCT2017, update WLS PSU 171017
 # Changes   v2.20: Update SSL_VERSION check to 1.2, Java JDK to 1.7.0_161
 # Changes   v2.21: Update for 20171031 bundle patches released 20171110, new ZDLRA patch
-#                  Bug fixes reported by JS - EMCLI definition, AIX hostname -f 
-#                                             -oh $MW_HOME in patchercheck
-#                  Enhancements from JS: improve minimum version calculation for OPatch
-#                                        merge certcheck/democertcheck
-#                                        use emcli list, not emcli execute_sql
-#                                        needs execute ad hoc sql using EMCLI list verb 
-#                                        ACCESS_EMCLI_SQL_LIST_VERB
+#		  Bug fixes reported by JS - EMCLI definition, AIX hostname -f 
+#						 -oh $MW_HOME in patchercheck
+#		  Enhancements from JS: improve minimum version calculation for OPatch
+#					merge certcheck/democertcheck
+#					use emcli list, not emcli execute_sql
+#					needs execute ad hoc sql using EMCLI list verb 
+#					ACCESS_EMCLI_SQL_LIST_VERB
 #
 #
 # From: @BrianPardy on Twitter
@@ -155,10 +155,10 @@
 # - Make sure the OEM user account has specified default normal database
 #   credentials and default host credentials for the repository database
 #   target.
-#      * This will enable plugin bundle patch checks on all agents.
+#	* This will enable plugin bundle patch checks on all agents.
 # - Make sure the OEM user account has specified preferred credentials for
 #   all host targets where agents run
-#      * This will enable Java version checks on all agents.
+#	* This will enable Java version checks on all agents.
 #
 # The create_user_for_checksec13R2.sh script provided in the same repo
 # as this script will create a user with the necessary permissions and
@@ -207,7 +207,6 @@ WLSPSUDESC="WLS PATCH SET UPDATE 12.1.3.0.$WLSPSUDATE ($WLSPSUPATCH)"
 ### End user configurable section
 
 
-
 SCRIPTNAME=`basename $0`
 PATCHDATE="31 Oct 2017"
 PATCHNOTE="1664074.1, 2219797.1"
@@ -223,9 +222,9 @@ HOST_OS=`uname -s`
 HOST_ARCH=`uname -m`
 
 if [[ "${HOST_OS}" == "AIX" ]]; then
-   OMSHOST=`hostname`
+	OMSHOST=`hostname`
 else
-   OMSHOST=`hostname -f`
+	OMSHOST=`hostname -f`
 fi
 
 ORAGCHOMELIST="/etc/oragchomelist"
@@ -319,31 +318,31 @@ EMCLI="$MW_HOME/bin/emcli"
 echo -e "\tEM13c config... OK"
 
 if [[ "$REPOS_DB_HOST" == "$OMSHOST" ]]; then
-    echo -ne "\tRepos DB... "
+	echo -ne "\tRepos DB... "
 	REPOS_DB_HOME=`$GREP "$REPOS_DB_SID:" $ORATAB | awk -F: '{print $2}'`
 	REPOS_DB_VERSION=`$REPOS_DB_HOME/OPatch/opatch lsinventory -oh $REPOS_DB_HOME | $GREP 'Oracle Database' | awk '{print $4}'`
 
 	if [[ "$REPOS_DB_VERSION" == "11.2.0.4.0" ]]; then
 		RUN_DB_CHECK=1
-        echo "$REPOS_DB_VERSION OK"
+	echo "$REPOS_DB_VERSION OK"
 	fi
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-        echo "$REPOS_DB_VERSION OK"
+	echo "$REPOS_DB_VERSION OK"
 		RUN_DB_CHECK=1
 	fi
 
 	if [[ "$RUN_DB_CHECK" -eq 0 ]]; then
-        echo "$REPOS_DB_VERSION not supported, skipping"
+	echo "$REPOS_DB_VERSION not supported, skipping"
 	fi
 fi
 
 
 getopts :v VERBOSE_FLAG
 if [[ "$VERBOSE_FLAG" == "v" ]]; then
-    VERBOSE_CHECKSEC=2
+	VERBOSE_CHECKSEC=2
 else
-    VERBOSE_CHECKSEC=0
+	VERBOSE_CHECKSEC=0
 fi
 
 
@@ -368,10 +367,10 @@ echo "OK"
 # Cache repository DB OPatch output
 OPATCH_REPOS_DB_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.REPOS_DB_HOME.$OPATCH_REPOS_DB_CACHE_RAND"
 if [[ "$RUN_DB_CHECK" -eq 1 ]]; then
-    echo -ne "\tOPatch-Repos DB... "
-    OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-    $REPOS_DB_HOME/OPatch/opatch lsinv -oh $REPOS_DB_HOME > $OPATCH_REPOS_DB_CACHE_FILE
-    echo "OK"
+	echo -ne "\tOPatch-Repos DB... "
+	OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+	$REPOS_DB_HOME/OPatch/opatch lsinv -oh $REPOS_DB_HOME > $OPATCH_REPOS_DB_CACHE_FILE
+	echo "OK"
 fi
 
 # Cache OMS OMSPatcher output
@@ -385,110 +384,110 @@ $EMCLI sync > /dev/null 2>&1
 EMCLI_NOT_LOGGED_IN=$?
 
 if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
-    echo -e "\tEMCLI login... OK"
+	echo -e "\tEMCLI login... OK"
 	EMCLI_AGENTLIST_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 	EMCLI_AGENTPATCHES_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 	EMCLI_AGENTHOMES_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 
 
-    # Cache list of all agents
-    echo -ne "\tEMCLI-Agent list... "
+	# Cache list of all agents
+	echo -ne "\tEMCLI-Agent list... "
 	EMCLI_AGENTLIST_CACHE_FILE="${SCRIPTNAME}_cache.agentlist.$EMCLI_AGENTLIST_RAND"
 	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
-    echo "OK"
+	echo "OK"
 
-    # Cache list of all patches on agents and their plugins
-    echo -ne "\tEMCLI-Agent patches... "
-    EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
-    $EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.     mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >                 $EMCLI_AGENTPATCHES_CACHE_FILE
-#    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
-    echo "OK"
+	# Cache list of all patches on agents and their plugins
+	echo -ne "\tEMCLI-Agent patches... "
+	EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
+	$EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.	 mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >		 $EMCLI_AGENTPATCHES_CACHE_FILE
+#	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
+	echo "OK"
 
-    # Cache list of all agent homes
-    echo -ne "\tEMCLI-Agent homes... "
-    EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
-    $EMCLI list -format="name:script" -noheader -columns="INFO:200" -sql="select distinct home_location || ',' || host_name info  from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
-#    $EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
-    echo "OK"
+	# Cache list of all agent homes
+	echo -ne "\tEMCLI-Agent homes... "
+	EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
+	$EMCLI list -format="name:script" -noheader -columns="INFO:200" -sql="select distinct home_location || ',' || host_name info  from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
+#	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
+	echo "OK"
 
 	EMCLI_CHECK=1
 else
-    echo "EMCLI login unavailable, skipping... "
+	echo "EMCLI login unavailable, skipping... "
 fi
 
 echo
 
 # cleantemp used to cleanup leftover temp files
 cleantemp () {
-    echo -n "Cleaning up temporary files... "
-    rm $OPATCH_OMS_CACHE_FILE 2> /dev/null
-    rm $OPATCH_AGENT_CACHE_FILE 2> /dev/null
-    rm $OPATCH_REPOS_DB_CACHE_FILE 2> /dev/null
-    rm $OMSPATCHER_OMS_CACHE_FILE 2> /dev/null
+	echo -n "Cleaning up temporary files... "
+	rm $OPATCH_OMS_CACHE_FILE 2> /dev/null
+	rm $OPATCH_AGENT_CACHE_FILE 2> /dev/null
+	rm $OPATCH_REPOS_DB_CACHE_FILE 2> /dev/null
+	rm $OMSPATCHER_OMS_CACHE_FILE 2> /dev/null
 
-    if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-        rm $EMCLI_AGENTLIST_CACHE_FILE 2> /dev/null
-        rm $EMCLI_AGENTPATCHES_CACHE_FILE 2> /dev/null
-        rm $EMCLI_AGENTHOMES_CACHE_FILE 2> /dev/null
-    fi
-    echo "done"
+	if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	rm $EMCLI_AGENTLIST_CACHE_FILE 2> /dev/null
+	rm $EMCLI_AGENTPATCHES_CACHE_FILE 2> /dev/null
+	rm $EMCLI_AGENTHOMES_CACHE_FILE 2> /dev/null
+	fi
+	echo "done"
 }
 
 # apexcheck used to validate installed version of APEX
 apexcheck () {
-    APEX_CHECK_VERSION=$1
+	APEX_CHECK_VERSION=$1
 
-    APEX_COMPARE_MIN=`echo $APEX_CHECK_VERSION | sed 's/\.//g'`
+	APEX_COMPARE_MIN=`echo $APEX_CHECK_VERSION | sed 's/\.//g'`
 
-    APEXVERSION=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'apexver:' || version from dba_registry where comp_name = 'Oracle Application Express'" | $GREP apexver | awk -F: '{print $2}'`
+	APEXVERSION=`$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select 'apexver:' || version from dba_registry where comp_name = 'Oracle Application Express'" | $GREP apexver | awk -F: '{print $2}'`
 
-    APEX_COMPARE_CUR=`echo $APEXVERSION | sed 's/\.//g'`
+	APEX_COMPARE_CUR=`echo $APEXVERSION | sed 's/\.//g'`
 
-    if [[ $APEX_COMPARE_CUR < $APEX_COMPARE_MIN ]]; then
-        echo FAILED
-        FAIL_COUNT=$((FAIL_COUNT+1))
-        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:APEX @ $REPOS_DB_TARGET_NAME: fails minimum version requirement $APEXVERSION vs $APEX_CHECK_VERSION"
-    else
-        echo OK
-    fi
-    return
+	if [[ $APEX_COMPARE_CUR < $APEX_COMPARE_MIN ]]; then
+	echo FAILED
+	FAIL_COUNT=$((FAIL_COUNT+1))
+	FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:APEX @ $REPOS_DB_TARGET_NAME: fails minimum version requirement $APEXVERSION vs $APEX_CHECK_VERSION"
+	else
+	echo OK
+	fi
+	return
 }
 
 # returnminversion [JS] - given two multidot version strings, return the minimum
 # return_min_version used to compare two version-strings in dot-separated format
 # missing version-fields will be filled with "0"
 function returnminversion() {
-    local LV_VERSION_1="$1"
-    local LV_VERSION_2="$2"
-    declare -a LV_VERS_1_ARR
-    LV_VERS_1_ARR=( $(echo "${LV_VERSION_1}" | sed 's/\./ /g') )
-    declare -a LV_VERS_2_ARR
-    LV_VERS_2_ARR=( $(echo "${LV_VERSION_2}" | sed 's/\./ /g') )
+	local LV_VERSION_1="$1"
+	local LV_VERSION_2="$2"
+	declare -a LV_VERS_1_ARR
+	LV_VERS_1_ARR=( $(echo "${LV_VERSION_1}" | sed 's/\./ /g') )
+	declare -a LV_VERS_2_ARR
+	LV_VERS_2_ARR=( $(echo "${LV_VERSION_2}" | sed 's/\./ /g') )
 
-    while [[ ${#LV_VERS_1_ARR[@]} -lt ${#LV_VERS_2_ARR[@]} ]]
-    do
-        LV_VERS_1_ARR[${#LV_VERS_1_ARR[@]}]=0
-    done
-    while [[ ${#LV_VERS_2_ARR[@]} -lt ${#LV_VERS_1_ARR[@]} ]]
-    do
-        LV_VERS_2_ARR[${#LV_VERS_2_ARR[@]}]=0
-    done
+	while [[ ${#LV_VERS_1_ARR[@]} -lt ${#LV_VERS_2_ARR[@]} ]]
+	do
+	LV_VERS_1_ARR[${#LV_VERS_1_ARR[@]}]=0
+	done
+	while [[ ${#LV_VERS_2_ARR[@]} -lt ${#LV_VERS_1_ARR[@]} ]]
+	do
+	LV_VERS_2_ARR[${#LV_VERS_2_ARR[@]}]=0
+	done
 
-    local LV_FIELD=0
-    while [[ ${LV_FIELD} -lt ${#LV_VERS_1_ARR[@]} ]]
-    do
-        if [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -lt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
-        then
-            echo "${LV_VERSION_1}"
-            return
-        elif [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -gt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
-        then
-            echo "${LV_VERSION_2}"
-            return
-        fi
-        (( LV_FIELD = LV_FIELD + 1 ))
-    done
-    echo "${LV_VERSION_1}"
+	local LV_FIELD=0
+	while [[ ${LV_FIELD} -lt ${#LV_VERS_1_ARR[@]} ]]
+	do
+	if [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -lt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
+	then
+		echo "${LV_VERSION_1}"
+		return
+	elif [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -gt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
+	then
+		echo "${LV_VERSION_2}"
+		return
+	fi
+	(( LV_FIELD = LV_FIELD + 1 ))
+	done
+	echo "${LV_VERSION_1}"
 }
 
 # patchercheck used to validate OPatch and/or OMSPatcher versions on a target
@@ -604,8 +603,8 @@ opatchcheck () {
 
 	if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
 		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_REPOS_DB_CACHE_FILE`
-    elif [[ "$OPATCH_CHECK_COMPONENT" == "Agent" ]]; then
-        OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
+	elif [[ "$OPATCH_CHECK_COMPONENT" == "Agent" ]]; then
+	OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
 	else
 		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_OMS_CACHE_FILE`
 	fi
@@ -627,13 +626,13 @@ opatchplugincheck () {
 	OPATCH_CHECK_COMPONENT=$1
 	OPATCH_CHECK_OH=$2
 	OPATCH_CHECK_PATCH=$3
-    OPATCH_PLUGIN_DIR=$4
+	OPATCH_PLUGIN_DIR=$4
 
-    if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}/META-INF" ]]; then
-            OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
-    else
-            OPATCH_RET="Plugin dir $OPATCH_PLUGIN_DIR does not exist, not installed"
-    fi
+	if [[ -d "${OPATCH_CHECK_OH}/plugins/${OPATCH_PLUGIN_DIR}/META-INF" ]]; then
+		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
+	else
+		OPATCH_RET="Plugin dir $OPATCH_PLUGIN_DIR does not exist, not installed"
+	fi
 
 	if [[ -z "$OPATCH_RET" ]]; then
 		echo FAILED
@@ -653,12 +652,12 @@ omspatchercheck () {
 	OMSPATCHER_CHECK_OH=$2
 	OMSPATCHER_CHECK_PATCH=$3
 
-    if [[ "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1322" || "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1321" || "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1323" ]]; then
-        # special case handling for 13.2.1 plugin bundle update when 13.2.2 plugins have been installed & vice versa
-        OMSPATCHER_RET=`$GREP -e $OMSSIDE1322 -e $OMSSIDE1321 -e $OMSSIDE1323 $OMSPATCHER_OMS_CACHE_FILE`
-    else
-        OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
-    fi
+	if [[ "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1322" || "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1321" || "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1323" ]]; then
+	# special case handling for 13.2.1 plugin bundle update when 13.2.2 plugins have been installed & vice versa
+	OMSPATCHER_RET=`$GREP -e $OMSSIDE1322 -e $OMSSIDE1321 -e $OMSSIDE1323 $OMSPATCHER_OMS_CACHE_FILE`
+	else
+	OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
+	fi
 
 
 	if [[ -z "$OMSPATCHER_RET" ]]; then
@@ -674,32 +673,32 @@ omspatchercheck () {
 
 # combinedcertcheck checks for presence of a self-signed or demo certificate on a component
 combinedcertcheck () {
-    CERTCHECK_CHECK_COMPONENT=$1
-    CERTCHECK_CHECK_HOST=$2
-    CERTCHECK_CHECK_PORT=$3
+	CERTCHECK_CHECK_COMPONENT=$1
+	CERTCHECK_CHECK_HOST=$2
+	CERTCHECK_CHECK_PORT=$3
 
-    echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
+	echo -ne "\tChecking certificate at $CERTCHECK_CHECK_COMPONENT ($CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)... "
 
-    OPENSSL_RESULT="`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1`"
-    OPENSSL_CHECK_FAILED=`echo "${OPENSSL_RESULT}" | $GREP -ci ":wrong version number:"`
-    OPENSSL_SELFSIGNED_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "self signed certificate"`
-    OPENSSL_DEMO_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
+	OPENSSL_RESULT="`echo Q | $OPENSSL s_client -prexit -connect $CERTCHECK_CHECK_HOST:$CERTCHECK_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL 2>&1`"
+	OPENSSL_CHECK_FAILED=`echo "${OPENSSL_RESULT}" | $GREP -ci ":wrong version number:"`
+	OPENSSL_SELFSIGNED_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "self signed certificate"`
+	OPENSSL_DEMO_COUNT=`echo "${OPENSSL_RESULT}" | $GREP -ci "issuer=/C=US/ST=MyState/L=MyTown/O=MyOrganization/OU=FOR TESTING ONLY/CN"`
 
-    if [[ $OPENSSL_CHECK_FAILED -ne "0" ]]; then
-        echo FAILED - SSL handshake failed
-        FAIL_COUNT=$((FAIL_COUNT+1))
-        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} SSL      handshake failed"
-    elif [[ $OPENSSL_SELFSIGNED_COUNT -ne "0" ]]; then
-        echo FAILED - Found self-signed certificate
-        FAIL_COUNT=$((FAIL_COUNT+1))
-        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found    self-signed certificate"
-    elif [[ $OPENSSL_DEMO_COUNT -ne "0" ]]; then
-        echo FAILED - Found demonstration certificate
-        FAIL_COUNT=$((FAIL_COUNT+1))
-        FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:                         ${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
-    else
-        echo OK
-    fi
+	if [[ $OPENSSL_CHECK_FAILED -ne "0" ]]; then
+		echo FAILED - SSL handshake failed
+		FAIL_COUNT=$((FAIL_COUNT+1))
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} SSL	  handshake failed"
+	elif [[ $OPENSSL_SELFSIGNED_COUNT -ne "0" ]]; then
+		echo FAILED - Found self-signed certificate
+		FAIL_COUNT=$((FAIL_COUNT+1))
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found	self-signed certificate"
+	elif [[ $OPENSSL_DEMO_COUNT -ne "0" ]]; then
+		echo FAILED - Found demonstration certificate
+		FAIL_COUNT=$((FAIL_COUNT+1))
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$DEMOCERTCHECK_CHECK_COMPONENT @ ${DEMOCERTCHECK_CHECK_HOST}:			 ${DEMOCERTCHECK_CHECK_PORT} found demonstration certificate"
+	else
+		echo OK
+	fi
 }
 
 
@@ -751,31 +750,30 @@ ciphercheck () {
 
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking LOW strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT, protocol $OPENSSL_CERTCHECK_PROTOCOL)..."
 
-    # Added 20170425, issue #4: Wrong detection of LOW security ciphers on agents
-    #
-    # Some OpenSSL deployments do not have any LOW strength ciphers available
-    #
-    # $ openssl ciphers LOW
-    # Error in cipher list
-    # 140665824761672:error:1410D0B9:SSL routines:SSL_CTX_set_cipher_list:no cipher match:ssl_lib.c:1314:
+	# Added 20170425, issue #4: Wrong detection of LOW security ciphers on agents
+	#
+	# Some OpenSSL deployments do not have any LOW strength ciphers available
+	#
+	# $ openssl ciphers LOW
+	# Error in cipher list
+	# 140665824761672:error:1410D0B9:SSL routines:SSL_CTX_set_cipher_list:no cipher match:ssl_lib.c:1314:
 
-#    OPENSSL_CHECK_NO_LOW_CIPHERS=`$OPENSSL ciphers LOW 2>&1 | $GREP -c "Error in cipher list"`
-    if [[ $OPENSSL_CHECK_NO_LOW_CIPHERS -eq "1" ]]; then
-        echo -e "\tN/A - OpenSSL LOW strength ciphers not available"
+#	OPENSSL_CHECK_NO_LOW_CIPHERS=`$OPENSSL ciphers LOW 2>&1 | $GREP -c "Error in cipher list"`
+	if [[ $OPENSSL_CHECK_NO_LOW_CIPHERS -eq "1" ]]; then
+		echo -e "\tN/A - OpenSSL LOW strength ciphers not available"
 		FAIL_COUNT=$((FAIL_COUNT+1))
 		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:Unable to check LOW strength ciphers, not supported by installed OpenSSL"
-    else
-        OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
+	else
+		OPENSSL_LOW_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher LOW 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
 
-        if [[ $OPENSSL_LOW_RETURN -eq "0" ]]; then
-            echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
-            FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:Permits LOW strength ciphers"
-        else
-            echo -e "\tOK"
-        fi
-    fi
-
+		if [[ $OPENSSL_LOW_RETURN -eq "0" ]]; then
+			echo -e "\tFAILED - PERMITS LOW STRENGTH CIPHER CONNECTIONS"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$OPENSSL_CHECK_COMPONENT @ $OPENSSL_CHECK_HOST:${OPENSSL_CHECK_PORT}:Permits LOW strength ciphers"
+		else
+			echo -e "\tOK"
+		fi
+	fi
 
 	echo -ne "\t($CIPHERCHECK_SECTION) Checking MEDIUM strength ciphers on $OPENSSL_CHECK_COMPONENT ($OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT)..."
 	OPENSSL_MEDIUM_RETURN=`echo Q | $OPENSSL s_client -prexit -connect $OPENSSL_CHECK_HOST:$OPENSSL_CHECK_PORT -$OPENSSL_CERTCHECK_PROTOCOL -cipher MEDIUM 2>&1 | $GREP Cipher | uniq | $GREP -c 0000`
@@ -974,150 +972,150 @@ javacheck () {
 
 # emclijavacheck uses emcli execute_sql to identify the agent home directory and execute_hostcmd to validate java version
 emclijavacheck () {
-    JAVA_VERSION=$1
+	JAVA_VERSION=$1
 
-    for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
-        THEHOST=`echo $curagent | sed -e 's/:.*$//'`
-        echo -ne "\n\t(5b) Agent $curagent JAVA VERSION $JAVA_VERSION... "
-        EMCLIJAVACHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
-        EMCLIJAVACHECK_GETHOME=`echo $EMCLIJAVACHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
-        EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
+	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
+		THEHOST=`echo $curagent | sed -e 's/:.*$//'`
+		echo -ne "\n\t(5b) Agent $curagent JAVA VERSION $JAVA_VERSION... "
+		EMCLIJAVACHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
+		EMCLIJAVACHECK_GETHOME=`echo $EMCLIJAVACHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
+		EMCLIJAVACHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIJAVACHECK_GETHOME/jdk/bin/java -version" -targets="$THEHOST:host" | $GREP version | awk '{print $3}' | sed -e 's/"//g'`
 
-        if [[ "$EMCLIJAVACHECK_GETVER" == "$JAVA_CHECK_VERSION" ]]; then
-            echo -e "\tOK"
-        else
-            echo -e "\tFAILED"
-            FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER vs $JAVA_CHECK_VERSION"
-        fi
-        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
-    done
+		if [[ "$EMCLIJAVACHECK_GETVER" == "$JAVA_CHECK_VERSION" ]]; then
+			echo -e "\tOK"
+		else
+			echo -e "\tFAILED"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:Java in $THEHOST:$EMCLIJAVACHECK_GETHOME/jdk:Found incorrect version $EMCLIJAVACHECK_GETVER vs $JAVA_CHECK_VERSION"
+		fi
+		test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIJAVACHECK_GETVER
+	done
 }
 
 # emcliagentbundlecheck uses the agent patch list cache files to check for existence of a patch on an agent
 emcliagentbundlecheck() {
-    EMCLIAGENTBUNDLE_SECTION=$1
-    EMCLIAGENTBUNDLE_PATCH=$2
-    EMCLIAGENTBUNDLE_DESC=$3
+	EMCLIAGENTBUNDLE_SECTION=$1
+	EMCLIAGENTBUNDLE_PATCH=$2
+	EMCLIAGENTBUNDLE_DESC=$3
 
-    for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
-        THEHOST=`echo $i | sed -e 's/:.*$//'`
-        echo -ne "\n\t($EMCLIAGENTBUNDLE_SECTION) Agent $i $EMCLIAGENTBUNDLE_DESC ($EMCLIAGENTBUNDLE_PATCH)... "
+	for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
+		THEHOST=`echo $i | sed -e 's/:.*$//'`
+		echo -ne "\n\t($EMCLIAGENTBUNDLE_SECTION) Agent $i $EMCLIAGENTBUNDLE_DESC ($EMCLIAGENTBUNDLE_PATCH)... "
 
-       EMCLIAGENTBUNDLE_QUERY_RET=`$GREP $THEHOST $EMCLI_AGENTPATCHES_CACHE_FILE | $GREP -c $EMCLIAGENTBUNDLE_PATCH`
+		EMCLIAGENTBUNDLE_QUERY_RET=`$GREP $THEHOST $EMCLI_AGENTPATCHES_CACHE_FILE | $GREP -c $EMCLIAGENTBUNDLE_PATCH`
 
-        if [[ "$EMCLIAGENTBUNDLE_QUERY_RET" -eq 1 ]]; then
-            echo -e "\tOK"
-        else
-            echo -e "\tFAILED"
-            FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTBUNDLE_PATCH missing on $i"
-        fi
-    done
+		if [[ "$EMCLIAGENTBUNDLE_QUERY_RET" -eq 1 ]]; then
+			echo -e "\tOK"
+		else
+			echo -e "\tFAILED"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$EMCLIAGENTBUNDLE_PATCH missing on $i"
+		fi
+	done
 }
 
 # emclipluginpatchpresent uses the agent plugins cache file and agent patch cache file to check for presence
 # of a plugin on an agent, as well as presence of specific patch on an agent
 emclipluginpatchpresent () {
-    WHICH_TARGET_TYPE=$1
-    WHICH_PLUGIN=$2
-    WHICH_PLUGIN_TYPE=$3
-    WHICH_PLUGIN_VERSION=$4
-    WHICH_PATCH=$5
-    WHICH_LABEL=$6
-    WHICH_PATCH_DESC=$7
-    EMCLI_PLUGINPATCHPRESENT_HOST=`echo $curagent | sed 's/:.*$//'`
+	WHICH_TARGET_TYPE=$1
+	WHICH_PLUGIN=$2
+	WHICH_PLUGIN_TYPE=$3
+	WHICH_PLUGIN_VERSION=$4
+	WHICH_PATCH=$5
+	WHICH_LABEL=$6
+	WHICH_PATCH_DESC=$7
+	EMCLI_PLUGINPATCHPRESENT_HOST=`echo $curagent | sed 's/:.*$//'`
 
-    echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
+	echo -ne "\n\t(${SECTION_NUM}${WHICH_LABEL}) $WHICH_PATCH_DESC @ $curagent ($WHICH_PATCH)... "
 
-    PLUGIN_EXISTS=`$GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
+	PLUGIN_EXISTS=`$GREP $WHICH_PLUGIN $EMCLICHECK_HOSTPLUGINS_CACHEFILE | sed "s/^.*$WHICH_PLUGIN/$WHICH_PLUGIN/"`
 
-    if [[ -z "$PLUGIN_EXISTS" ]]; then
-        echo "OK - plugin not installed"
-    else
-        if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
-            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
-        else
-            CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
-        fi
+	if [[ -z "$PLUGIN_EXISTS" ]]; then
+		echo "OK - plugin not installed"
+	else
+		if [[ "$WHICH_PLUGIN_TYPE" == "discovery" ]]; then
+			CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}\*"
+		else
+			CUR_PLUGIN_VERSION="${WHICH_PLUGIN_VERSION}$"
+		fi
 
-        for j in $PLUGIN_EXISTS; do
-            EMCLICHECK_RETURN=""
-            EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
-            if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
-                EMCLICHECK_RETURN="OK"
-                break
-            fi
-        done
+		for j in $PLUGIN_EXISTS; do
+			EMCLICHECK_RETURN=""
+			EMCLICHECK_FOUND_VERSION=`echo $j | $GREP -c $CUR_PLUGIN_VERSION`
+			if [[ $EMCLICHECK_FOUND_VERSION > 0 ]]; then
+				EMCLICHECK_RETURN="OK"
+				break
+			fi
+		done
 
-	# OK at this point simply means plugin home exists on the agent
-	# Now check for existence of patch
+		# OK at this point simply means plugin home exists on the agent
+		# Now check for existence of patch
 
-        if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
-            EMCLICHECK_QUERY_RET=`$GREP $EMCLI_PLUGINPATCHPRESENT_HOST $EMCLI_AGENTPATCHES_CACHE_FILE | $GREP -c $WHICH_PATCH`
+		if [[ "$EMCLICHECK_RETURN" == "OK" ]]; then
+			EMCLICHECK_QUERY_RET=`$GREP $EMCLI_PLUGINPATCHPRESENT_HOST $EMCLI_AGENTPATCHES_CACHE_FILE | $GREP -c $WHICH_PATCH`
 
-            if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
-                echo -e "\tOK"
-            else
-                echo -e "\tFAILED"
-                FAIL_COUNT=$((FAIL_COUNT+1))
-                FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $EMCLI_PLUGINPATCHPRESENT_HOST"
-            fi
-        else
-            echo -e "\tOK - plugin not installed"
-        fi
-    fi
+			if [[ "$EMCLICHECK_QUERY_RET" -eq 1 ]]; then
+				echo -e "\tOK"
+			else
+				echo -e "\tFAILED"
+				FAIL_COUNT=$((FAIL_COUNT+1))
+				FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$WHICH_PATCH missing in $WHICH_PLUGIN on $EMCLI_PLUGINPATCHPRESENT_HOST"
+			fi
+		else
+			echo -e "\tOK - plugin not installed"
+		fi
+	fi
 
-#    test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
+#	test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLICHECK_RETURN
 }
 
 # emcliagentbundlepluginpatchcheck caches agent plugin lists and calls emclipluginpatchpresent to check patch presence
 emcliagentbundlepluginpatchcheck () {
-    SECTION_NUM=$1
+	SECTION_NUM=$1
 
-    for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
-        EMCLICHECK_RETURN="FAILED"
-        EMCLICHECK_FOUND_VERSION=0
-        EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-        EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
+	for curagent in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
+		EMCLICHECK_RETURN="FAILED"
+		EMCLICHECK_FOUND_VERSION=0
+		EMCLICHECK_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+		EMCLICHECK_HOSTPLUGINS_CACHEFILE="plugins_${curagent}_cache.${EMCLICHECK_RAND}"
 
-        $EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+		$EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
 
-        emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 26955301 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.171031 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 26955424 a "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 26238665 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170630 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.2.0.0 26568836 b "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 26568791 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170831 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.2.0.0 26815892 c "EM FMW PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 26741697 c "EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25985080 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170531 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.2.0.0 25987111 e "EM SI PLUGIN BUNDLE PATCH 13.2.2.0.170531 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
-        emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-#        emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26238786 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26817739 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25985223 j "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170531 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26238802 j "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.2.0.0 26817804 k "EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 26958775 k "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 l "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.2.0.0 26404920 l "EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.3.0.0 26958757 l "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 26404865 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170731 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.2.0.0 26832251 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 26741689 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 n "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
-        emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.2.0.0 26817793 n "EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-        emclipluginpatchpresent oracle_emd oracle.sysman.am agent 13.2.2.0.0 26955968 n "EM ZERO DATA LOSS RECOVERY APPLIANCE PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 26955301 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.171031 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 26955424 a "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 26238665 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170630 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.2.0.0 26568836 b "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 26568791 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170831 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.2.0.0 26815892 c "EM FMW PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 26741697 c "EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25985080 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170531 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.2.0.0 25987111 e "EM SI PLUGIN BUNDLE PATCH 13.2.2.0.170531 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
+		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+#		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26238786 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26817739 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25985223 j "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170531 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26238802 j "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.2.0.0 26817804 k "EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 26958775 k "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 l "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.2.0.0 26404920 l "EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.3.0.0 26958757 l "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 26404865 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170731 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.2.0.0 26832251 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 26741689 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 n "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.2.0.0 26817793 n "EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.am agent 13.2.2.0.0 26955968 n "EM ZERO DATA LOSS RECOVERY APPLIANCE PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
 
-        (( SECTION_NUM+=1 ))
+		(( SECTION_NUM+=1 ))
 
-        rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
-    done
+		rm $EMCLICHECK_HOSTPLUGINS_CACHEFILE
+	done
 }
 
 # emcliagentselfsignedcerts uses the agent list cache file to identify agents and check for self signed certs at each endpoint
@@ -1126,7 +1124,7 @@ emcliagentselfsignedcerts() {
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-        certcheck Agent $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST $EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT
+		certcheck Agent $EMCLIAGENTSELFSIGNEDCERTS_CHECK_HOST $EMCLIAGENTSELFSIGNEDCERTS_CHECK_PORT
 	done
 }
 
@@ -1136,7 +1134,7 @@ emcliagentdemocerts() {
 		EMCLIAGENTDEMOCERTS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTDEMOCERTS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-        democertcheck Agent $EMCLIAGENTDEMOCERTS_CHECK_HOST $EMCLIAGENTDEMOCERTS_CHECK_PORT
+		democertcheck Agent $EMCLIAGENTDEMOCERTS_CHECK_HOST $EMCLIAGENTDEMOCERTS_CHECK_PORT
 	done
 }
 
@@ -1150,7 +1148,7 @@ emcliagentprotocols() {
 		EMCLIAGENTPROTOCOLS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTPROTOCOLS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-        sslcheck Agent $EMCLIAGENTPROTOCOLS_CHECK_HOST $EMCLIAGENTPROTOCOLS_CHECK_PORT $EMCLIAGENTPROTOCOLS_CHECK_PROTO
+		sslcheck Agent $EMCLIAGENTPROTOCOLS_CHECK_HOST $EMCLIAGENTPROTOCOLS_CHECK_PORT $EMCLIAGENTPROTOCOLS_CHECK_PROTO
 	done
 }
 
@@ -1162,32 +1160,32 @@ emcliagentciphers() {
 		EMCLIAGENTCIPHERS_CHECK_HOST=`echo $curagent | sed 's/:.*$//'`
 		EMCLIAGENTCIPHERS_CHECK_PORT=`echo $curagent | sed 's/^.*://'`
 
-        ciphercheck Agent $EMCLIAGENTCIPHERS_CHECK_HOST $EMCLIAGENTCIPHERS_CHECK_PORT $EMCLIAGENTCIPHERS_SECTION
+		ciphercheck Agent $EMCLIAGENTCIPHERS_CHECK_HOST $EMCLIAGENTCIPHERS_CHECK_PORT $EMCLIAGENTCIPHERS_SECTION
 	done
 }
 
 # emcliagentopatch uses execute_sql and execute_hostcmd to check the OPatch version on every agent
 emcliagentopatch() {
-    SECTION=$1
-    AGENT_OPATCH_VERSION=$2
+	SECTION=$1
+	AGENT_OPATCH_VERSION=$2
 
-    for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
-        THEHOST=`echo $i | sed -e 's/:.*$//'`
-        echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
+	for i in `cat $EMCLI_AGENTLIST_CACHE_FILE`; do
+		THEHOST=`echo $i | sed -e 's/:.*$//'`
+		echo -ne "\n\t($SECTION) Agent $i ORACLE_HOME OPatch VERSION $AGENT_OPATCH_VERSION... "
 
-        EMCLIAGENTOPATCHCHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
-        EMCLIAGENTOPATCHCHECK_GETHOME=`echo $EMCLIAGENTOPATCHCHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
-        EMCLIAGENTOPATCHCHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch/opatch version -jre $EMCLIAGENTOPATCHCHECK_GETHOME/oracle_common/jdk" -targets="$THEHOST:host" | $GREP Version | sed 's/.*: //'`
+		EMCLIAGENTOPATCHCHECK_GETHOME=`$GREP $THEHOST $EMCLI_AGENTHOMES_CACHE_FILE | awk -F, '{print $1}'`
+		EMCLIAGENTOPATCHCHECK_GETHOME=`echo $EMCLIAGENTOPATCHCHECK_GETHOME | sed -e 's/\\\\/\\\\\\\\/g'`
+		EMCLIAGENTOPATCHCHECK_GETVER=`$EMCLI execute_hostcmd -cmd="$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch/opatch version -jre $EMCLIAGENTOPATCHCHECK_GETHOME/oracle_common/jdk" -targets="$THEHOST:host" | $GREP Version | sed 's/.*: //'`
 
-        if [[ "$EMCLIAGENTOPATCHCHECK_GETVER" == "$AGENT_OPATCH_VERSION" ]]; then
-            echo -e "\tOK"
-        else
-            echo -e "\tFAILED"
-            FAIL_COUNT=$((FAIL_COUNT+1))
-            FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $AGENT_OPATCH_VERSION"
-        fi
-        test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIAGENTOPATCHCHECK_GETVER
-    done
+		if [[ "$EMCLIAGENTOPATCHCHECK_GETVER" == "$AGENT_OPATCH_VERSION" ]]; then
+			echo -e "\tOK"
+		else
+			echo -e "\tFAILED"
+			FAIL_COUNT=$((FAIL_COUNT+1))
+			FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:OPatch in $THEHOST:$EMCLIAGENTOPATCHCHECK_GETHOME/OPatch: fails minimum version requirement $EMCLIAGENTOPATCHCHECK_GETVER vs $AGENT_OPATCH_VERSION"
+		fi
+		test $VERBOSE_CHECKSEC -ge 2 && echo $EMCLIAGENTOPATCHCHECK_GETVER
+	done
 }
 
 
@@ -1408,10 +1406,10 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) listener.ora SSL_CIPHER_SUITES parameter (1545816.1)... "
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 
-    if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-        echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
-        apexcheck 5.0.4.00.12
-    fi
+	if [[ "$EMCLI_CHECK" -eq 1 ]]; then
+	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
+	apexcheck 5.0.4.00.12
+	fi
 fi
 
 #echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.170718 PSU (25731746)... "
@@ -1461,16 +1459,16 @@ opatchcheck WLS $OMS_HOME 26591558
 
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    echo -e "\n\tUsing EMCLI to check for agent bundle patch on all agents"
-    #emcliagentbundlecheck 4d 26448382 "EM-AGENT BUNDLE PATCH 13.2.0.0.170831"
-    #emcliagentbundlecheck 4d 26649994 "EM-AGENT BUNDLE PATCH 13.2.0.0.170930"
-    emcliagentbundlecheck 4d $AGTBUNDLEPATCH $AGTBUNDLEDESC
+	echo -e "\n\tUsing EMCLI to check for agent bundle patch on all agents"
+	#emcliagentbundlecheck 4d 26448382 "EM-AGENT BUNDLE PATCH 13.2.0.0.170831"
+	#emcliagentbundlecheck 4d 26649994 "EM-AGENT BUNDLE PATCH 13.2.0.0.170930"
+	emcliagentbundlecheck 4d $AGTBUNDLEPATCH $AGTBUNDLEDESC
 else
-    echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
-    #echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170831 (26448382)... "
-    #opatchcheck Agent $AGENT_HOME 26448382
-    echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170930 (26649994)... "
-    opatchcheck Agent $AGENT_HOME 26649994
+	echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
+	#echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170831 (26448382)... "
+	#opatchcheck Agent $AGENT_HOME 26448382
+	echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170930 (26649994)... "
+	opatchcheck Agent $AGENT_HOME 26649994
 fi
 
 
@@ -1482,12 +1480,12 @@ echo -ne "\n\t(5a) Common Java ($OMS_HOME/oracle_common/jdk) JAVA SE JDK VERSION
 javacheck JAVA $OMS_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    echo -e "\n\tUsing EMCLI to check Java patch levels on all agents"
-    emclijavacheck "$JAVA_CHECK_VERSION"
+	echo -e "\n\tUsing EMCLI to check Java patch levels on all agents"
+	emclijavacheck "$JAVA_CHECK_VERSION"
 else
-    echo -e "\n\tNot logged in to EMCLI, will only check Java patch levels on local host."
-    echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
-    javacheck JAVA $AGENT_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
+	echo -e "\n\tNot logged in to EMCLI, will only check Java patch levels on local host."
+	echo -ne "\n\t(5b) OMS Chained Agent Java ($AGENT_HOME/oracle_common/jdk) JAVA SE JDK VERSION $JAVA_CHECK_VERSION (13079846)... "
+	javacheck JAVA $AGENT_HOME/oracle_common/jdk "$JAVA_CHECK_VERSION"
 fi
 
 
@@ -1508,99 +1506,99 @@ fi
 
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-    echo -ne "\n(7) Agent plugin bundle patch checks on all agents... "
-    emcliagentbundlepluginpatchcheck 7
+	echo -ne "\n(7) Agent plugin bundle patch checks on all agents... "
+	emcliagentbundlepluginpatchcheck 7
 else
-    echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
-    echo    "    with an OEM user that has configured default normal database credentials and default host"
-    echo    "    credentials for your repository database target, then run this script again."
+	echo -e "\n(7) Not logged in to EMCLI. Skipping EMCLI-based checks. To enable EMCLI checks, login to EMCLI"
+	echo	"	with an OEM user that has configured default normal database credentials and default host"
+	echo	"	credentials for your repository database target, then run this script again."
 
-    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.171031 MONITORING (26955301)... "
-    opatchplugincheck Agent $AGENT_HOME 26955301 oracle.sysman.db.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.171031 MONITORING (26955301)... "
+	opatchplugincheck Agent $AGENT_HOME 26955301 oracle.sysman.db.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170630 DISCOVERY (26238665)... "
-    opatchplugincheck Agent $AGENT_HOME 26238665 oracle.sysman.db.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170630 DISCOVERY (26238665)... "
+	opatchplugincheck Agent $AGENT_HOME 26238665 oracle.sysman.db.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING (26955424)... "
-    opatchplugincheck Agent $AGENT_HOME 26955424 oracle.sysman.db.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING (26955424)... "
+	opatchplugincheck Agent $AGENT_HOME 26955424 oracle.sysman.db.agent.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY (26568836)... "
-    opatchplugincheck Agent $AGENT_HOME 26568836 oracle.sysman.db.discovery.plugin_13.2.2.0.0
+	echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY (26568836)... "
+	opatchplugincheck Agent $AGENT_HOME 26568836 oracle.sysman.db.discovery.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170831 MONITORING (26568791)... "
-    opatchplugincheck Agent $AGENT_HOME 26568791 oracle.sysman.emas.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170831 MONITORING (26568791)... "
+	opatchplugincheck Agent $AGENT_HOME 26568791 oracle.sysman.emas.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26815892)... "
-    opatchplugincheck Agent $AGENT_HOME 26815892 oracle.sysman.emas.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26815892)... "
+	opatchplugincheck Agent $AGENT_HOME 26815892 oracle.sysman.emas.agent.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741697)... "
-    opatchplugincheck Agent $AGENT_HOME 26741697 oracle.sysman.emas.agent.plugin_13.2.3.0.0
+	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741697)... "
+	opatchplugincheck Agent $AGENT_HOME 26741697 oracle.sysman.emas.agent.plugin_13.2.3.0.0
 
-    echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
-    opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
+	opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170531 MONITORING (25985080)... "
-    opatchplugincheck Agent $AGENT_HOME 25985080 oracle.sysman.si.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170531 MONITORING (25985080)... "
+	opatchplugincheck Agent $AGENT_HOME 25985080 oracle.sysman.si.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.2.0.170531 MONITORING (25987111)... "
-    opatchplugincheck Agent $AGENT_HOME 25987111 oracle.sysman.si.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7e) OMS CHAINED AGENT HOME ($AGENT_HOME) EM SI PLUGIN BUNDLE PATCH 13.2.2.0.170531 MONITORING (25987111)... "
+	opatchplugincheck Agent $AGENT_HOME 25987111 oracle.sysman.si.agent.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7f) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
-    opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
+	echo -ne "\n\t(7f) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-BEACON BUNDLE PATCH 13.2.0.0.161231 (25162444)... "
+	opatchplugincheck Agent $AGENT_HOME 25162444 oracle.sysman.beacon.agent.plugin_13.2.0.0.0
 
-    echo -ne "\n\t(7g) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501436)... "
-    opatchplugincheck Agent $AGENT_HOME 25501436 oracle.sysman.xa.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7g) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501436)... "
+	opatchplugincheck Agent $AGENT_HOME 25501436 oracle.sysman.xa.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7h) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362875)... "
-    opatchplugincheck Agent $AGENT_HOME 25362875 oracle.sysman.xa.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7h) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362875)... "
+	opatchplugincheck Agent $AGENT_HOME 25362875 oracle.sysman.xa.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25522944)... "
-    opatchplugincheck Agent $AGENT_HOME 25522944 oracle.sysman.emfa.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25522944)... "
+	opatchplugincheck Agent $AGENT_HOME 25522944 oracle.sysman.emfa.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170531 DISCOVERY (25985223)... "
-    opatchplugincheck Agent $AGENT_HOME 25985223 oracle.sysman.emfa.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170531 DISCOVERY (25985223)... "
+	opatchplugincheck Agent $AGENT_HOME 25985223 oracle.sysman.emfa.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817739)... "
-    opatchplugincheck Agent $AGENT_HOME 26817739 oracle.sysman.emfa.discovery.plugin_13.2.2.0.0
+	echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817739)... "
+	opatchplugincheck Agent $AGENT_HOME 26817739 oracle.sysman.emfa.discovery.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 DISCOVERY (26238802)... "
-    opatchplugincheck Agent $AGENT_HOME 26238802 oracle.sysman.emfa.discovery.plugin_13.2.2.0.0
+	echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 DISCOVERY (26238802)... "
+	opatchplugincheck Agent $AGENT_HOME 26238802 oracle.sysman.emfa.discovery.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501416)... "
-    opatchplugincheck Agent $AGENT_HOME 25501416 oracle.sysman.vi.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501416)... "
+	opatchplugincheck Agent $AGENT_HOME 25501416 oracle.sysman.vi.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817804)... "
-    opatchplugincheck Agent $AGENT_HOME 26817804 oracle.sysman.vi.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817804)... "
+	opatchplugincheck Agent $AGENT_HOME 26817804 oracle.sysman.vi.agent.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING (26958775)... "
-    opatchplugincheck Agent $AGENT_HOME 26958775 oracle.sysman.vi.agent.plugin_13.2.3.0.0
+	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING (26958775)... "
+	opatchplugincheck Agent $AGENT_HOME 26958775 oracle.sysman.vi.agent.plugin_13.2.3.0.0
 
-    echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362898)... "
-    opatchplugincheck Agent $AGENT_HOME 25362898 oracle.sysman.vi.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362898)... "
+	opatchplugincheck Agent $AGENT_HOME 25362898 oracle.sysman.vi.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170731 DISCOVERY (26404920)... "
-    opatchplugincheck Agent $AGENT_HOME 26404920 oracle.sysman.vi.discovery.plugin_13.2.2.0.0
+	echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170731 DISCOVERY (26404920)... "
+	opatchplugincheck Agent $AGENT_HOME 26404920 oracle.sysman.vi.discovery.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 DISCOVERY (26958757)... "
-    opatchplugincheck Agent $AGENT_HOME 26958757 oracle.sysman.vi.discovery.plugin_13.2.3.0.0
+	echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 DISCOVERY (26958757)... "
+	opatchplugincheck Agent $AGENT_HOME 26958757 oracle.sysman.vi.discovery.plugin_13.2.3.0.0
 
-    echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170731 MONITORING (26404865)... "
-    opatchplugincheck Agent $AGENT_HOME 26404865 oracle.sysman.vt.agent.plugin_13.2.1.0.0
+	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170731 MONITORING (26404865)... "
+	opatchplugincheck Agent $AGENT_HOME 26404865 oracle.sysman.vt.agent.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26832251)... "
-    opatchplugincheck Agent $AGENT_HOME 26832251 oracle.sysman.vt.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26832251)... "
+	opatchplugincheck Agent $AGENT_HOME 26832251 oracle.sysman.vt.agent.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741689)... "
-    opatchplugincheck Agent $AGENT_HOME 26741689 oracle.sysman.vt.agent.plugin_13.2.3.0.0
+	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741689)... "
+	opatchplugincheck Agent $AGENT_HOME 26741689 oracle.sysman.vt.agent.plugin_13.2.3.0.0
 
-    echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
-    opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
+	opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
 
-    echo -ne "\n\t(7n) OMS CHAINED AGENT HOME ($AGENT_HOME) EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817793)... "
-    opatchplugincheck Agent $AGENT_HOME 26817793 oracle.sysman.csm.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7n) OMS CHAINED AGENT HOME ($AGENT_HOME) EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817793)... "
+	opatchplugincheck Agent $AGENT_HOME 26817793 oracle.sysman.csm.agent.plugin_13.2.2.0.0
 
-    echo -ne "\n\t(7o) OMS CHAINED AGENT HOME ($AGENT_HOME) EM ZERO DATA LOSS RECOVERY APPLIANCE PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING (26955968)... "
-    opatchplugincheck Agent $AGENT_HOME 26955968 oracle.sysman.am.agent.plugin_13.2.2.0.0
+	echo -ne "\n\t(7o) OMS CHAINED AGENT HOME ($AGENT_HOME) EM ZERO DATA LOSS RECOVERY APPLIANCE PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING (26955968)... "
+	opatchplugincheck Agent $AGENT_HOME 26955968 oracle.sysman.am.agent.plugin_13.2.2.0.0
 fi
 
 echo
