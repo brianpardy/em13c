@@ -3,101 +3,101 @@
 # This script should examine your EM13c environment, identify the ports
 # each component uses, and check for usage of encryption protocols older
 # then TLSv1.2, as well as make sure that weak and medium strength
-# cipher suites get rejected.  It will also validate your system comparing
+# cipher suites get rejected. It will also validate your system comparing
 # against the latest recommended patches and also flags the use of demo
 # or self-signed certificates.
 #
 # LICENSE: PUBLIC DOMAIN, USE AT YOUR OWN RISK
 #
-# Released  v0.1:  Initial beta release 5 Apr 2016
-# Changes   v0.2:  Updated for current patches
-# Changes   v0.3:  APR2016 patchset added
-# Changes   v0.4:  Plugin updates for 20160429
-# Changes   v0.5:  Plugin updates for 20160531
-# Changes   v0.6:  Plugin/OMS/DB updates for 20160719 CPU + Java check
-# Changes   v0.7:  Plugin/OMS updates for 20160816 bundles
-#		  Support for SLES11 OpenSSL 1 parallel package
-#		  Add checks for TLSv1.1, TLSv1.2
-#		  Permit only TLSv1.2 where supported by OpenSSL
-# Changes   v0.8:  Fix broken check for SSL_CIPHER_SUITES
-#		  Add checks for ENCRYPTION_SERVER, ENCRYPTION_CLIENT,
-#		  CRYPTO_CHECKSUM_SERVER, CRYPTO_CHECKSUM_CLIENT,
-#		  ENCRYPTION_TYPES_SERVER, ENCRYPTION_TYPES_CLIENT,
-#		  CRYPTO_CHECKSUM_TYPES_SERVER, CRYPTO_CHECKSUM_TYPES_CLIENT
-# Changes   v0.9:  Plugin updates for 20160920
-#		  Support TLSv1.2 when available in certcheck,
-#		  democertcheck, and ciphercheck
-# Changes   v1.0:  Converted to EM13cR2, converted repository DB checks
-#		  to use DBBP Bundle Patch (aka Exadata patch), not PSU
-# Changes   v1.1:  Updated for 20161231 EM13cR2 patches.
-#		  Updated for 20170117 security patches.
-#		  Add check for OPatch and OMSPatcher versions.
-# Changes   v1.2:  Updated for 20170131 bundle patches.
-# Changes   v1.3:  Updated for 20170228 bundle patches.
-# Changes   v1.4:  Added patches 25604219 and 24327938
-#		  Updated Java check to 1.7.0_131
-# Changes   v1.5:  Add check for chained agent Java version
-# Changes   v1.6:  Updated note references.
-#		  Added plugin patch checks for OMS chained agent
-#		  for non-default discovery/monitoring plugins
-#		  not previously checked. If you do not have
-#		  those plugins installed, the script will not
-#		  indicate failure due to the missing patch.
-#		  Added EMCLI check. If you login to EMCLI
-#		  before running ./checksec13R2.sh, the script
-#		  will soon check additional items using EMCLI.
-# Changes   v2.0:  Now checking plugin bundle patches on all agents
-#		  using EMCLI.  Run the script while not logged in
-#		  to EMCLI for instructions.  Login to EMCLI and run
-#		  the script to use the new functionality.
-#		  If not logged in, still runs all non-EMCLI checks.
-# Changes   v2.1:  Now checking OPatch versions on all agents using
-#		  EMCLI. Now checking self-signed/demo certs on all
-#		  agents using EMCLI. Now caching key EMCLI output
-#		  to decrease runtime.
-# Changes   v2.2:  Gather OPatch/OMSPatcher output at the beginning
-#		  of the script and cache it during the run to improve
-#		  runtime. Turned off verbose-by-default, added "-v"
-#		  commandline switch to enable verbose run.
-#		  Now checks agent bundle patch presence on all agents.
-#		  Cache execute_sql agent patch output to improve runtime.
-#		  Cache agent home list to improve runtime.
-#		  Huge runtime improvements vs previous release.
-#		  Remove duplicated code for cert checks
-# Changes   v2.3:  Get agent home directories from a different repo table
-#		  Update OPatch/OMSPatcher versions
-# Changes   v2.4:  Include 20170418 PSU
-# Changes   v2.5:  Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141
-#		  Update MOS note references, add agent bundle 20170331
-# Changes   v2.6:  Add agent bundle 20170331, ADF 21849941, OPSS 22748215
-#		  Update plugin bundle patches for 13.2.1 plugin line
-# Changes   v2.7:  Add check for APEX version on repository DB
-#		  Handle cases where OpenSSL has no LOW strength ciphers
-#		  Fix opatchplugincheck for directories leftover from
-#		  install of previous plugin versions.
-#		  Fixed some missing bundle patches in EMCLI agent checks.
-#		  Update agent+plugin bundle patches to 20170430
-# Changes   v2.8:  Update for 20170531 patch release
-# Changes   v2.9:  Update for first set of 13.2.2 plugin bundle patches
-# Changes   v2.10: Update for 20170630 plugin bundle patches
-# Changes   v2.11: Update for 20170718 OMS, DB, WLS PSU releases
-# Changes   v2.12: Update for 20170731 plugin bundle patches
-# Changes   v2.13: Update for 20170814 off cycle DB PSU
-# Changes   v2.14: Update for 20170831 plugin bundle patches
-# Changes   v2.15: Update for 20170930 plugin bundle patches + 13.2.3 
-# Changes   v2.16: Add Cloud Services Management plugin, OMS PSU 171017
-# Changes   v2.17: Update for DB PROACTIVE PSU 171017 & OCW PSU (JVM PSU TBD?)
-# Changes   v2.18: Update JVM PSU 171017
-# Changes   v2.19: Add OSS CPUOCT2017, update WLS PSU 171017
-# Changes   v2.20: Update SSL_VERSION check to 1.2, Java JDK to 1.7.0_161
-# Changes   v2.21: Update for 20171031 bundle patches released 20171110, new ZDLRA patch
-#		  Bug fixes reported by JS - EMCLI definition, AIX hostname -f 
-#						 -oh $MW_HOME in patchercheck
-#		  Enhancements from JS: improve minimum version calculation for OPatch
-#					merge certcheck/democertcheck
-#					use emcli list, not emcli execute_sql
-#					needs execute ad hoc sql using EMCLI list verb 
-#					ACCESS_EMCLI_SQL_LIST_VERB
+#	Released	v0.1:	Initial beta release 5 Apr 2016
+#	Changes		v0.2:	Updated for current patches
+#	Changes		v0.3:	APR2016 patchset added
+#	Changes		v0.4:	Plugin updates for 20160429
+#	Changes		v0.5:	Plugin updates for 20160531
+#	Changes		v0.6:	Plugin/OMS/DB updates for 20160719 CPU + Java check
+#	Changes		v0.7:	Plugin/OMS updates for 20160816 bundles
+#						Support for SLES11 OpenSSL 1 parallel package
+#						Add checks for TLSv1.1, TLSv1.2
+#						Permit only TLSv1.2 where supported by OpenSSL
+#	Changes		v0.8:	Fix broken check for SSL_CIPHER_SUITES
+#						Add checks for ENCRYPTION_SERVER, ENCRYPTION_CLIENT,
+#						CRYPTO_CHECKSUM_SERVER, CRYPTO_CHECKSUM_CLIENT,
+#						ENCRYPTION_TYPES_SERVER, ENCRYPTION_TYPES_CLIENT,
+#						CRYPTO_CHECKSUM_TYPES_SERVER, CRYPTO_CHECKSUM_TYPES_CLIENT
+#	Changes		v0.9:	Plugin updates for 20160920
+#						Support TLSv1.2 when available in certcheck,
+#						democertcheck, and ciphercheck
+#	Changes		v1.0:	Converted to EM13cR2, converted repository DB checks
+#						to use DBBP Bundle Patch (aka Exadata patch), not PSU
+#	Changes		v1.1:	Updated for 20161231 EM13cR2 patches.
+#						Updated for 20170117 security patches.
+#						Add check for OPatch and OMSPatcher versions.
+#	Changes		v1.2:	Updated for 20170131 bundle patches.
+#	Changes		v1.3:	Updated for 20170228 bundle patches.
+#	Changes		v1.4:	Added patches 25604219 and 24327938
+#						Updated Java check to 1.7.0_131
+#	Changes		v1.5:	Add check for chained agent Java version
+#	Changes		v1.6:	Updated note references.
+#						Added plugin patch checks for OMS chained agent
+#						for non-default discovery/monitoring plugins
+#						not previously checked. If you do not have
+#						those plugins installed, the script will not
+#						indicate failure due to the missing patch.
+#						Added EMCLI check. If you login to EMCLI
+#						before running ./checksec13R2.sh, the script
+#						will soon check additional items using EMCLI.
+#	Changes		v2.0:	Now checking plugin bundle patches on all agents
+#						using EMCLI.	Run the script while not logged in
+#						to EMCLI for instructions.	Login to EMCLI and run
+#						the script to use the new functionality.
+#						If not logged in, still runs all non-EMCLI checks.
+#	Changes		v2.1:	Now checking OPatch versions on all agents using
+#						EMCLI. Now checking self-signed/demo certs on all
+#						agents using EMCLI. Now caching key EMCLI output
+#						to decrease runtime.
+#	Changes		v2.2:	Gather OPatch/OMSPatcher output at the beginning
+#						of the script and cache it during the run to improve
+#						runtime. Turned off verbose-by-default, added "-v"
+#						commandline switch to enable verbose run.
+#						Now checks agent bundle patch presence on all agents.
+#						Cache execute_sql agent patch output to improve runtime.
+#						Cache agent home list to improve runtime.
+#						Huge runtime improvements vs previous release.
+#						Remove duplicated code for cert checks
+#	Changes		v2.3:	Get agent home directories from a different repo table
+#						Update OPatch/OMSPatcher versions
+#	Changes		v2.4:	Include 20170418 PSU
+#	Changes		v2.5:	Include 20170418 DBBP and 20170418 WLS and Java 1.7.0_141
+#						Update MOS note references, add agent bundle 20170331
+#	Changes		v2.6:	Add agent bundle 20170331, ADF 21849941, OPSS 22748215
+#						Update plugin bundle patches for 13.2.1 plugin line
+#	Changes		v2.7:	Add check for APEX version on repository DB
+#						Handle cases where OpenSSL has no LOW strength ciphers
+#						Fix opatchplugincheck for directories leftover from
+#						install of previous plugin versions.
+#						Fixed some missing bundle patches in EMCLI agent checks.
+#						Update agent+plugin bundle patches to 20170430
+#	Changes		v2.8:	Update for 20170531 patch release
+#	Changes		v2.9:	Update for first set of 13.2.2 plugin bundle patches
+#	Changes		v2.10:	Update for 20170630 plugin bundle patches
+#	Changes		v2.11:	Update for 20170718 OMS, DB, WLS PSU releases
+#	Changes		v2.12:	Update for 20170731 plugin bundle patches
+#	Changes		v2.13:	Update for 20170814 off cycle DB PSU
+#	Changes		v2.14:	Update for 20170831 plugin bundle patches
+#	Changes		v2.15:	Update for 20170930 plugin bundle patches + 13.2.3 
+#	Changes		v2.16:	Add Cloud Services Management plugin, OMS PSU 171017
+#	Changes		v2.17:	Update for DB PROACTIVE PSU 171017 & OCW PSU (JVM PSU TBD?)
+#	Changes		v2.18:	Update JVM PSU 171017
+#	Changes		v2.19:	Add OSS CPUOCT2017, update WLS PSU 171017
+#	Changes		v2.20:	Update SSL_VERSION check to 1.2, Java JDK to 1.7.0_161
+#	Changes		v2.21:	Update for 20171031 bundle patches released 20171110, ZDLRA patch
+#						Bug fixes reported by JS - EMCLI definition, AIX hostname -f 
+#							-oh $MW_HOME in patchercheck
+#						Enhancements from JS: improve minimum version calc for OPatch
+#							merge certcheck/democertcheck
+#							use emcli list, not emcli execute_sql
+#						Now needs execute ad hoc sql using EMCLI list verb
+#							ACCESS_EMCLI_SQL_LIST_VERB
 #
 #
 # From: @BrianPardy on Twitter
@@ -149,15 +149,15 @@
 # To make use of this new functionality, you must perform the following steps
 # before running the script:
 #
-# - Login to EMCLI using an OEM user account
-# - Make sure the OEM user account can execute EMCLI execute_sql, 
-#   execute_hostcmd, and list 
-# - Make sure the OEM user account has specified default normal database
-#   credentials and default host credentials for the repository database
-#   target.
+# -	Login to EMCLI using an OEM user account
+# -	Make sure the OEM user account can execute EMCLI execute_sql, 
+#	execute_hostcmd, and list 
+# -	Make sure the OEM user account has specified default normal database
+#	credentials and default host credentials for the repository database
+#	target.
 #	* This will enable plugin bundle patch checks on all agents.
-# - Make sure the OEM user account has specified preferred credentials for
-#   all host targets where agents run
+# -	Make sure the OEM user account has specified preferred credentials for
+#	all host targets where agents run
 #	* This will enable Java version checks on all agents.
 #
 # The create_user_for_checksec13R2.sh script provided in the same repo
@@ -167,11 +167,11 @@
 #
 #
 # Dedicated to our two Lhasa Apsos:
-#   Lucy (6/13/1998 - 3/13/2015)
-#   Ethel (6/13/1998 - 7/31/2015)
+#	Lucy (6/13/1998 - 3/13/2015)
+#	Ethel (6/13/1998 - 7/31/2015)
 #
 # And our new beagle/poodle/boxer/dalmation/pekingese/cockerspaniel/pug mutt
-#   Helix b. 1/2/2017
+#	Helix b. 1/2/2017
 #
 
 ### Begin user configurable section
@@ -402,13 +402,13 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 	echo -ne "\tEMCLI-Agent patches... "
 	EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
 	$EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.	 mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >		 $EMCLI_AGENTPATCHES_CACHE_FILE
-#	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' ||  host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
+#	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' || host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
 	echo "OK"
 
 	# Cache list of all agent homes
 	echo -ne "\tEMCLI-Agent homes... "
 	EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
-	$EMCLI list -format="name:script" -noheader -columns="INFO:200" -sql="select distinct home_location || ',' || host_name info  from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
+	$EMCLI list -format="name:script" -noheader -columns="INFO:200" -sql="select distinct home_location || ',' || host_name info from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
 #	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
 	echo "OK"
 
@@ -689,7 +689,7 @@ combinedcertcheck () {
 	if [[ $OPENSSL_CHECK_FAILED -ne "0" ]]; then
 		echo FAILED - SSL handshake failed
 		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} SSL	  handshake failed"
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} SSL handshake failed"
 	elif [[ $OPENSSL_SELFSIGNED_COUNT -ne "0" ]]; then
 		echo FAILED - Found self-signed certificate
 		FAIL_COUNT=$((FAIL_COUNT+1))
@@ -777,7 +777,7 @@ paramcheck () {
 		return
 	fi
 
-	PARAMCHECK_RETURN=`$GREP $WHICH_PARAM $WHICH_ORACLE_HOME/network/admin/$WHICH_FILE | $GREP -v '^#'  | awk -F= '{print $2}' | sed -e 's/\s//g'`
+	PARAMCHECK_RETURN=`$GREP $WHICH_PARAM $WHICH_ORACLE_HOME/network/admin/$WHICH_FILE | $GREP -v '^#' | awk -F= '{print $2}' | sed -e 's/\s//g'`
 	if [[ "$WHICH_PARAM" == "SSL_VERSION" ]]; then
 		if [[ "$PARAMCHECK_RETURN" == "1.2" ]]; then
 			echo -e "OK"
