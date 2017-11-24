@@ -324,16 +324,16 @@ if [[ "$REPOS_DB_HOST" == "$OMSHOST" ]]; then
 
 	if [[ "$REPOS_DB_VERSION" == "11.2.0.4.0" ]]; then
 		RUN_DB_CHECK=1
-	echo "$REPOS_DB_VERSION OK"
+		echo "$REPOS_DB_VERSION OK"
 	fi
 
 	if [[ "$REPOS_DB_VERSION" == "12.1.0.2.0" ]]; then
-	echo "$REPOS_DB_VERSION OK"
+		echo "$REPOS_DB_VERSION OK"
 		RUN_DB_CHECK=1
 	fi
 
 	if [[ "$RUN_DB_CHECK" -eq 0 ]]; then
-	echo "$REPOS_DB_VERSION not supported, skipping"
+		echo "$REPOS_DB_VERSION not supported, skipping"
 	fi
 fi
 
@@ -446,11 +446,11 @@ apexcheck () {
 	APEX_COMPARE_CUR=`echo $APEXVERSION | sed 's/\.//g'`
 
 	if [[ $APEX_COMPARE_CUR < $APEX_COMPARE_MIN ]]; then
-	echo FAILED
-	FAIL_COUNT=$((FAIL_COUNT+1))
-	FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:APEX @ $REPOS_DB_TARGET_NAME: fails minimum version requirement $APEXVERSION vs $APEX_CHECK_VERSION"
+		echo FAILED
+		FAIL_COUNT=$((FAIL_COUNT+1))
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:APEX @ $REPOS_DB_TARGET_NAME: fails minimum version requirement $APEXVERSION vs $APEX_CHECK_VERSION"
 	else
-	echo OK
+		echo OK
 	fi
 	return
 }
@@ -468,26 +468,26 @@ function returnminversion() {
 
 	while [[ ${#LV_VERS_1_ARR[@]} -lt ${#LV_VERS_2_ARR[@]} ]]
 	do
-	LV_VERS_1_ARR[${#LV_VERS_1_ARR[@]}]=0
+		LV_VERS_1_ARR[${#LV_VERS_1_ARR[@]}]=0
 	done
 	while [[ ${#LV_VERS_2_ARR[@]} -lt ${#LV_VERS_1_ARR[@]} ]]
 	do
-	LV_VERS_2_ARR[${#LV_VERS_2_ARR[@]}]=0
+		LV_VERS_2_ARR[${#LV_VERS_2_ARR[@]}]=0
 	done
 
 	local LV_FIELD=0
 	while [[ ${LV_FIELD} -lt ${#LV_VERS_1_ARR[@]} ]]
 	do
-	if [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -lt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
-	then
-		echo "${LV_VERSION_1}"
-		return
-	elif [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -gt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
-	then
-		echo "${LV_VERSION_2}"
-		return
-	fi
-	(( LV_FIELD = LV_FIELD + 1 ))
+		if [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -lt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
+		then
+			echo "${LV_VERSION_1}"
+			return
+		elif [[ "${LV_VERS_1_ARR[${LV_FIELD}]}" -gt "${LV_VERS_2_ARR[${LV_FIELD}]}" ]]
+		then
+			echo "${LV_VERSION_2}"
+			return
+		fi
+		(( LV_FIELD = LV_FIELD + 1 ))
 	done
 	echo "${LV_VERSION_1}"
 }
@@ -606,7 +606,7 @@ opatchcheck () {
 	if [[ "$OPATCH_CHECK_COMPONENT" == "ReposDBHome" ]]; then
 		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_REPOS_DB_CACHE_FILE`
 	elif [[ "$OPATCH_CHECK_COMPONENT" == "Agent" ]]; then
-	OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
+		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_AGENT_CACHE_FILE`
 	else
 		OPATCH_RET=`$GREP $OPATCH_CHECK_PATCH $OPATCH_OMS_CACHE_FILE`
 	fi
@@ -655,10 +655,10 @@ omspatchercheck () {
 	OMSPATCHER_CHECK_PATCH=$3
 
 	if [[ "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1322" || "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1321" || "$OMSPATCHER_CHECK_PATCH" -eq "$OMSSIDE1323" ]]; then
-	# special case handling for 13.2.1 plugin bundle update when 13.2.2 plugins have been installed & vice versa
-	OMSPATCHER_RET=`$GREP -e $OMSSIDE1322 -e $OMSSIDE1321 -e $OMSSIDE1323 $OMSPATCHER_OMS_CACHE_FILE`
+		# special case handling for 13.2.1 plugin bundle update when 13.2.2 plugins have been installed & vice versa
+		OMSPATCHER_RET=`$GREP -e $OMSSIDE1322 -e $OMSSIDE1321 -e $OMSSIDE1323 $OMSPATCHER_OMS_CACHE_FILE`
 	else
-	OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
+		OMSPATCHER_RET=`$GREP $OMSPATCHER_CHECK_PATCH $OMSPATCHER_OMS_CACHE_FILE`
 	fi
 
 
@@ -1370,8 +1370,8 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 	paramcheck SSL_CIPHER_SUITES $REPOS_DB_HOME listener.ora
 
 	if [[ "$EMCLI_CHECK" -eq 1 ]]; then
-	echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
-	apexcheck 5.0.4.00.12
+		echo -ne "\n\t(4b) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) APEX version... "
+		apexcheck 5.0.4.00.12
 	fi
 fi
 
