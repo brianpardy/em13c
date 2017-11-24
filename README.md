@@ -33,7 +33,7 @@ These scripts work on Linux x86-64 and users have reported they work on Solaris 
 
 ## Agent security ## 
 
-The make\_agents\_TLSv1.2.sh and secure\_agent\_ciphersuites.sh scripts provide an automated process to lock down all of your Oracle Management Agents to the most secure TLS protocol (TLSv1.2) and ciphersuite (SSL\_RSA\_WITH\_3DES\_EDE\_CBC\_SHA) available in EM13c R2. 
+The make\_agents\_TLSv1.2.sh and secure\_agent\_ciphersuites.sh scripts provide an automated process to lock down all of your Oracle Management Agents to the most secure TLS protocol (TLSv1.2) and ciphersuite (TLS\_RSA\_WITH\_AES\_256\_CBC\_SHA256) available in EM13c R2. 
 
 
 ## SSL/TLS certificates ##
