@@ -47,8 +47,8 @@
 #						before running ./checksec13R2.sh, the script
 #						will soon check additional items using EMCLI.
 #	Changes		v2.0:	Now checking plugin bundle patches on all agents
-#						using EMCLI.	Run the script while not logged in
-#						to EMCLI for instructions.	Login to EMCLI and run
+#						using EMCLI. Run the script while not logged in
+#						to EMCLI for instructions. Login to EMCLI and run
 #						the script to use the new functionality.
 #						If not logged in, still runs all non-EMCLI checks.
 #	Changes		v2.1:	Now checking OPatch versions on all agents using
@@ -84,14 +84,14 @@
 #	Changes		v2.12:	Update for 20170731 plugin bundle patches
 #	Changes		v2.13:	Update for 20170814 off cycle DB PSU
 #	Changes		v2.14:	Update for 20170831 plugin bundle patches
-#	Changes		v2.15:	Update for 20170930 plugin bundle patches + 13.2.3 
+#	Changes		v2.15:	Update for 20170930 plugin bundle patches + 13.2.3
 #	Changes		v2.16:	Add Cloud Services Management plugin, OMS PSU 171017
 #	Changes		v2.17:	Update for DB PROACTIVE PSU 171017 & OCW PSU (JVM PSU TBD?)
 #	Changes		v2.18:	Update JVM PSU 171017
 #	Changes		v2.19:	Add OSS CPUOCT2017, update WLS PSU 171017
 #	Changes		v2.20:	Update SSL_VERSION check to 1.2, Java JDK to 1.7.0_161
 #	Changes		v2.21:	Update for 20171031 bundle patches released 20171110, ZDLRA patch
-#						Bug fixes reported by JS - EMCLI definition, AIX hostname -f 
+#						Bug fixes reported by JS - EMCLI definition, AIX hostname -f
 #							-oh $MW_HOME in patchercheck
 #						Enhancements from JS: improve minimum version calc for OPatch
 #							merge certcheck/democertcheck
@@ -126,7 +126,7 @@
 # 6.9 where OpenSSL does not have LOW strength ciphers available, causing
 # an error in the script.
 #
-# Thanks to Jan Schnackenberg who reported many general and AIX-specific issues 
+# Thanks to Jan Schnackenberg who reported many general and AIX-specific issues
 # and provided patches to resolve them, including a merged replacement for
 # the self-signed and demo certificate checks, a greatly improved multi-dot
 # version string comparison, better handling for endpoints not supporting
@@ -150,8 +150,8 @@
 # before running the script:
 #
 # -	Login to EMCLI using an OEM user account
-# -	Make sure the OEM user account can execute EMCLI execute_sql, 
-#	execute_hostcmd, and list 
+# -	Make sure the OEM user account can execute EMCLI execute_sql,
+#	execute_hostcmd, and list
 # -	Make sure the OEM user account has specified default normal database
 #	credentials and default host credentials for the repository database
 #	target.
@@ -190,7 +190,7 @@ OMSSIDE1323DATE=20171031
 
 OMSPSUPATCH=26625183
 OMSPSUDATE=171017
-OMSPSUDESC="ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.$OMSPSUDATE PSU ($OMSPSUPATCH)" 
+OMSPSUDESC="ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.$OMSPSUDATE PSU ($OMSPSUPATCH)"
 
 DB12102PSUPATCH=26717470
 DB12102PSUDATE=171017
@@ -401,7 +401,7 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 	# Cache list of all patches on agents and their plugins
 	echo -ne "\tEMCLI-Agent patches... "
 	EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
-	$EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.	 mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >		 $EMCLI_AGENTPATCHES_CACHE_FILE
+	$EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >		 $EMCLI_AGENTPATCHES_CACHE_FILE
 #	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' || host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
 	echo "OK"
 
@@ -693,7 +693,7 @@ combinedcertcheck () {
 	elif [[ $OPENSSL_SELFSIGNED_COUNT -ne "0" ]]; then
 		echo FAILED - Found self-signed certificate
 		FAIL_COUNT=$((FAIL_COUNT+1))
-		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found	self-signed certificate"
+		FAIL_TESTS="${FAIL_TESTS}\\n$FUNCNAME:$CERTCHECK_CHECK_COMPONENT @ ${CERTCHECK_CHECK_HOST}:${CERTCHECK_CHECK_PORT} found self-signed certificate"
 	elif [[ $OPENSSL_DEMO_COUNT -ne "0" ]]; then
 		echo FAILED - Found demonstration certificate
 		FAIL_COUNT=$((FAIL_COUNT+1))
