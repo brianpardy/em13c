@@ -1577,6 +1577,11 @@ else
 fi
 
 echo
+echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
+echo "See bugs 27102554, 27138085, 27099568 for more information."
+echo
+
+echo
 echo "Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for more information."
 echo "Download the latest release from https://raw.githubusercontent.com/brianpardy/em13c/master/checksec13R2.sh"
 echo "Download the latest beta release from https://raw.githubusercontent.com/brianpardy/em13c/beta/checksec13R2.sh"
