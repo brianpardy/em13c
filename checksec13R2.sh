@@ -98,6 +98,7 @@
 #							use emcli list, not emcli execute_sql
 #						Now needs execute ad hoc sql using EMCLI list verb
 #							ACCESS_EMCLI_SQL_LIST_VERB
+#	Changes		v2.22:	Abort if running as user root. Move cache files to $TMPDIR.
 #
 #
 # From: @BrianPardy on Twitter
@@ -210,7 +211,7 @@ WLSPSUDESC="WLS PATCH SET UPDATE 12.1.3.0.$WLSPSUDATE ($WLSPSUPATCH)"
 SCRIPTNAME=`basename $0`
 PATCHDATE="31 Oct 2017"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.21"
+VERSION="2.22"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -223,8 +224,23 @@ HOST_ARCH=`uname -m`
 
 if [[ "${HOST_OS}" == "AIX" ]]; then
 	OMSHOST=`hostname`
+	WHOAMI=`/usr/bin/whoami`
 else
 	OMSHOST=`hostname -f`
+	if [[ -x "/usr/ucb/whoami" ]]; then
+		WHOAMI=`/usr/ucb/whoami`
+	else
+		WHOAMI=`/usr/bin/whoami`
+	fi
+fi
+
+if [[ -z "${TMPDIR}" ]]; then
+	TMPDIR=/tmp
+fi
+
+if [[ "${WHOAMI}" == "root" ]]; then
+	echo "Please execute this script as the Oracle software owner, not the root account."
+	exit 1
 fi
 
 ORAGCHOMELIST="/etc/oragchomelist"
@@ -345,38 +361,51 @@ else
 	VERBOSE_CHECKSEC=0
 fi
 
+# filecreated used to confirm cache files generated correctly and abort if not
+filecreated () {
+	FILECREATED_CHECKFILE=$1
+	if [[ ! -r "${FILECREATED_CHECKFILE}" ]]; then
+		echo "Cachefile $FILECREATED_CHECKFILE not created or readable, aborting."
+		exit 2
+	fi
+}
+
 
 # Gather random seeds for tempfiles
 OPATCH_OMS_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 OPATCH_CHAINED_AGENT_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
-OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+#OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 OMSPATCHER_OMS_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 
 # Cache OMS OPatch output
 echo -ne "\tOPatch-OMS... "
-OPATCH_OMS_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.OMS_HOME.$OPATCH_OMS_CACHE_RAND"
+OPATCH_OMS_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.OPatch.OMS_HOME.$OPATCH_OMS_CACHE_RAND"
 $OPATCH lsinv -oh $OMS_HOME > $OPATCH_OMS_CACHE_FILE
+filecreated $OPATCH_OMS_CACHE_FILE
 echo "OK"
 
 # Cache chained agent OPatch output
 echo -ne "\tOPatch-Agent... "
-OPATCH_AGENT_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.AGENT.$OPATCH_CHAINED_AGENT_CACHE_RAND"
+OPATCH_AGENT_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.OPatch.AGENT.$OPATCH_CHAINED_AGENT_CACHE_RAND"
 $OPATCH lsinv -oh $AGENT_HOME > $OPATCH_AGENT_CACHE_FILE
+filecreated $OPATCH_AGENT_CACHE_FILE
 echo "OK"
 
 # Cache repository DB OPatch output
-OPATCH_REPOS_DB_CACHE_FILE="${SCRIPTNAME}_cache.OPatch.REPOS_DB_HOME.$OPATCH_REPOS_DB_CACHE_RAND"
+OPATCH_REPOS_DB_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.OPatch.REPOS_DB_HOME.$OPATCH_REPOS_DB_CACHE_RAND"
 if [[ "$RUN_DB_CHECK" -eq 1 ]]; then
 	echo -ne "\tOPatch-Repos DB... "
 	OPATCH_REPOS_DB_CACHE_RAND=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
 	$REPOS_DB_HOME/OPatch/opatch lsinv -oh $REPOS_DB_HOME > $OPATCH_REPOS_DB_CACHE_FILE
+	filecreated $OPATCH_REPOS_DB_CACHE_FILE
 	echo "OK"
 fi
 
 # Cache OMS OMSPatcher output
 echo -ne "\tOMSPatcher-OMS... "
-OMSPATCHER_OMS_CACHE_FILE="${SCRIPTNAME}_cache.OMSPatcher.OMS_HOME.$OMSPATCHER_OMS_CACHE_RAND"
+OMSPATCHER_OMS_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.OMSPatcher.OMS_HOME.$OMSPATCHER_OMS_CACHE_RAND"
 $OMSPATCHER lspatches -oh $OMS_HOME -jdk $MW_HOME/oracle_common/jdk > $OMSPATCHER_OMS_CACHE_FILE
+filecreated $OMSPATCHER_OMS_CACHE_FILE
 echo "OK"
 
 
@@ -394,22 +423,25 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 
 	# Cache list of all agents
 	echo -ne "\tEMCLI-Agent list... "
-	EMCLI_AGENTLIST_CACHE_FILE="${SCRIPTNAME}_cache.agentlist.$EMCLI_AGENTLIST_RAND"
+	EMCLI_AGENTLIST_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.agentlist.$EMCLI_AGENTLIST_RAND"
 	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
+	filecreated $EMCLI_AGENTLIST_CACHE_FILE
 	echo "OK"
 
 	# Cache list of all patches on agents and their plugins
 	echo -ne "\tEMCLI-Agent patches... "
-	EMCLI_AGENTPATCHES_CACHE_FILE="${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
+	EMCLI_AGENTPATCHES_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.agenthosts_allpatches.$EMCLI_AGENTPATCHES_RAND"
 	$EMCLI list -format="name:script" -noheader -columns="INFO:100" -sql="select patch || ' on ' || host AS info from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" >		 $EMCLI_AGENTPATCHES_CACHE_FILE
 #	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select patch || ' on ' || host from sysman.mgmt\$applied_patches where host in (select host_name from sysman.mgmt\$target where target_type = 'oracle_emd')" > $EMCLI_AGENTPATCHES_CACHE_FILE
+	filecreated $EMCLI_AGENTPATCHES_CACHE_FILE
 	echo "OK"
 
 	# Cache list of all agent homes
 	echo -ne "\tEMCLI-Agent homes... "
-	EMCLI_AGENTHOMES_CACHE_FILE="${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
+	EMCLI_AGENTHOMES_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.agenthomes.$EMCLI_AGENTHOMES_RAND"
 	$EMCLI list -format="name:script" -noheader -columns="INFO:200" -sql="select distinct home_location || ',' || host_name info from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
 #	$EMCLI execute_sql -targets="${REPOS_DB_TARGET_NAME}:oracle_database" -sql="select distinct home_location || ',' || host_name from sysman.mgmt\$oh_installed_targets where inst_target_type = 'oracle_emd'" > $EMCLI_AGENTHOMES_CACHE_FILE
+	filecreated $EMCLI_AGENTHOMES_CACHE_FILE
 	echo "OK"
 
 	EMCLI_CHECK=1
@@ -418,6 +450,7 @@ else
 fi
 
 echo
+
 
 # cleantemp used to cleanup leftover temp files
 cleantemp () {
