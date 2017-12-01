@@ -228,7 +228,7 @@ if [[ "${HOST_OS}" == "AIX" ]]; then
 else
 	OMSHOST=`hostname -f`
 	if [[ -x "/usr/ucb/whoami" ]]; then
-		WHOAMI=`/usr/ucb/whoami`
+		WHOAMI=`/usr/ucb/whoami`	# Solaris
 	else
 		WHOAMI=`/usr/bin/whoami`
 	fi
