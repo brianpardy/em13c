@@ -1611,7 +1611,7 @@ fi
 
 echo
 echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
-echo "See bugs 27102554, 27138085, 27099568 for more information."
+echo "See bugs 27102554, 27138085, 27099568 for more information. Patch 27155076 exists to resolve this issue. Contact support."
 echo
 
 echo
