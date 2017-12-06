@@ -99,6 +99,7 @@
 #						Now needs execute ad hoc sql using EMCLI list verb
 #							ACCESS_EMCLI_SQL_LIST_VERB
 #	Changes		v2.22:	Abort if running as user root. Move cache files to $TMPDIR.
+#	Changes		v2.23:	Update OPatch 13.9.2.1.0 warning, add patch 27155076
 #
 #
 # From: @BrianPardy on Twitter
@@ -209,9 +210,9 @@ WLSPSUDESC="WLS PATCH SET UPDATE 12.1.3.0.$WLSPSUDATE ($WLSPSUPATCH)"
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="31 Oct 2017"
+PATCHDATE="6 Dec 2017"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.22"
+VERSION="2.23"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -1414,6 +1415,9 @@ fi
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) $OMSPSUDESC... "
 omspatchercheck OMS $OMS_HOME $OMSPSUPATCH
 
+echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) FIX FOR EM BUG 27099568 (27155076)... "
+omspatchercheck OMS $OMS_HOME 27155076
+
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
 
@@ -1611,7 +1615,8 @@ fi
 
 echo
 echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
-echo "See bugs 27102554, 27138085, 27099568 for more information. Patch 27155076 exists to resolve this issue. Contact support."
+echo "MOS note 2335997.1 documents the problem and provides instructions to resolve it using patch 27155076."
+echo "See bugs 27102554, 27138085, 27099568 for more information."
 echo
 
 echo
