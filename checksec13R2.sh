@@ -100,6 +100,7 @@
 #							ACCESS_EMCLI_SQL_LIST_VERB
 #	Changes		v2.22:	Abort if running as user root. Move cache files to $TMPDIR.
 #	Changes		v2.23:	Update OPatch 13.9.2.1.0 warning, add patch 27155076
+#	Changes		v2.24:	Update for 20171130 bundle patches
 #
 #
 # From: @BrianPardy on Twitter
@@ -183,12 +184,12 @@ OPATCH_CHECK_VERSION="13.9.2.1.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 ### Group the main set of frequently revised patches here
-OMSSIDE1321=26955185
-OMSSIDE1321DATE=20171031
-OMSSIDE1322=26955202
-OMSSIDE1322DATE=20171031
-OMSSIDE1323=26955215
-OMSSIDE1323DATE=20171031
+OMSSIDE1321=27109095
+OMSSIDE1321DATE=20171130
+OMSSIDE1322=27109106
+OMSSIDE1322DATE=20171130
+OMSSIDE1323=27109111
+OMSSIDE1323DATE=20171130
 
 OMSPSUPATCH=26625183
 OMSPSUDATE=171017
@@ -198,8 +199,8 @@ DB12102PSUPATCH=26717470
 DB12102PSUDATE=171017
 DB12102PSUDESC="DATABASE PROACTIVE BUNDLE PATCH 12.1.0.2.$DB12102PSUDATE ($DB12102PSUPATCH)"
 
-AGTBUNDLEPATCH=26649994
-AGTBUNDLEDATE=170930
+AGTBUNDLEPATCH=27031053
+AGTBUNDLEDATE=171130
 AGTBUNDLEDESC="EM-AGENT BUNDLE PATCH 13.2.0.0.$AGTBUNDLEDATE"
 
 WLSPSUPATCH=26519417
@@ -212,7 +213,7 @@ WLSPSUDESC="WLS PATCH SET UPDATE 12.1.3.0.$WLSPSUDATE ($WLSPSUPATCH)"
 SCRIPTNAME=`basename $0`
 PATCHDATE="6 Dec 2017"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.23"
+VERSION="2.24"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -1078,33 +1079,39 @@ emcliagentbundlepluginpatchcheck () {
 		$EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
 
 		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 26955301 a "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.171031 MONITORING"
-		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 26955424 a "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
+#		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 26955424 a "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 27110186  a "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171130 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 26238665 b "EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170630 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.2.0.0 26568836 b "EM DB PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 26568791 c "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170831 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.2.0.0 26815892 c "EM FMW PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 26741697 c "EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
+#		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 26741697 c "EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 27110197 c "EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 25501430 d "EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 25985080 e "EM SI PLUGIN BUNDLE PATCH 13.2.1.0.170531 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.2.0.0 25987111 e "EM SI PLUGIN BUNDLE PATCH 13.2.2.0.170531 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 25162444 f "EM-BEACON BUNDLE PATCH 13.2.0.0.161231"
 		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 25501436 g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.2.0.0 27110225  g "EM EXADATA PLUGIN BUNDLE PATCH 13.2.2.0.171130 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 25362875 h "EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25522944 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
-#		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26238786 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26817739 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.3.0.0 27110221 i "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 25985223 j "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.1.0.170531 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 26238802 j "EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 25501416 k "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.2.0.0 26817804 k "EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 26958775 k "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING"
+#		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 26958775 k "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 27110205  k "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 25362898 l "EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.2.0.0 26404920 l "EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.3.0.0 26958757 l "EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 26404865 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.170731 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.2.0.0 26832251 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
-		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 26741689 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
+#		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 26741689 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 27110211 m "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 25197712 n "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.3.0.0 27110236 n "EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.171130 DISCOVERY"
 		emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.2.0.0 26817793 n "EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING"
 		emclipluginpatchpresent oracle_emd oracle.sysman.am agent 13.2.2.0.0 26955968 n "EM ZERO DATA LOSS RECOVERY APPLIANCE PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING"
 
@@ -1442,12 +1449,6 @@ omspatchercheck OMS $OMS_HOME $OMSSIDE1322
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) ENTERPRISE MANAGER FOR OMS PLUGINS 13.2.3.0.$OMSSIDE1323DATE (for 13.2.3 plugins) ($OMSSIDE1323)... "
 omspatchercheck OMS $OMS_HOME $OMSSIDE1323
 
-#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170418 (25388793)... "
-#opatchcheck WLS $OMS_HOME 25388793
-
-#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) WLS PATCH SET UPDATE 12.1.3.0.170718 (25869659)... "
-#opatchcheck WLS $OMS_HOME 25869659
-
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) $WLSPSUDESC... "
 opatchcheck WLS $OMS_HOME $WLSPSUPATCH
 
@@ -1463,10 +1464,6 @@ if [[ "$EMCLI_CHECK" -eq 1 ]]; then
 	emcliagentbundlecheck 4d $AGTBUNDLEPATCH $AGTBUNDLEDESC
 else
 	echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
-	#echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170831 (26448382)... "
-	#opatchcheck Agent $AGENT_HOME 26448382
-	#echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM-AGENT BUNDLE PATCH 13.2.0.0.170930 (26649994)... "
-	#opatchcheck Agent $AGENT_HOME 26649994
 	echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) $AGTBUNDLEDESC... "
 	opatchcheck Agent $AGENT_HOME $AGTBUNDLEPATCH
 fi
@@ -1519,8 +1516,11 @@ else
 	echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.1.0.170630 DISCOVERY (26238665)... "
 	opatchplugincheck Agent $AGENT_HOME 26238665 oracle.sysman.db.discovery.plugin_13.2.1.0.0
 
-	echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING (26955424)... "
-	opatchplugincheck Agent $AGENT_HOME 26955424 oracle.sysman.db.agent.plugin_13.2.2.0.0
+#	echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171031 MONITORING (26955424)... "
+#	opatchplugincheck Agent $AGENT_HOME 26955424 oracle.sysman.db.agent.plugin_13.2.2.0.0
+
+	echo -ne "\n\t(7a) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.171130 MONITORING (27110186)... "
+	opatchplugincheck Agent $AGENT_HOME 27110186 oracle.sysman.db.agent.plugin_13.2.2.0.0
 
 	echo -ne "\n\t(7b) OMS CHAINED AGENT HOME ($AGENT_HOME) EM DB PLUGIN BUNDLE PATCH 13.2.2.0.170831 DISCOVERY (26568836)... "
 	opatchplugincheck Agent $AGENT_HOME 26568836 oracle.sysman.db.discovery.plugin_13.2.2.0.0
@@ -1531,8 +1531,11 @@ else
 	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26815892)... "
 	opatchplugincheck Agent $AGENT_HOME 26815892 oracle.sysman.emas.agent.plugin_13.2.2.0.0
 
-	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741697)... "
-	opatchplugincheck Agent $AGENT_HOME 26741697 oracle.sysman.emas.agent.plugin_13.2.3.0.0
+#	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741697)... "
+#	opatchplugincheck Agent $AGENT_HOME 26741697 oracle.sysman.emas.agent.plugin_13.2.3.0.0
+
+	echo -ne "\n\t(7c) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING (27110197)... "
+	opatchplugincheck Agent $AGENT_HOME 27110197 oracle.sysman.emas.agent.plugin_13.2.3.0.0
 
 	echo -ne "\n\t(7d) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FMW PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501430)... "
 	opatchplugincheck Agent $AGENT_HOME 25501430 oracle.sysman.emas.discovery.plugin_13.2.1.0.0
@@ -1549,6 +1552,9 @@ else
 	echo -ne "\n\t(7g) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170228 DISCOVERY (25501436)... "
 	opatchplugincheck Agent $AGENT_HOME 25501436 oracle.sysman.xa.discovery.plugin_13.2.1.0.0
 
+	echo -ne "\n\t(7g) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.2.0.171130 DISCOVERY (27110225)... "
+	opatchplugincheck Agent $AGENT_HOME 27110225 oracle.sysman.xa.discovery.plugin_13.2.2.0.0
+
 	echo -ne "\n\t(7h) OMS CHAINED AGENT HOME ($AGENT_HOME) EM EXADATA PLUGIN BUNDLE PATCH 13.2.1.0.170131 MONITORING (25362875)... "
 	opatchplugincheck Agent $AGENT_HOME 25362875 oracle.sysman.xa.agent.plugin_13.2.1.0.0
 
@@ -1564,14 +1570,20 @@ else
 	echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.2.0.170630 DISCOVERY (26238802)... "
 	opatchplugincheck Agent $AGENT_HOME 26238802 oracle.sysman.emfa.discovery.plugin_13.2.2.0.0
 
+	echo -ne "\n\t(7i) OMS CHAINED AGENT HOME ($AGENT_HOME) EM FUSION APPS PLUGIN BUNDLE PATCH 13.2.3.0.1701130 MONITORING (27110221)... "
+	opatchplugincheck Agent $AGENT_HOME 27110221 oracle.sysman.emfa.discovery.plugin_13.2.3.0.0
+
 	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170228 MONITORING (25501416)... "
 	opatchplugincheck Agent $AGENT_HOME 25501416 oracle.sysman.vi.agent.plugin_13.2.1.0.0
 
 	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817804)... "
 	opatchplugincheck Agent $AGENT_HOME 26817804 oracle.sysman.vi.agent.plugin_13.2.2.0.0
 
-	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING (26958775)... "
-	opatchplugincheck Agent $AGENT_HOME 26958775 oracle.sysman.vi.agent.plugin_13.2.3.0.0
+#	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171031 MONITORING (26958775)... "
+#	opatchplugincheck Agent $AGENT_HOME 26958775 oracle.sysman.vi.agent.plugin_13.2.3.0.0
+
+	echo -ne "\n\t(7j) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING (27110205)... "
+	opatchplugincheck Agent $AGENT_HOME 27110205 oracle.sysman.vi.agent.plugin_13.2.3.0.0
 
 	echo -ne "\n\t(7k) OMS CHAINED AGENT HOME ($AGENT_HOME) EM OVI PLUGIN BUNDLE PATCH 13.2.1.0.170131 DISCOVERY (25362898)... "
 	opatchplugincheck Agent $AGENT_HOME 25362898 oracle.sysman.vi.discovery.plugin_13.2.1.0.0
@@ -1588,11 +1600,17 @@ else
 	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26832251)... "
 	opatchplugincheck Agent $AGENT_HOME 26832251 oracle.sysman.vt.agent.plugin_13.2.2.0.0
 
-	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741689)... "
-	opatchplugincheck Agent $AGENT_HOME 26741689 oracle.sysman.vt.agent.plugin_13.2.3.0.0
+#	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.170930 MONITORING (26741689)... "
+#	opatchplugincheck Agent $AGENT_HOME 26741689 oracle.sysman.vt.agent.plugin_13.2.3.0.0
 
-	echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
-	opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
+	echo -ne "\n\t(7l) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.171130 MONITORING (27110211)... "
+	opatchplugincheck Agent $AGENT_HOME 27110211 oracle.sysman.vt.agent.plugin_13.2.3.0.0
+
+#	echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.1.0.161231 DISCOVERY (25197712)... "
+#	opatchplugincheck Agent $AGENT_HOME 25197712 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
+
+	echo -ne "\n\t(7m) OMS CHAINED AGENT HOME ($AGENT_HOME) EM VIRTUALIZATION PLUGIN BUNDLE PATCH 13.2.3.0.171130 DISCOVERY (27110236)... "
+	opatchplugincheck Agent $AGENT_HOME 27110236 oracle.sysman.vt.discovery.plugin_13.2.1.0.0
 
 	echo -ne "\n\t(7n) OMS CHAINED AGENT HOME ($AGENT_HOME) EM CSM PLUGIN BUNDLE PATCH 13.2.2.0.170930 MONITORING (26817793)... "
 	opatchplugincheck Agent $AGENT_HOME 26817793 oracle.sysman.csm.agent.plugin_13.2.2.0.0
