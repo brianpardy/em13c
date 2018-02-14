@@ -106,6 +106,7 @@
 #	Changes		v2.27:	Update for 20180131 bundle patches and Java 1.7.0_171
 #						Improve OPatch version check on agents to tolerate minimum version
 #						Rewrite SQL for agent patch list to avoid EMCLI too many rows err
+#						Update for 20180116 OMS PSU
 #
 #
 # From: @BrianPardy on Twitter
