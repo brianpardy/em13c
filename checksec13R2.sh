@@ -1693,7 +1693,7 @@ fi
 echo
 echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
 echo "MOS note 2335997.1 documents the problem and provides instructions to resolve it using patch 27155076."
-echo "See bugs 27102554, 27138085, 27099568 for more information."
+echo "See bugs 27102554, 27138085, 27099568 for more information. See also MOS note 2366532.1."
 echo
 echo "WARNING: I have encountered numerous problems with automatic OPatch upgrades since the OPatch 13.9.2"
 echo "conversion to an OUI-based installer.  I STRONGLY recommend that you always disable automated OPatch"
