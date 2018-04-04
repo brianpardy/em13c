@@ -1515,7 +1515,7 @@ opatchcheck WLS $OMS_HOME 26591558
 
 if [[ "$EMCLI_CHECK" -eq 1 ]]; then
 	echo -e "\n\tUsing EMCLI check for agent bundle patch on all agents"
-	emcliagentbundlecheck 4d $AGTBUNDLEPATCH $AGTBUNDLEDESC
+	emcliagentbundlecheck 4d $AGTBUNDLEPATCH "$AGTBUNDLEDESC"
 else
 	echo -e "\n\tNot logged in to EMCLI, will only check agent bundle patch on local host."
 	echo -ne "\n\t(4d) OMS CHAINED AGENT HOME ($AGENT_HOME) $AGTBUNDLEDESC... "
