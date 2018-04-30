@@ -109,6 +109,7 @@
 #						Update for 20180116 OMS PSU
 #	Changes		v2.28:	Update for 20180228 bundle patches
 #	Changes		v2.29:	Update for 20180331 bundle patches
+#	Changes		v2.30:	Update for 20180417 security patches, OPatch 13.9.3.2.0
 #
 #
 # From: @BrianPardy on Twitter
@@ -188,17 +189,10 @@
 ### Begin user configurable section
 
 JAVA_CHECK_VERSION="1.7.0_171"
-OPATCH_CHECK_VERSION="13.9.2.1.0"
+OPATCH_CHECK_VERSION="13.9.3.2.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
 ### Group the main set of frequently revised patches here
-#OMSSIDE1321=27523593
-#OMSSIDE1321DATE=20180228
-#OMSSIDE1322=27523597
-#OMSSIDE1322DATE=20180228
-#OMSSIDE1323=27523627
-#OMSSIDE1323DATE=20180228
-
 OMSSIDE1321=27523593
 OMSSIDE1321DATE=20180228
 OMSSIDE1322=27650736
@@ -206,37 +200,41 @@ OMSSIDE1322DATE=20180331
 OMSSIDE1323=27650740
 OMSSIDE1323DATE=20180331
 
-OMSPSUPATCH=27116243
-OMSPSUDATE=180116
+OMSPSUPATCH=27612395
+OMSPSUDATE=180417
 OMSPSUDESC="ENTERPRISE MANAGER BASE PLATFORM - OMS 13.2.0.0.$OMSPSUDATE PSU ($OMSPSUPATCH)"
 
-DB12102PSUPATCH=26925263
-DB12102PSUDATE=180116
+#DB12102PSUPATCH=26925263
+#DB12102PSUDATE=180116
+#DB12102PSUDESC="DATABASE PROACTIVE BUNDLE PATCH 12.1.0.2.$DB12102PSUDATE ($DB12102PSUPATCH)"
+#
+#DB12102JAVAPATCH=27001733
+#DB12102JAVADATE=180116
+#DB12102JAVADESC="ORACLE JAVAVM COMPONENT 12.1.0.2.$DB12102JAVADATE ($DB12102JAVAPATCH)"
+
+DB12102PSUPATCH=27338029
+DB12102PSUDATE=180417
 DB12102PSUDESC="DATABASE PROACTIVE BUNDLE PATCH 12.1.0.2.$DB12102PSUDATE ($DB12102PSUPATCH)"
 
-DB12102JAVAPATCH=27001733
-DB12102JAVADATE=180116
+DB12102JAVAPATCH=27475603
+DB12102JAVADATE=180417
 DB12102JAVADESC="ORACLE JAVAVM COMPONENT 12.1.0.2.$DB12102JAVADATE ($DB12102JAVAPATCH)"
-
-#AGTBUNDLEPATCH=27446771
-#AGTBUNDLEDATE=180228
-#AGTBUNDLEDESC="EM-AGENT BUNDLE PATCH 13.2.0.0.$AGTBUNDLEDATE"
 
 AGTBUNDLEPATCH=27585167
 AGTBUNDLEDATE=180331
 AGTBUNDLEDESC="EM-AGENT BUNDLE PATCH 13.2.0.0.$AGTBUNDLEDATE"
 
-WLSPSUPATCH=27057030
-WLSPSUDATE=180116
+WLSPSUPATCH=27419391
+WLSPSUDATE=180417
 WLSPSUDESC="WLS PATCH SET UPDATE 12.1.3.0.$WLSPSUDATE ($WLSPSUPATCH)"
 
 ### End user configurable section
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="31 Mar 2018"
+PATCHDATE="17 Apr 2018"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.29"
+VERSION="2.30"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -1421,8 +1419,11 @@ if [[ $RUN_DB_CHECK -eq 1 ]]; then
 #		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.171017 (26392192)... "
 #		opatchcheck ReposDBHome $REPOS_DB_HOME 26392192
 
-		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.180116 (26925218)... "
-		opatchcheck ReposDBHome $REPOS_DB_HOME 26925218
+#		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.180116 (26925218)... "
+#		opatchcheck ReposDBHome $REPOS_DB_HOME 26925218
+
+		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) OCW Patch Set Update : 12.1.0.2.180417 (27338020)... "
+		opatchcheck ReposDBHome $REPOS_DB_HOME 27338020
 
 		echo -ne "\n\t(4a) OMS REPOSITORY DATABASE HOME ($REPOS_DB_HOME) EM QUERY WITH SQL_ID 4RQ83FNXTF39U PERFORMS POORLY ON ORACLE 12C RELATIVE TO 11G (20243268)... "
 		opatchcheck ReposDBHome $REPOS_DB_HOME 20243268
@@ -1476,8 +1477,9 @@ fi
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) $OMSPSUDESC... "
 omspatchercheck OMS $OMS_HOME $OMSPSUPATCH
 
-echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) FIX FOR EM BUG 27099568 (27155076)... "
-omspatchercheck OMS $OMS_HOME 27155076
+# Apparently no longer needed with current OPatch
+#echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) FIX FOR EM BUG 27099568 (27155076)... "
+#omspatchercheck OMS $OMS_HOME 27155076
 
 echo -ne "\n\t(4c) OMS HOME ($OMS_HOME) TRACKING BUG TO REGISTER META VERSION FROM PS4 AND 13.1 BUNDLE PATCHES IN 13.2 (SYSTEM PATCH) (23603592)... "
 omspatchercheck OMS $OMS_HOME 23603592
@@ -1742,14 +1744,15 @@ else
 	echo "All tests succeeded."
 fi
 
-echo
-echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
-echo "MOS note 2335997.1 documents the problem and provides instructions to resolve it using patch 27155076."
-echo "See bugs 27102554, 27138085, 27099568 for more information. See also MOS note 2366532.1."
+#echo
+#echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
+#echo "MOS note 2335997.1 documents the problem and provides instructions to resolve it using patch 27155076."
+#echo "See bugs 27102554, 27138085, 27099568 for more information. See also MOS note 2366532.1."
 echo
 echo "WARNING: I have encountered numerous problems with automatic OPatch upgrades since the OPatch 13.9.2"
 echo "conversion to an OUI-based installer.  I STRONGLY recommend that you always disable automated OPatch"
-echo "upgrades when applying patches to an agent or agent plugins using a patch plan."
+echo "upgrades when applying patches to an agent or agent plugins using a patch plan, and manually perform"
+echo "OPatch upgrades as needed. The latest 13.9.3.2.0 version (as of Apr 2018) appears stable for my system."
 echo
 
 echo
