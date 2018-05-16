@@ -1742,12 +1742,12 @@ fi
 #echo "TEMPORARY NOTE 20171128: Several open bugs exist for OPatch 13.9.2.1.0, apply it at your own risk."
 #echo "MOS note 2335997.1 documents the problem and provides instructions to resolve it using patch 27155076."
 #echo "See bugs 27102554, 27138085, 27099568 for more information. See also MOS note 2366532.1."
-echo
-echo "WARNING: I have encountered numerous problems with automatic OPatch upgrades since the OPatch 13.9.2"
-echo "conversion to an OUI-based installer.  I STRONGLY recommend that you always disable automated OPatch"
-echo "upgrades when applying patches to an agent or agent plugins using a patch plan, and manually perform"
-echo "OPatch upgrades as needed. The latest 13.9.3.2.0 version (as of Apr 2018) appears stable for my system."
-echo
+#echo
+#echo "WARNING: I have encountered numerous problems with automatic OPatch upgrades since the OPatch 13.9.2"
+#echo "conversion to an OUI-based installer.  I STRONGLY recommend that you always disable automated OPatch"
+#echo "upgrades when applying patches to an agent or agent plugins using a patch plan, and manually perform"
+#echo "OPatch upgrades as needed. The latest 13.9.3.2.0 version (as of Apr 2018) appears stable for my system."
+#echo
 
 echo
 echo "Visit https://pardydba.wordpress.com/2016/10/28/securing-oracle-enterprise-manager-13cr2/ for more information."
