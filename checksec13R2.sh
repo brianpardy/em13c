@@ -111,6 +111,7 @@
 #	Changes		v2.29:	Update for 20180331 bundle patches
 #	Changes		v2.30:	Update for 20180417 security patches, OPatch 13.9.3.2.0
 #	Changes		v2.31:	Update for 20180430 bundle patches
+#	Changes		v2.32:	Update for 20180531 bundle patches
 #
 #
 # From: @BrianPardy on Twitter
@@ -242,9 +243,9 @@ WLSPSUDESC="WLS PATCH SET UPDATE 12.1.3.0.$WLSPSUDATE ($WLSPSUPATCH)"
 
 
 SCRIPTNAME=`basename $0`
-PATCHDATE="30 Apr 2018"
+PATCHDATE="31 May 2018"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.31"
+VERSION="2.32"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
