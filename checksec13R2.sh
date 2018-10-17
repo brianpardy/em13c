@@ -657,7 +657,7 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 	echo -ne "\tEMCLI-Agent list... "
 	EMCLI_AGENTLIST_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.agentlist.$EMCLI_AGENTLIST_RAND"
 #	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
-	$EMCLI get_targets -format=name:csv -targets=oracle_emd | $GREP oracle_emd | awk -F: '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
+	$EMCLI get_targets -format=name:csv -targets=oracle_emd | $GREP oracle_emd | awk -F, '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
 	filecreated $EMCLI_AGENTLIST_CACHE_FILE
 	echo "OK"
 
