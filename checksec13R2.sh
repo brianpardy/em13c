@@ -1828,7 +1828,7 @@ fi
 echo
 echo
 
-#cleantemp
+cleantemp
 
 if [[ $FAIL_COUNT -gt "0" ]]; then
 	echo "Failed test count: $FAIL_COUNT - Review output"
