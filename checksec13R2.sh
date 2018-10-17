@@ -121,6 +121,7 @@
 #	Changes		v2.37:	Update for 20181016 OMS PSU
 #	Changes		v2.38:	Update for 20181016 Critical Patch Update: APEX, DB, WLS
 #	Changes		v2.39:	Bugfixes for issue #7, long agent names truncated
+#						Fix bug introduced in 2.35 displaying plugin bundle patch names
 #
 #
 # From: @BrianPardy on Twitter
@@ -1318,42 +1319,42 @@ emcliagentbundlepluginpatchcheck () {
 
 		$EMCLI list_plugins_on_agent -agent_names="${curagent}" -include_discovery > $EMCLICHECK_HOSTPLUGINS_CACHEFILE
 
-		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 $DBPLG1321MONPATCH a $DBPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 $DBPLG1322MONPATCH a $DBPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 $DBPLG1321DISCPATCH b $DBPLG1321DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.2.0.0 $DBPLG1322DISCPATCH b $DBPLG1322DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 $FMWPLG1321MONPATCH c $FMWPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.2.0.0 $FMWPLG1322MONPATCH c $FMWPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 $FMWPLG1323MONPATCH c $FMWPLG1323MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 $FMWPLG1321DISCPATCH d $FMWPLG1321DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.2.0.0 $FMWPLG1322DISCPATCH d $FMWPLG1322DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.3.0.0 $FMWPLG1323DISCPATCH d $FMWPLG1323DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 $SIPLG1321MONPATCH e $SIPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.2.0.0 $SIPLG1322MONPATCH e $SIPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.3.0.0 $SIPLG1323MONPATCH e $SIPLG1323MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 $BEACONPLG1320PATCH f $BEACONPLG1320DESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 $EXAPLG1321DISCPATCH g $EXAPLG1321DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.2.0.0 $EXAPLG1322DISCPATCH g $EXAPLG1322DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 $EXAPLG1321MONPATCH h $EXAPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 $FMWAPPSPLG1321MONPATCH i $FMWAPPSPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 $FMWAPPSPLG1322MONPATCH i $FMWAPPSPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.3.0.0 $FMWAPPSPLG1323MONPATCH i $FMWAPPSPLG1323MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 $FMWAPPSPLG1321DISCPATCH j $FMWAPPSPLG1321DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 $FMWAPPSPLG1322DISCPATCH j $FMWAPPSPLG1322DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 $OVIPLG1321MONPATCH k $OVIPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.2.0.0 $OVIPLG1322MONPATCH k $OVIPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 $OVIPLG1323MONPATCH k $OVIPLG1323MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 $OVIPLG1321DISCPATCH l $OVIPLG1321DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.2.0.0 $OVIPLG1322DISCPATCH l $OVIPLG1322DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.3.0.0 $OVIPLG1323DISCPATCH l $OVIPLG1323DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 $VIRTPLG1321MONPATCH m $VIRTPLG1321MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.2.0.0 $VIRTPLG1322MONPATCH m $VIRTPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 $VIRTPLG1323MONPATCH m $VIRTPLG1323MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 $VIRTPLG1321DISCPATCH n $VIRTPLG1321DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.3.0.0 $VIRTPLG1323DISCPATCH n $VIRTPLG1323DISCDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.2.0.0 $CSMPLG1322MONPATCH n $CSMPLG1322MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.3.0.0 $CSMPLG1323MONPATCH n $CSMPLG1323MONDESC
-		emclipluginpatchpresent oracle_emd oracle.sysman.am agent 13.2.2.0.0 $ZDLRAPLG1322MONPATCH n $ZDLRAPLG1322MONDESC
+		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.1.0.0 $DBPLG1321MONPATCH a "$DBPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db agent 13.2.2.0.0 $DBPLG1322MONPATCH a "$DBPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.1.0.0 $DBPLG1321DISCPATCH b "$DBPLG1321DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.db discovery 13.2.2.0.0 $DBPLG1322DISCPATCH b "$DBPLG1322DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.1.0.0 $FMWPLG1321MONPATCH c "$FMWPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.2.0.0 $FMWPLG1322MONPATCH c "$FMWPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas agent 13.2.3.0.0 $FMWPLG1323MONPATCH c "$FMWPLG1323MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.1.0.0 $FMWPLG1321DISCPATCH d "$FMWPLG1321DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.2.0.0 $FMWPLG1322DISCPATCH d "$FMWPLG1322DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emas discovery 13.2.3.0.0 $FMWPLG1323DISCPATCH d "$FMWPLG1323DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.1.0.0 $SIPLG1321MONPATCH e "$SIPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.2.0.0 $SIPLG1322MONPATCH e "$SIPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.si agent 13.2.3.0.0 $SIPLG1323MONPATCH e "$SIPLG1323MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.beacon agent 13.2.0.0.0 $BEACONPLG1320PATCH f "$BEACONPLG1320DESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.1.0.0 $EXAPLG1321DISCPATCH g "$EXAPLG1321DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.xa discovery 13.2.2.0.0 $EXAPLG1322DISCPATCH g "$EXAPLG1322DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.xa agent 13.2.1.0.0 $EXAPLG1321MONPATCH h "$EXAPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 $FMWAPPSPLG1321MONPATCH i "$FMWAPPSPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 $FMWAPPSPLG1322MONPATCH i "$FMWAPPSPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.3.0.0 $FMWAPPSPLG1323MONPATCH i "$FMWAPPSPLG1323MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.1.0.0 $FMWAPPSPLG1321DISCPATCH j "$FMWAPPSPLG1321DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.emfa agent 13.2.2.0.0 $FMWAPPSPLG1322DISCPATCH j "$FMWAPPSPLG1322DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.1.0.0 $OVIPLG1321MONPATCH k "$OVIPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.2.0.0 $OVIPLG1322MONPATCH k "$OVIPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi agent 13.2.3.0.0 $OVIPLG1323MONPATCH k "$OVIPLG1323MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.1.0.0 $OVIPLG1321DISCPATCH l "$OVIPLG1321DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.2.0.0 $OVIPLG1322DISCPATCH l "$OVIPLG1322DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vi discovery 13.2.3.0.0 $OVIPLG1323DISCPATCH l "$OVIPLG1323DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.1.0.0 $VIRTPLG1321MONPATCH m "$VIRTPLG1321MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.2.0.0 $VIRTPLG1322MONPATCH m "$VIRTPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt agent 13.2.3.0.0 $VIRTPLG1323MONPATCH m "$VIRTPLG1323MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.1.0.0 $VIRTPLG1321DISCPATCH n "$VIRTPLG1321DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.vt discovery 13.2.3.0.0 $VIRTPLG1323DISCPATCH n "$VIRTPLG1323DISCDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.2.0.0 $CSMPLG1322MONPATCH n "$CSMPLG1322MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.csm agent 13.2.3.0.0 $CSMPLG1323MONPATCH n "$CSMPLG1323MONDESC"
+		emclipluginpatchpresent oracle_emd oracle.sysman.am agent 13.2.2.0.0 $ZDLRAPLG1322MONPATCH n "$ZDLRAPLG1322MONDESC"
 
 		(( SECTION_NUM+=1 ))
 
