@@ -122,6 +122,7 @@
 #	Changes		v2.38:	Update for 20181016 Critical Patch Update: APEX, DB, WLS
 #	Changes		v2.39:	Bugfixes for issue #7, long agent names truncated
 #						Fix bug introduced in 2.35 displaying plugin bundle patch names
+#						Update Java to 1.7.0_201
 #
 #
 # From: @BrianPardy on Twitter
@@ -204,7 +205,7 @@
 
 ### Begin user configurable section
 
-JAVA_CHECK_VERSION="1.7.0_171"
+JAVA_CHECK_VERSION="1.7.0_201"
 OPATCH_CHECK_VERSION="13.9.3.2.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
