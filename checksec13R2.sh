@@ -157,7 +157,7 @@
 # version string comparison, better handling for endpoints not supporting
 # TLSv1.2, and bugfixes for the patchercheck and variable definitions.
 #
-# Thanks to  who reported an issue causing truncation of long
+# Thanks to lamahmud on github who reported an issue causing truncation of long
 # agent names in emcli output, and useless output from emcli when an agent is
 # down, and provided a fix.
 #
