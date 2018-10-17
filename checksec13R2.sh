@@ -120,6 +120,7 @@
 #	Changes		v2.36:	Update for 20180930 bundle patches
 #	Changes		v2.37:	Update for 20181016 OMS PSU
 #	Changes		v2.38:	Update for 20181016 Critical Patch Update: APEX, DB, WLS
+#	Changes		v2.39:	Bugfixes for issue #7, long agent names truncated
 #
 #
 # From: @BrianPardy on Twitter
@@ -153,6 +154,10 @@
 # the self-signed and demo certificate checks, a greatly improved multi-dot
 # version string comparison, better handling for endpoints not supporting
 # TLSv1.2, and bugfixes for the patchercheck and variable definitions.
+#
+# Thanks to  who reported an issue causing truncation of long
+# agent names in emcli output, and useless output from emcli when an agent is
+# down, and provided a fix.
 #
 # In order to check selections for ENCRYPTION_TYPES and CRYPTO_CHECKSUM_TYPES
 # I have to make some judgement calls. Due to MD5's known issues, I consider
@@ -438,7 +443,7 @@ VIRTPLG1323DISCDESC="$VIRTPLGDESC 13.2.3.0.$VIRTPLG1323DISCDATE DISCOVERY"
 SCRIPTNAME=`basename $0`
 PATCHDATE="16 Oct 2018"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.38"
+VERSION="2.39"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
@@ -651,7 +656,8 @@ if [[ "$EMCLI_NOT_LOGGED_IN" -eq 0 ]]; then
 	# Cache list of all agents
 	echo -ne "\tEMCLI-Agent list... "
 	EMCLI_AGENTLIST_CACHE_FILE="${TMPDIR}/${SCRIPTNAME}_cache.agentlist.$EMCLI_AGENTLIST_RAND"
-	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
+#	$EMCLI get_targets | $GREP oracle_emd | awk '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
+	$EMCLI get_targets -format=name:csv -targets=oracle_emd | $GREP oracle_emd | awk -F: '{print $4}' > $EMCLI_AGENTLIST_CACHE_FILE
 	filecreated $EMCLI_AGENTLIST_CACHE_FILE
 	echo "OK"
 
@@ -1822,7 +1828,7 @@ fi
 echo
 echo
 
-cleantemp
+#cleantemp
 
 if [[ $FAIL_COUNT -gt "0" ]]; then
 	echo "Failed test count: $FAIL_COUNT - Review output"
