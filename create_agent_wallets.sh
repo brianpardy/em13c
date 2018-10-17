@@ -10,6 +10,8 @@
 #
 # @BrianPardy 20161229
 #
+# Update 20181017: Change EMCLI get_targets call to avoid truncating long agent names
+#
 # Public domain. Use at your own risk.
 #
 
@@ -32,7 +34,7 @@ fi
 mkdir $AGENTWALLETDIR
 cd $AGENTWALLETDIR
 
-for agent in `$EMCLI get_targets -targets=oracle_emd | grep oracle_emd | awk '{print $4}'`
+for agent in `$EMCLI get_targets -format=name:csv -targets=oracle_emd | grep oracle_emd | awk -F, '{print $4}'`
 do
 	agenthostcn=`echo $agent | awk -F: '{print $1}'`
 	CSRFILE="$agenthostcn/$agenthostcn.csr"
