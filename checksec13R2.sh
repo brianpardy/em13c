@@ -123,6 +123,7 @@
 #	Changes		v2.39:	Bugfixes for issue #7, long agent names truncated
 #						Fix bug introduced in 2.35 displaying plugin bundle patch names
 #						Update Java to 1.7.0_201
+#	Changes		v2.40:	Revert Java 1.7.0_201 check. Causes down targets in OEM.
 #
 #
 # From: @BrianPardy on Twitter
@@ -205,7 +206,7 @@
 
 ### Begin user configurable section
 
-JAVA_CHECK_VERSION="1.7.0_201"
+JAVA_CHECK_VERSION="1.7.0_171"
 OPATCH_CHECK_VERSION="13.9.3.2.0"
 OMSPATCHER_CHECK_VERSION="13.8.0.0.2"
 
@@ -445,7 +446,7 @@ VIRTPLG1323DISCDESC="$VIRTPLGDESC 13.2.3.0.$VIRTPLG1323DISCDATE DISCOVERY"
 SCRIPTNAME=`basename $0`
 PATCHDATE="16 Oct 2018"
 PATCHNOTE="1664074.1, 2219797.1"
-VERSION="2.39"
+VERSION="2.40"
 FAIL_COUNT=0
 FAIL_TESTS=""
 
